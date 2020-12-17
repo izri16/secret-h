@@ -1,0 +1,31 @@
+{
+  "name": "secret-h-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^5.0.0",
+    "body-parser": "^1.19.0",
+    "connect-session-knex": "^2.0.0",
+    "cookie": "^0.4.1",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "knex": "^0.21.13",
+    "pg": "^8.5.1"
+  },
+  "devDependencies": {
+    "eslint": "^7.15.0",
+    "eslint-plugin-react": "^7.21.5",
+    "nodemon": "^2.0.6"
+  },
+  "scripts": {
+    "dev": "nodemon ./index.js localhost 3000",
+    "migrate": "knex migrate:up --esm",
+    "rollback": "knex migrate:rollback --esm",
+    "lint": "eslint --ext js ."
+  },
+  "type": "module"
+}
