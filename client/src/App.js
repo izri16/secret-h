@@ -5,8 +5,9 @@ import {
 
 import {Registration} from './auth/Registration'
 import {Login} from './auth/Login'
-import {Logout} from './auth/Logout'
 import {AuthProvider, AuthRoute, NoAuthRoute} from './auth/AuthContext'
+import {Dashboard} from './dashboard/Dashboard'
+import {Game} from './dashboard/game/Game'
 
 const AppContent = () => {
   return (
@@ -16,8 +17,11 @@ const AppContent = () => {
           <Registration />
           <Login />
         </NoAuthRoute>
-        <AuthRoute exact path="/game">
-          <Logout />
+        <AuthRoute exact path="/dashboard">
+          <Dashboard />
+        </AuthRoute>
+        <AuthRoute exact path="/game/:id">
+          <Game />
         </AuthRoute>
       </Switch>
     </Router>

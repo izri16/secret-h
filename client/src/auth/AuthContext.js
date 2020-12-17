@@ -67,7 +67,7 @@ export const NoAuthRoute = ({ children, ...rest }) => {
           return <div>Loading ...</div>
         }
         if (authState === LOGIN_STATUS.loggedIn) {
-          return <Redirect to='/game' />
+          return <Redirect to='/dashboard' />
         }
         return children
       }

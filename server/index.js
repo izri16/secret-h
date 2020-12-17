@@ -6,6 +6,7 @@ import connectSessionKnex from 'connect-session-knex'
 
 import {config} from './config.js'
 import player from './api/player.js'
+import game from './api/game.js'
 import knex from './knex/knex.js'
 
 const KnexSessionStore = connectSessionKnex(session)
@@ -33,6 +34,7 @@ if (config.dev) {
 app.use(bodyParser.json())
 
 app.use('/api/player', player)
+app.use('/api/game', game)
 
 app.listen(config.port, () => {
   console.log(`Secret-Hitler app listening at http://localhost:${config.port}`)
