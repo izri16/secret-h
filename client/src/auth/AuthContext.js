@@ -17,7 +17,6 @@ export const AuthProvider = ({children}) => {
 
   React.useEffect(() => {
     apiRequest('player', 'GET').then((data) => {
-      console.log('data', data)
       setAuthState(LOGIN_STATUS.loggedIn)
     }).catch(() => {
       setAuthState(LOGIN_STATUS.loggedOut)

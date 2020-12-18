@@ -6,11 +6,8 @@ import {
 import {apiRequest} from '../../utils/api'
 import {SocketProvider} from './SocketContext'
 
-const GameContent = () => {
+const GameContent = ({gameId}) => {
   const history = useHistory()
-  const params = useParams()
-
-  const gameId = params.id
 
   const onDelete = async (e) => {
     e.preventDefault()
@@ -32,8 +29,12 @@ const GameContent = () => {
   )
 }
 
-export const Game = () => (
-  <SocketProvider>
-    <GameContent />
-  </SocketProvider>
-)
+export const Game = () => {
+  const params = useParams()
+  const gameId = params.id
+  return (
+    <SocketProvider gameId={gameId}>
+      <GameContent gameId={gameId} />
+    </SocketProvider>
+  )
+}

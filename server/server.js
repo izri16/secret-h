@@ -7,6 +7,7 @@ import http from 'http'
 import connectSessionKnex from 'connect-session-knex'
 
 import {config} from './config.js'
+import {requireAuthAndGameId} from './sockets/middlewares.js'
 import knex from './knex/knex.js'
 
 const KnexSessionStore = connectSessionKnex(session)
@@ -41,13 +42,13 @@ const io = new Server(server, {
   cors: corsOptions
 })
 
+// share sessions with express app
 io.use((socket, next) => {
   appSession(socket.request, {}, next)
 })
 
-io.on('connection', (socket) => {
-  console.log('player connected',  socket.request.session.playerId)
-})
+// require auth & game id for all socket requests
+io.use(requireAuthAndGameId)
 
 export const expressServer = app
 export const httpServer = server
