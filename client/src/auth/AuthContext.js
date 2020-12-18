@@ -15,8 +15,6 @@ const AuthContext = React.createContext({
 export const AuthProvider = ({children}) => {
   const [authState, setAuthState] = React.useState(LOGIN_STATUS.unknown)
 
-  console.log('wtf', authState)
-
   React.useEffect(() => {
     apiRequest('player', 'GET').then((data) => {
       console.log('data', data)

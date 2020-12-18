@@ -4,8 +4,9 @@ import {
   useParams
 } from "react-router-dom";
 import {apiRequest} from '../../utils/api'
+import {SocketProvider} from './SocketContext'
 
-export const Game = () => {
+const GameContent = () => {
   const history = useHistory()
   const params = useParams()
 
@@ -30,3 +31,9 @@ export const Game = () => {
     </div>
   )
 }
+
+export const Game = () => (
+  <SocketProvider>
+    <GameContent />
+  </SocketProvider>
+)

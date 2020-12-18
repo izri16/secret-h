@@ -65,6 +65,7 @@ router.post('/login', async function (req, res) {
   }
 
   req.session.playerId = player.id
+  req.session.save()
 
   res.status(200)
   res.json({})

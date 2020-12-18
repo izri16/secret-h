@@ -15,7 +15,8 @@
     "express-session": "^1.17.1",
     "knex": "^0.21.13",
     "lodash": "^4.17.20",
-    "pg": "^8.5.1"
+    "pg": "^8.5.1",
+    "socket.io": "^3.0.4"
   },
   "devDependencies": {
     "eslint": "^7.15.0",

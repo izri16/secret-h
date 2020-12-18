@@ -84,6 +84,8 @@ router.post('/:id/player', [auth], async function (req, res) {
     game_id: gameId,
   })
 
+  // TODO: sockets
+
   // all players registered, set random players order
   if (registeredPlayers.length === gamePlayersCount - 1) {
     const orders = _.shuffle(_.range(1, gamePlayersCount + 1))
