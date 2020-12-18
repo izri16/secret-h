@@ -12,6 +12,8 @@ import knex from './knex/knex.js'
 const KnexSessionStore = connectSessionKnex(session)
 const sessionStore = new KnexSessionStore({knex})
 
+// TODO: socket.io setup / take from "revolt"
+
 const app = express()
 
 app.set('trust proxy', 1) // trust first proxy (heroku)

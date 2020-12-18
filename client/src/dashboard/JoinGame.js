@@ -1,5 +1,6 @@
 import React from 'react'
 import {useHistory} from 'react-router-dom'
+import {apiRequest} from '../utils/api'
 
 const useFormData = () => {
   const history = useHistory()
@@ -11,6 +12,9 @@ const useFormData = () => {
     e.preventDefault()
 
     try {
+      await apiRequest(`game/${formData.gameId}/player`, 'POST', {
+        numberOfPlayers: formData.numberOfPlayers,
+      })
       history.push(`game/${formData.gameId}`)
     } catch (error) {
       alert('Unxepected error ...')
