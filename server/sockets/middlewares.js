@@ -8,7 +8,7 @@ export const requireAuthAndGameId = async (socket, next) => {
     playerId = socket.handshake.query.playerId
   }
 
-  if (playerId === undefined) {
+  if (!playerId) {
     emitError(socket)
     return
   }

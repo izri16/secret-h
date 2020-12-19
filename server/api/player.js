@@ -11,14 +11,8 @@ const saltRounds = 11
 
 // get info about logged-in user
 router.get('/', [auth], async function (req, res) {
-  const playerId = req.session.playerId
-
-  const player = await knex('players').select('login', 'id').where({
-    id: playerId
-  }).first()
-
   res.status(200)
-  res.json(player)
+  res.json(req.player)
 })
 
 // register new user
@@ -65,14 +59,13 @@ router.post('/login', async function (req, res) {
   }
 
   req.session.playerId = player.id
-  req.session.save()
 
   res.status(200)
   res.json({playerId: player.id})
 })
 
 router.post('/logout', [auth], async function (req, res) {
-  req.session.playerId = undefined
+  req.session.destroy()
   res.status(200)
   res.json({})
 })

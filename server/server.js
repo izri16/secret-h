@@ -26,8 +26,8 @@ app.set('trust proxy', 1) // trust first proxy (heroku)
 export const appSession = session({
   store: sessionStore,
   secret: config.sessionSecret,
-  resave: true,
-  saveUninitialized: true,
+  resave: false,
+  saveUninitialized: false,
   cookie: { secure: config.https, httpOnly: true }
 })
 

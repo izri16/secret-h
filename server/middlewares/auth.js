@@ -14,16 +14,18 @@ export const auth = async (req, res, next) => {
     return
   }
 
-  const player = await knex('players').select('login').where({
+  const player = await knex('players').select('id', 'login').where({
     id: playerId
   }).first()
 
   if (!player) {
-    req.session.playerId = undefined
+    req.session.destroy()
     res.status(404)
     res.json({})
     return
   }
+
+  req.player = player
 
   next()
 }
