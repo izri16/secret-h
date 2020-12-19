@@ -1,8 +1,13 @@
 import {emitError} from './utils.js'
+import {config} from '../config.js'
 
 export const requireAuthAndGameId = async (socket, next) => {
-  const playerId = socket.request.session.playerId
-  
+  let playerId = socket.request.session.playerId
+
+  if (config.testingSessions) {
+    playerId = socket.handshake.query.playerId
+  }
+
   if (playerId === undefined) {
     emitError(socket)
     return

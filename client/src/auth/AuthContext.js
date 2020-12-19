@@ -1,6 +1,7 @@
 import React from 'react'
 import {Route, Redirect} from "react-router-dom";
 import {apiRequest} from '../utils/api'
+import {config} from '../config'
 
 const LOGIN_STATUS = {
   unknown: 'unknown',
@@ -23,8 +24,18 @@ export const AuthProvider = ({children}) => {
     })
   })
 
-  const login = () => setAuthState(LOGIN_STATUS.loggedIn)
-  const logout = () => setAuthState(LOGIN_STATUS.loggedOut)
+  const login = (playerId) => {
+    if (config.testingSessions) {
+      sessionStorage.setItem('playerId', playerId)
+    }
+    setAuthState(LOGIN_STATUS.loggedIn)
+  }
+  const logout = () => {
+    if (config.testingSessions) {
+      sessionStorage.clear()
+    }
+    setAuthState(LOGIN_STATUS.loggedOut)
+  }
 
   return (
     <AuthContext.Provider value={{authState, login, logout}}>

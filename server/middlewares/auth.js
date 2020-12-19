@@ -1,7 +1,12 @@
 import knex from '../knex/knex.js'
+import {config} from '../config.js'
 
 export const auth = async (req, res, next) => {
-  const playerId = req.session.playerId
+  let playerId = req.session.playerId
+
+  if (config.testingSessions) {
+    playerId = req.headers['x-player-id']
+  }
 
   if (!playerId) {
     res.status(401)

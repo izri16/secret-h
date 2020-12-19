@@ -8,8 +8,12 @@ export const apiRequest = async (path, method, data) => {
     cache: 'no-cache',
     credentials: config.dev ? 'include' : 'same-origin',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     }
+  }
+
+  if (config.testingSessions && sessionStorage.getItem('playerId')) {
+    options.headers['x-player-id'] = sessionStorage.getItem('playerId')
   }
 
   if (data) {

@@ -1,11 +1,13 @@
 
 exports.up = async function(knex) {
+  await knex.raw('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"')
+  
   await knex.schema
     .createTable('players', table => {
       table
-        .increments('id')
+        .uuid('id')
+        .defaultTo(knex.raw('uuid_generate_v4()'))
         .primary()
-        .unsigned()
       table.string('login').unique()
       table.string('hashed_password')
     })
@@ -13,18 +15,18 @@ exports.up = async function(knex) {
   await knex.schema
     .createTable('games', table => {
       table
-        .increments('id')
+        .uuid('id')
+        .defaultTo(knex.raw('uuid_generate_v4()'))
         .primary()
-        .unsigned()
-      table.integer('created_by').references('players.id').onDelete('CASCADE')
+      table.uuid('created_by').references('players.id').onDelete('CASCADE')
       table.integer('number_of_players').unsigned()
       table.boolean('is_ready').default(false)
     })
 
   await knex.schema
     .createTable('player_to_game', table => {
-      table.integer('game_id').references('games.id').onDelete('CASCADE')
-      table.integer('player_id').references('players.id').onDelete('CASCADE')
+      table.uuid('game_id').references('games.id').onDelete('CASCADE')
+      table.uuid('player_id').references('players.id').onDelete('CASCADE')
       table.boolean('killed').default(false)
       table.integer('order')
       table.primary(['player_id', 'game_id'])
@@ -35,4 +37,5 @@ exports.down = async function(knex) {
   await knex.schema.dropTable('player_to_game')
   await knex.schema.dropTable('games')
   await knex.schema.dropTable('players')
+  await knex.raw('DROP EXTENSION IF EXISTS "uuid-ossp"')
 }

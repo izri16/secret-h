@@ -20,12 +20,12 @@ const useFormData = () => {
     }
 
     try {
-      await apiRequest('player', 'POST', {
+      const res = await apiRequest('player', 'POST', {
         login: formData.login,
         password: formData.password,
         pin: formData.pin
       })
-      login()
+      login(res.playerId)
     } catch (error) {
       alert('Unxepected error ...')
     }

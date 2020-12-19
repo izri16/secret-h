@@ -13,12 +13,19 @@ export const SocketProvider = ({children, gameId}) => {
   // TODO: in revolt there were nasty issues with useEffect, but class component worked,
   // change if issues
   React.useEffect(() => {
+
+    const query = {
+      gameId
+    }
+
+    if (config.testingSessions && sessionStorage.getItem('playerId')) {
+      query.playerId = sessionStorage.getItem('playerId')
+    }
+
     const socket = io(config.socketServerUrl, {
       withCredentials: true,
-      query: {
-        gameId,
-      }
-    });
+      query
+    })
 
     socket.on('joined-game', (data) => {
       console.log('joined game', data)

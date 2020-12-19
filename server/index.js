@@ -6,6 +6,9 @@ import game from './api/game.js'
 
 import {init as socketsInit} from './sockets/init.js'
 
+// TODO: setup login by "session storage" for testing purposes,
+// to login as multiple users in multiple tabs
+
 // api endpoints
 expressServer.use('/api/player', player)
 expressServer.use('/api/game', game)

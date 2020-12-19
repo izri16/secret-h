@@ -13,7 +13,7 @@ const saltRounds = 11
 router.get('/', [auth], async function (req, res) {
   const playerId = req.session.playerId
 
-  const player = await knex('players').select('login').where({
+  const player = await knex('players').select('login', 'id').where({
     id: playerId
   }).first()
 
@@ -40,7 +40,7 @@ router.post('/', async function (req, res) {
   req.session.playerId = player.id
 
   res.status(201)
-  res.json({login})
+  res.json({login, playerId: player.id})
 })
 
 router.post('/login', async function (req, res) {
@@ -68,7 +68,7 @@ router.post('/login', async function (req, res) {
   req.session.save()
 
   res.status(200)
-  res.json({})
+  res.json({playerId: player.id})
 })
 
 router.post('/logout', [auth], async function (req, res) {

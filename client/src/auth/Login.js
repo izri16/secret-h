@@ -13,11 +13,11 @@ const useFormData = () => {
     e.preventDefault()
 
     try {
-      await apiRequest('player/login', 'POST', {
+      const res = await apiRequest('player/login', 'POST', {
         login: formData.login,
         password: formData.password,
       })
-      login()
+      login(res.playerId)
     } catch (error) {
       alert('Unxepected error ...')
     }
