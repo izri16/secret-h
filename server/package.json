@@ -27,6 +27,7 @@
     "dev": "nodemon ./index.js localhost 3000",
     "migrate": "knex migrate:up --esm",
     "rollback": "knex migrate:rollback --esm",
+    "seed": "knex seed:run --esm",
     "lint": "eslint --ext js ."
   },
   "type": "module"

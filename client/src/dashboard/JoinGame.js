@@ -27,7 +27,7 @@ export const JoinGame = () => {
       <p>Join game</p>
       <form onSubmit={onSubmit}>
         <label>Game id</label>
-        <input type="number" name="gameId" value={formData.gameId} onChange={onChange('gameId')}></input>
+        <input type="string" name="gameId" value={formData.gameId} onChange={onChange('gameId')}></input>
         <button type="submit">Join game</button>
       </form>
     </div>
