@@ -17,15 +17,9 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "yarn lint",
     "eject": "react-scripts eject",
-    "lint": "eslint --ext js src"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+    "lint": "eslint ."
   },
   "browserslist": {
     "production": [

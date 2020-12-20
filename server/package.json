@@ -29,7 +29,8 @@
     "migrate": "knex migrate:up --esm",
     "rollback": "knex migrate:rollback --esm",
     "seed": "knex seed:run --esm",
-    "lint": "eslint --ext js ."
+    "lint": "eslint --ext .cjs,.js .",
+    "test": "yarn lint"
   },
   "type": "module"
 }
