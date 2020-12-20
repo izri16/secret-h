@@ -1,5 +1,5 @@
-import {emitError} from './utils.js'
-import {config} from '../config.js'
+import { emitError } from './utils.js'
+import { config } from '../config.js'
 
 export const requireAuthAndGameId = async (socket, next) => {
   let playerId = socket.request.session.playerId

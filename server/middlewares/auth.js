@@ -1,5 +1,5 @@
 import knex from '../knex/knex.js'
-import {config} from '../config.js'
+import { config } from '../config.js'
 
 export const auth = async (req, res, next) => {
   let playerId = req.session.playerId
@@ -14,9 +14,12 @@ export const auth = async (req, res, next) => {
     return
   }
 
-  const player = await knex('players').select('id', 'login').where({
-    id: playerId
-  }).first()
+  const player = await knex('players')
+    .select('id', 'login')
+    .where({
+      id: playerId,
+    })
+    .first()
 
   if (!player) {
     req.session.destroy()

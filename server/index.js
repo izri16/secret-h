@@ -1,10 +1,10 @@
-import {expressServer, httpServer, ioServer} from './server.js'
-import {config} from './config.js'
+import { expressServer, httpServer, ioServer } from './server.js'
+import { config } from './config.js'
 
 import player from './api/player.js'
 import game from './api/game.js'
 
-import {init as socketsInit} from './sockets/init.js'
+import { init as socketsInit } from './sockets/init.js'
 
 // TODO: setup login by "session storage" for testing purposes,
 // to login as multiple users in multiple tabs

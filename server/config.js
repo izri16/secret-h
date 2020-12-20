@@ -10,5 +10,5 @@ export const config = {
   allowedDevCorsOrigin: process.env.ALLOWED_DEV_CORS_ORIGIN,
   dev: process.env.NODE_ENV !== 'production',
   pin: process.env.PIN,
-  testingSessions: process.env.TESTING_SESSIONS === 'true'
+  testingSessions: process.env.TESTING_SESSIONS === 'true',
 }

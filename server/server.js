@@ -1,21 +1,21 @@
 import express from 'express'
-import {Server} from 'socket.io'
+import { Server } from 'socket.io'
 import bodyParser from 'body-parser'
 import cors from 'cors'
 import session from 'express-session'
 import http from 'http'
 import connectSessionKnex from 'connect-session-knex'
 
-import {config} from './config.js'
-import {requireAuthAndGameId} from './sockets/middlewares.js'
+import { config } from './config.js'
+import { requireAuthAndGameId } from './sockets/middlewares.js'
 import knex from './knex/knex.js'
 
 const KnexSessionStore = connectSessionKnex(session)
-const sessionStore = new KnexSessionStore({knex})
+const sessionStore = new KnexSessionStore({ knex })
 
 export const corsOptions = {
   origin: config.allowedDevCorsOrigin,
-  credentials: true
+  credentials: true,
 }
 
 const app = express()
@@ -28,7 +28,7 @@ export const appSession = session({
   secret: config.sessionSecret,
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: config.https, httpOnly: true }
+  cookie: { secure: config.https, httpOnly: true },
 })
 
 app.use(appSession)
@@ -39,7 +39,7 @@ if (config.dev) {
 }
 
 const io = new Server(server, {
-  cors: corsOptions
+  cors: corsOptions,
 })
 
 // share sessions with express app
