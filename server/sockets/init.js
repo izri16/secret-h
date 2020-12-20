@@ -3,10 +3,20 @@ import _ from 'lodash'
 import {ioServer} from '../server.js'
 import knex from '../knex/knex.js'
 import {emitError} from './utils.js'
-import {raceConfigurations} from 'common/constants.js'
+import {raceConfigurations, race} from 'common/constants.js'
 
-// TODO
-console.log('test', raceConfigurations)
+const assignRaces = (playerRecords) => {
+  const numberOfPlayers = playerRecords.length
+  const conf = raceConfigurations[numberOfPlayers].races
+
+  const races = _.shuffle([
+    ..._.fill(Array(conf[race.liberal]), race.liberal),
+    ..._.fill(Array(conf[race.fascist] - 1), race.fascist),
+    ...[race.hitler]
+  ])
+
+  return playerRecords.map((r, i) => ({...r, race: races[i]}))
+}
 
 const alreadyJoined = async (playerId, gameId) => {
   return !!(await knex('player_to_game').where({game_id: gameId, player_id: playerId}).first())
@@ -27,9 +37,6 @@ const joinGame = async (socket) => {
     throw new Error('Game is full')
   }
 
-  // remove player from all other games
-  await knex('player_to_game').del().where({player_id: playerId})
-
   // add player to game
   await knex('player_to_game').insert({
     player_id: playerId,
@@ -45,9 +52,12 @@ const joinGame = async (socket) => {
   if (registeredPlayers.length === gamePlayersCount - 1) {
     const orders = _.shuffle(_.range(1, gamePlayersCount + 1))
     const records = await knex('player_to_game').select('*').where({game_id: gameId})
+    const recordsWithRaces = assignRaces(records)
     
-    records.forEach(async (r, index) => {
-      await knex('player_to_game').where({player_id: r.player_id, game_id: r.game_id}).update({order: orders[index]})
+    recordsWithRaces.forEach(async (r, index) => {
+      await knex('player_to_game')
+        .where({player_id: r.player_id, game_id: r.game_id})
+        .update({order: orders[index], race: r.race})
     })
 
     // mark game as ready

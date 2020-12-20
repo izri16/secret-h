@@ -13,5 +13,5 @@ exports.seed = async function(knex) {
     return {login, hashed_password: hash}
   }))
 
-  await knex('players').insert(dataToInsert)
+  return await knex('players').insert(dataToInsert)
 }
