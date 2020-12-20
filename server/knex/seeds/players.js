@@ -27,5 +27,5 @@ exports.seed = async function (knex) {
     })
   )
 
-  return await knex('players').insert(dataToInsert)
+  await knex('players').insert(dataToInsert)
 }
