@@ -19,7 +19,10 @@
   },
   "devDependencies": {
     "eslint": "^7.15.0",
-    "nodemon": "^2.0.6"
+    "eslint-config-prettier": "^7.1.0",
+    "eslint-plugin-prettier": "^3.3.0",
+    "nodemon": "^2.0.6",
+    "prettier": "^2.2.1"
   },
   "scripts": {
     "dev": "nodemon ./index.js localhost 3000",

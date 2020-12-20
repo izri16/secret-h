@@ -23,7 +23,7 @@ exports.seed = async function (knex) {
   const dataToInsert = await Promise.all(
     playerLogins.map(async (login) => {
       const hash = await bcrypt.hash(login, saltRounds)
-      return { login, hashed_password: hash }
+      return {login, hashed_password: hash}
     })
   )
 

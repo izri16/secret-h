@@ -1,5 +1,5 @@
 Arguments: 
-  /home/richard/.nvm/versions/node/v14.15.2/bin/node /home/richard/.yarn/lib/cli.js add workspace-common^1.0.0
+  /home/richard/.nvm/versions/node/v14.15.2/bin/node /home/richard/.yarn/bin/yarn.js add --dev plugin:prettier/recommended
 
 PATH: 
   /home/richard/.yarn/bin:/home/richard/.config/yarn/global/node_modules/.bin:/home/richard/Android/Sdk/emulator:/home/richard/Android/Sdk/tools:/home/richard/.nvm/versions/node/v14.15.2/bin:/home/richard/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/lib/jvm/jdk1.8.0_261/bin:/usr/lib/jvm/java-8-oracle/bin:/usr/lib/jvm/java-8-oracle/db/bin:/usr/lib/jvm/java-8-oracle/jre/bin:/home/richard/Android/Sdk/tools:/home/richard/Android/Sdk/tools/bin:/home/richard/Android/Sdk/platform-tools:/opt/gradle/gradle-6.6.1/bin:/home/richard/go/bin:/home/richard/.yarn/bin
@@ -14,30 +14,29 @@ Platform:
   linux x64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/workspace-common%5E1.0.0: Not found
-      at Request.params.callback [as _callback] (/home/richard/.yarn/lib/cli.js:66988:18)
-      at Request.self.callback (/home/richard/.yarn/lib/cli.js:140749:22)
-      at Request.emit (events.js:315:20)
-      at Request.<anonymous> (/home/richard/.yarn/lib/cli.js:141721:10)
-      at Request.emit (events.js:315:20)
-      at IncomingMessage.<anonymous> (/home/richard/.yarn/lib/cli.js:141643:12)
-      at Object.onceWrapper (events.js:421:28)
-      at IncomingMessage.emit (events.js:327:22)
-      at endReadableNT (internal/streams/readable.js:1327:12)
-      at processTicksAndRejections (internal/process/task_queues.js:80:21)
+  Error: plugin:prettier%2frecommended: Invalid protocol: plugin:
+      at Request.module.exports.Request.init (/home/richard/.yarn/lib/cli.js:141018:31)
+      at new Request (/home/richard/.yarn/lib/cli.js:140691:8)
+      at request (/home/richard/.yarn/lib/cli.js:137597:10)
+      at RequestManager.execute (/home/richard/.yarn/lib/cli.js:67040:15)
+      at RequestManager.shiftQueue (/home/richard/.yarn/lib/cli.js:67078:10)
+      at /home/richard/.yarn/lib/cli.js:66747:13
+      at new Promise (<anonymous>)
+      at new F (/home/richard/.yarn/lib/cli.js:5301:28)
+      at RequestManager.request (/home/richard/.yarn/lib/cli.js:66745:19)
+      at NpmRegistry.<anonymous> (/home/richard/.yarn/lib/cli.js:31704:42)
 
 npm manifest: 
   {
-    "name": "workspace-server",
+    "name": "server",
     "version": "1.0.0",
     "main": "index.js",
     "license": "MIT",
     "dependencies": {
       "bcrypt": "^5.0.0",
       "body-parser": "^1.19.0",
+      "common": "1.0.0",
       "connect-session-knex": "^2.0.0",
-      "cookie": "^0.4.1",
-      "cookie-parser": "^1.4.5",
       "cors": "^2.8.5",
       "dotenv": "^8.2.0",
       "express": "^4.17.1",
@@ -49,7 +48,6 @@ npm manifest:
     },
     "devDependencies": {
       "eslint": "^7.15.0",
-      "eslint-plugin-react": "^7.21.5",
       "nodemon": "^2.0.6"
     },
     "scripts": {
@@ -3657,14 +3655,6 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/convert-source-map/-/convert-source-map-0.3.5.tgz#f1d802950af7dd2631a1febe0596550c86ab3190"
     integrity sha1-8dgClQr33SYxof6+BZZVDIarMZA=
   
-  cookie-parser@^1.4.5:
-    version "1.4.5"
-    resolved "https://registry.yarnpkg.com/cookie-parser/-/cookie-parser-1.4.5.tgz#3e572d4b7c0c80f9c61daf604e4336831b5d1d49"
-    integrity sha512-f13bPUj/gG/5mDr+xLmSxxDsB9DQiTIfhJS/sqjrmfAWiAN+x2O4i/XguTL9yDZ+/IFDanJ+5x7hC4CXT9Tdzw==
-    dependencies:
-      cookie "0.4.0"
-      cookie-signature "1.0.6"
-  
   cookie-signature@1.0.6:
     version "1.0.6"
     resolved "https://registry.yarnpkg.com/cookie-signature/-/cookie-signature-1.0.6.tgz#e303a882b342cc3ee8ca513a79999734dab3ae2c"
@@ -3675,7 +3665,7 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/cookie/-/cookie-0.4.0.tgz#beb437e7022b3b6d49019d088665303ebe9c14ba"
     integrity sha512-+Hp8fLp57wnUSt0tY0tHEXh4voZRDnoIrZPqlo3DPiI4y9lwg/jqx+1Om94/W6ZaPDOUbnjOt/99w66zk+l1Xg==
   
-  cookie@^0.4.1, cookie@~0.4.1:
+  cookie@~0.4.1:
     version "0.4.1"
     resolved "https://registry.yarnpkg.com/cookie/-/cookie-0.4.1.tgz#afd713fe26ebd21ba95ceb61f9a8116e50a537d1"
     integrity sha512-ZwrFkGJxUR3EIoXtO+yVE69Eb7KlixbaeAWfBQB9vVsNn/o+Yw69gBWSSDK825hQNdN+wF8zELf3dFNl/kxkUA==

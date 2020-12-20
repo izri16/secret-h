@@ -2,8 +2,8 @@ import express from 'express'
 import bcrypt from 'bcrypt'
 
 import knex from '../knex/knex.js'
-import { auth } from '../middlewares/auth.js'
-import { config } from '../config.js'
+import {auth} from '../middlewares/auth.js'
+import {config} from '../config.js'
 
 const router = express.Router()
 
@@ -17,7 +17,7 @@ router.get('/', [auth], async function (req, res) {
 
 // register new user
 router.post('/', async function (req, res) {
-  const { password, login, pin } = req.body
+  const {password, login, pin} = req.body
   const hashedPassword = await bcrypt.hash(password, saltRounds)
 
   if (pin !== config.pin) {
@@ -38,11 +38,11 @@ router.post('/', async function (req, res) {
   req.session.playerId = player.id
 
   res.status(201)
-  res.json({ login, playerId: player.id })
+  res.json({login, playerId: player.id})
 })
 
 router.post('/login', async function (req, res) {
-  const { password, login } = req.body
+  const {password, login} = req.body
 
   const player = await knex('players')
     .select('*')
@@ -68,7 +68,7 @@ router.post('/login', async function (req, res) {
   req.session.playerId = player.id
 
   res.status(200)
-  res.json({ playerId: player.id })
+  res.json({playerId: player.id})
 })
 
 router.post('/logout', [auth], async function (req, res) {

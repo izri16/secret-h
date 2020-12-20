@@ -1,5 +1,5 @@
 import knex from '../knex/knex.js'
-import { config } from '../config.js'
+import {config} from '../config.js'
 
 export const auth = async (req, res, next) => {
   let playerId = req.session.playerId

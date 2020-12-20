@@ -1,7 +1,7 @@
-import { dirname } from 'path'
-import { fileURLToPath } from 'url'
+import {dirname} from 'path'
+import {fileURLToPath} from 'url'
 
-import { config } from './config.js'
+import {config} from './config.js'
 
 // Note: there is not __dirname when "type: module" for node
 const __dirname = dirname(fileURLToPath(import.meta.url))

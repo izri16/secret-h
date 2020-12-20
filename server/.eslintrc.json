@@ -1,15 +1,13 @@
 {
   "env": {
-    "es2021": true,
+    "es6": true,
     "node": true
   },
   "extends": [
-    "eslint:recommended"
+    "eslint:recommended",
+    "plugin:prettier/recommended"
   ],
   "parserOptions": {
-    "ecmaFeatures": {
-        "jsx": true
-    },
     "ecmaVersion": 12,
     "sourceType": "module"
   },
@@ -22,13 +20,13 @@
       "error",
       "unix"
     ],
-    "quotes": [
+    "prettier/prettier": [
       "error",
-      "single"
-    ],
-    "semi": [
-      "error",
-      "never"
+      {
+        "singleQuote": true,
+        "semi": false,
+        "bracketSpacing": false
+      }
     ]
   }
 }

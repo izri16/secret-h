@@ -1,13 +1,13 @@
 import express from 'express'
 
 import knex from '../knex/knex.js'
-import { auth } from '../middlewares/auth.js'
+import {auth} from '../middlewares/auth.js'
 
 const router = express.Router()
 
 // create-new game
 router.post('/', [auth], async function (req, res) {
-  const { numberOfPlayers } = req.body
+  const {numberOfPlayers} = req.body
   const playerId = req.player.id
 
   if (numberOfPlayers < 5 || numberOfPlayers > 10) {
@@ -32,7 +32,7 @@ router.post('/', [auth], async function (req, res) {
   })
 
   res.status(201)
-  res.json({ id: game.id, numberOfPlayers })
+  res.json({id: game.id, numberOfPlayers})
 })
 
 // delete game
