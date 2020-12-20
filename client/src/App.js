@@ -9,6 +9,11 @@ import {AuthProvider, AuthRoute, NoAuthRoute} from './auth/AuthContext'
 import {Dashboard} from './dashboard/Dashboard'
 import {Game} from './dashboard/game/Game'
 
+import {raceConfigurations} from 'common/constants.js'
+
+// TODO
+console.log('test', raceConfigurations)
+
 const AppContent = () => {
   return (
     <Router>

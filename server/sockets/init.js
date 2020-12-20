@@ -3,6 +3,10 @@ import _ from 'lodash'
 import {ioServer} from '../server.js'
 import knex from '../knex/knex.js'
 import {emitError} from './utils.js'
+import {raceConfigurations} from 'common/constants.js'
+
+// TODO
+console.log('test', raceConfigurations)
 
 const alreadyJoined = async (playerId, gameId) => {
   return !!(await knex('player_to_game').where({game_id: gameId, player_id: playerId}).first())

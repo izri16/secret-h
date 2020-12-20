@@ -1,11 +1,12 @@
 {
-  "name": "secret-h-server",
+  "name": "server",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
     "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
+    "common": "1.0.0",
     "connect-session-knex": "^2.0.0",
     "cookie": "^0.4.1",
     "cookie-parser": "^1.4.5",

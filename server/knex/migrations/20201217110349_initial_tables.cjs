@@ -29,6 +29,7 @@ exports.up = async function(knex) {
       table.uuid('player_id').references('players.id').onDelete('CASCADE')
       table.boolean('killed').default(false)
       table.integer('order')
+      table.string('race')
       table.primary(['player_id', 'game_id'])
     })
 }
