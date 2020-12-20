@@ -23,8 +23,9 @@ const useFormData = () => {
 
   return {
     formData,
-    onChange: (name) => (e) => setFormData({...formData, [name]: e.target.value}),
-    onSubmit
+    onChange: (name) => (e) =>
+      setFormData({...formData, [name]: e.target.value}),
+    onSubmit,
   }
 }
 
@@ -36,7 +37,12 @@ export const CreateGame = () => {
       <p>Create game</p>
       <form onSubmit={onSubmit}>
         <label>Number of players</label>
-        <input type="number" name="numberOfPlayers" value={formData.numberOfPlayers} onChange={onChange('numberOfPlayers')}></input>
+        <input
+          type="number"
+          name="numberOfPlayers"
+          value={formData.numberOfPlayers}
+          onChange={onChange('numberOfPlayers')}
+        ></input>
         <button type="submit">Create game</button>
       </form>
     </div>

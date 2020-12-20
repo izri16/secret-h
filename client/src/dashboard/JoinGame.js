@@ -14,8 +14,9 @@ const useFormData = () => {
 
   return {
     formData,
-    onChange: (name) => (e) => setFormData({...formData, [name]: e.target.value}),
-    onSubmit
+    onChange: (name) => (e) =>
+      setFormData({...formData, [name]: e.target.value}),
+    onSubmit,
   }
 }
 
@@ -27,7 +28,12 @@ export const JoinGame = () => {
       <p>Join game</p>
       <form onSubmit={onSubmit}>
         <label>Game id</label>
-        <input type="string" name="gameId" value={formData.gameId} onChange={onChange('gameId')}></input>
+        <input
+          type="string"
+          name="gameId"
+          value={formData.gameId}
+          onChange={onChange('gameId')}
+        ></input>
         <button type="submit">Join game</button>
       </form>
     </div>

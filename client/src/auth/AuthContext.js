@@ -1,27 +1,29 @@
 import React from 'react'
-import {Route, Redirect} from "react-router-dom";
+import {Route, Redirect} from 'react-router-dom'
 import {apiRequest} from '../utils/api'
 import {config} from '../config'
 
 const LOGIN_STATUS = {
   unknown: 'unknown',
   loggedIn: 'loggedIn',
-  loggedOut: 'loggedOut'
+  loggedOut: 'loggedOut',
 }
 
 const AuthContext = React.createContext({
-  loginStatus: LOGIN_STATUS.unknown
+  loginStatus: LOGIN_STATUS.unknown,
 })
 
 export const AuthProvider = ({children}) => {
   const [authState, setAuthState] = React.useState(LOGIN_STATUS.unknown)
 
   React.useEffect(() => {
-    apiRequest('player', 'GET').then((data) => {
-      setAuthState(LOGIN_STATUS.loggedIn)
-    }).catch(() => {
-      setAuthState(LOGIN_STATUS.loggedOut)
-    })
+    apiRequest('player', 'GET')
+      .then((data) => {
+        setAuthState(LOGIN_STATUS.loggedIn)
+      })
+      .catch(() => {
+        setAuthState(LOGIN_STATUS.loggedOut)
+      })
   })
 
   const login = (playerId) => {
@@ -46,40 +48,38 @@ export const AuthProvider = ({children}) => {
 
 export const useAuth = () => React.useContext(AuthContext)
 
-export const AuthRoute = ({ children, ...rest }) => {
-  const {authState} = useAuth();
+export const AuthRoute = ({children, ...rest}) => {
+  const {authState} = useAuth()
   return (
     <Route
       {...rest}
-      render={({ location }) => {
+      render={({location}) => {
         if (authState === LOGIN_STATUS.unknown) {
           return <div>Loading ...</div>
         }
         if (authState === LOGIN_STATUS.loggedOut) {
-          return <Redirect to='/' />
+          return <Redirect to="/" />
         }
         return children
-      }
-    }
+      }}
     />
   )
 }
 
-export const NoAuthRoute = ({ children, ...rest }) => {
-  const {authState} = useAuth();
+export const NoAuthRoute = ({children, ...rest}) => {
+  const {authState} = useAuth()
   return (
     <Route
       {...rest}
-      render={({ location }) => {
+      render={({location}) => {
         if (authState === LOGIN_STATUS.unknown) {
           return <div>Loading ...</div>
         }
         if (authState === LOGIN_STATUS.loggedIn) {
-          return <Redirect to='/dashboard' />
+          return <Redirect to="/dashboard" />
         }
         return children
-      }
-    }
+      }}
     />
   )
 }

@@ -8,7 +8,7 @@ const useFormData = () => {
     login: '',
     password: '',
     passwordCheck: '',
-    pin: ''
+    pin: '',
   })
 
   const onSubmit = async (e) => {
@@ -23,7 +23,7 @@ const useFormData = () => {
       const res = await apiRequest('player', 'POST', {
         login: formData.login,
         password: formData.password,
-        pin: formData.pin
+        pin: formData.pin,
       })
       login(res.playerId)
     } catch (error) {
@@ -33,8 +33,9 @@ const useFormData = () => {
 
   return {
     formData,
-    onChange: (name) => (e) => setFormData({...formData, [name]: e.target.value}),
-    onSubmit
+    onChange: (name) => (e) =>
+      setFormData({...formData, [name]: e.target.value}),
+    onSubmit,
   }
 }
 
@@ -46,17 +47,37 @@ export const Registration = () => {
       <p>Dummy registration</p>
       <form onSubmit={onSubmit}>
         <label>Login</label>
-        <input type="text" name="login" value={formData.login} onChange={onChange('login')}></input>
+        <input
+          type="text"
+          name="login"
+          value={formData.login}
+          onChange={onChange('login')}
+        ></input>
 
         <label>Password</label>
-        <input type="password" name="password" value={formData.password} onChange={onChange('password')}></input>
+        <input
+          type="password"
+          name="password"
+          value={formData.password}
+          onChange={onChange('password')}
+        ></input>
 
         <label>Password check</label>
-        <input type="password" name="passwordCheck" value={formData.passwordCheck} onChange={onChange('passwordCheck')}></input>
+        <input
+          type="password"
+          name="passwordCheck"
+          value={formData.passwordCheck}
+          onChange={onChange('passwordCheck')}
+        ></input>
 
         <label>PIN</label>
-        <input type="text" name="pin" value={formData.pin} onChange={onChange('pin')}></input>
-        
+        <input
+          type="text"
+          name="pin"
+          value={formData.pin}
+          onChange={onChange('pin')}
+        ></input>
+
         <button type="submit">Register</button>
       </form>
     </div>

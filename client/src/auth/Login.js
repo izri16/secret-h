@@ -25,8 +25,9 @@ const useFormData = () => {
 
   return {
     formData,
-    onChange: (name) => (e) => setFormData({...formData, [name]: e.target.value}),
-    onSubmit
+    onChange: (name) => (e) =>
+      setFormData({...formData, [name]: e.target.value}),
+    onSubmit,
   }
 }
 
@@ -38,11 +39,21 @@ export const Login = () => {
       <p>Dummy login</p>
       <form onSubmit={onSubmit}>
         <label>Login</label>
-        <input type="text" name="login" value={formData.login} onChange={onChange('login')}></input>
+        <input
+          type="text"
+          name="login"
+          value={formData.login}
+          onChange={onChange('login')}
+        ></input>
 
         <label>Password</label>
-        <input type="password" name="password" value={formData.password} onChange={onChange('password')}></input>
-        
+        <input
+          type="password"
+          name="password"
+          value={formData.password}
+          onChange={onChange('password')}
+        ></input>
+
         <button type="submit">Login</button>
       </form>
     </div>

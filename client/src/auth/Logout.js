@@ -10,7 +10,5 @@ export const Logout = () => {
     logout()
   }
 
-  return (
-    <button onClick={onLogout}>Logout</button>
-  )
+  return <button onClick={onLogout}>Logout</button>
 }

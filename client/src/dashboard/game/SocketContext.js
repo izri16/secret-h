@@ -5,7 +5,7 @@ import {useGameData} from './GameDataContext'
 import {config} from '../../config'
 
 const SocketContext = React.createContext({
-  socket: null
+  socket: null,
 })
 
 export const SocketProvider = ({children}) => {
@@ -14,9 +14,8 @@ export const SocketProvider = ({children}) => {
 
   // TODO: in revolt there were nasty issues with useEffect, but class component worked,
   React.useEffect(() => {
-
     const query = {
-      gameId
+      gameId,
     }
 
     if (config.testingSessions && sessionStorage.getItem('playerId')) {
@@ -25,7 +24,7 @@ export const SocketProvider = ({children}) => {
 
     const socket = io(config.socketServerUrl, {
       withCredentials: true,
-      query
+      query,
     })
 
     socket.on('game-data', (data) => {
@@ -41,9 +40,7 @@ export const SocketProvider = ({children}) => {
   }, [gameId, setGameData])
 
   return (
-    <SocketContext.Provider value={{socket}}>
-      {children}
-    </SocketContext.Provider>
+    <SocketContext.Provider value={{socket}}>{children}</SocketContext.Provider>
   )
 }
 
