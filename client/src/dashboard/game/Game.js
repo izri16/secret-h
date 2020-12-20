@@ -1,40 +1,28 @@
 import React from 'react'
-import {
-  useHistory,
-  useParams
-} from "react-router-dom";
-import {apiRequest} from '../../utils/api'
 import {SocketProvider} from './SocketContext'
+import {GameDataProvider, useGameData} from './GameDataContext'
+import {PlayingBoard} from './PlayingBoard'
 
-const GameContent = ({gameId}) => {
-  const history = useHistory()
+const GameContent = () => {
+  const {gameData} = useGameData()
 
-  const onDelete = async (e) => {
-    e.preventDefault()
-    try {
-      await apiRequest(`game/${gameId}`, 'DELETE')
-      history.push('/dashboard')
-    } catch (error) {
-      alert('Unxepected error ...')
-    }
+  if (gameData && gameData.gameInfo.active) {
+    return <PlayingBoard />
   }
-
+  console.log('game data', gameData)
   return (
     <div>
       <p>Waiting for others ...</p>
-      <form onSubmit={onDelete}>
-        <button type="submit">Delete game</button>
-      </form>
     </div>
   )
 }
 
 export const Game = () => {
-  const params = useParams()
-  const gameId = params.id
   return (
-    <SocketProvider gameId={gameId}>
-      <GameContent gameId={gameId} />
-    </SocketProvider>
+    <GameDataProvider>
+      <SocketProvider>
+        <GameContent />
+      </SocketProvider>
+    </GameDataProvider>
   )
 }

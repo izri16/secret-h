@@ -8,7 +8,7 @@ const router = express.Router()
 // create-new game
 router.post('/', [auth], async function (req, res) {
   const {numberOfPlayers} = req.body
-  const playerId = req.session.playerId
+  const playerId = req.player.id
 
   if (numberOfPlayers < 5 || numberOfPlayers > 10) {
     res.status(400)
@@ -33,7 +33,7 @@ router.post('/', [auth], async function (req, res) {
 
 // delete game
 router.delete('/:id', [auth], async function (req, res) {
-  const playerId = req.session.playerId
+  const playerId = req.player.id
   const gameId = req.params.id
 
   await knex('games').delete().where({

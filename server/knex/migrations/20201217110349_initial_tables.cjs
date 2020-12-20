@@ -20,7 +20,7 @@ exports.up = async function(knex) {
         .primary()
       table.uuid('created_by').references('players.id').onDelete('CASCADE')
       table.integer('number_of_players').unsigned()
-      table.boolean('is_ready').default(false)
+      table.boolean('active').default(false)
     })
 
   await knex.schema

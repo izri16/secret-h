@@ -2,7 +2,7 @@ import _ from 'lodash'
 
 import {ioServer} from '../server.js'
 import knex from '../knex/knex.js'
-import {emitError} from './utils.js'
+import {emitError, getGameData} from './utils.js'
 import {raceConfigurations, race} from 'common/constants.js'
 
 const assignRaces = (playerRecords) => {
@@ -61,10 +61,7 @@ const joinGame = async (socket) => {
     })
 
     // mark game as ready
-    await knex('games').where({id: gameId}).update({is_ready: true})
-
-    // send to all, including sender
-    ioServer.in(gameId).emit('game-ready', {gameId})
+    await knex('games').where({id: gameId}).update({active: true})
   }
 }
 
@@ -73,17 +70,17 @@ export const init = async (socket) => {
 
   const joined = await alreadyJoined(playerId, gameId)
 
-  const onSuccess = () => {
-    socket.join(socket.gameId)
-    socket.emit('joined-game', {id: gameId})
-  }
-
   if (joined) {
-    onSuccess()
+    socket.join(socket.gameId)
+    const gameData = await getGameData(gameId)
+    socket.emit('game-data', gameData)
   } else {
     try {
       await joinGame(socket)
-      onSuccess()
+      socket.join(socket.gameId)
+      const gameData = await getGameData(gameId)
+      // send to all including sender
+      ioServer.in(gameId).emit('game-data', gameData)
     } catch (err) {
       emitError(socket)
     }

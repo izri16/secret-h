@@ -1,17 +1,18 @@
 import React from 'react'
 import io from 'socket.io-client'
 
+import {useGameData} from './GameDataContext'
 import {config} from '../../config'
 
 const SocketContext = React.createContext({
   socket: null
 })
 
-export const SocketProvider = ({children, gameId}) => {
+export const SocketProvider = ({children}) => {
   const [socket, setSocket] = React.useState(null)
+  const {gameId, setGameData} = useGameData()
 
   // TODO: in revolt there were nasty issues with useEffect, but class component worked,
-  // change if issues
   React.useEffect(() => {
 
     const query = {
@@ -27,20 +28,17 @@ export const SocketProvider = ({children, gameId}) => {
       query
     })
 
-    socket.on('joined-game', (data) => {
-      console.log('joined game', data)
+    socket.on('game-data', (data) => {
+      setGameData(data)
     })
 
-    socket.on('other-player-joined', (data) => {
-      console.log('other-player-joined', data)
-    })
-
-    socket.on('game-ready', (data) => {
-      console.log('game-ready', data)
+    socket.on('socket-error', (error) => {
+      // TODO:
+      alert('socket error', error)
     })
 
     setSocket(socket)
-  }, [gameId])
+  }, [gameId, setGameData])
 
   return (
     <SocketContext.Provider value={{socket}}>
