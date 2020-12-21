@@ -11,6 +11,8 @@ export const GameDataProvider = ({children}) => {
 
   const [gameData, setGameData] = React.useState(null)
 
+  console.log('Game-Data', gameData)
+
   return (
     <GameDataContext.Provider value={{gameData, setGameData, gameId}}>
       {children}

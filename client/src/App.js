@@ -1,10 +1,12 @@
 import {BrowserRouter as Router, Switch} from 'react-router-dom'
+import {ThemeProvider} from '@material-ui/core'
 
 import {Registration} from './auth/Registration'
 import {Login} from './auth/Login'
 import {AuthProvider, AuthRoute, NoAuthRoute} from './auth/AuthContext'
 import {Dashboard} from './dashboard/Dashboard'
 import {Game} from './dashboard/game/Game'
+import {theme} from './theme'
 
 import {raceConfigurations} from 'common/constants.js'
 
@@ -31,9 +33,11 @@ const AppContent = () => {
 }
 
 const App = () => (
-  <AuthProvider>
-    <AppContent />
-  </AuthProvider>
+  <ThemeProvider theme={theme}>
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
+  </ThemeProvider>
 )
 
 export default App

@@ -67,13 +67,13 @@ export const init = async (socket) => {
 
   if (joined) {
     socket.join(socket.gameId)
-    const gameData = await getGameData(gameId)
+    const gameData = await getGameData(gameId, playerId)
     socket.emit('game-data', gameData)
   } else {
     try {
       await joinGame(socket)
       socket.join(socket.gameId)
-      const gameData = await getGameData(gameId)
+      const gameData = await getGameData(gameId, playerId)
       // send to all including sender
       ioServer.in(gameId).emit('game-data', gameData)
     } catch (err) {

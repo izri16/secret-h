@@ -1,15 +1,14 @@
 import React from 'react'
 import {SocketProvider} from './SocketContext'
 import {GameDataProvider, useGameData} from './GameDataContext'
-import {PlayingBoard} from './PlayingBoard'
+import {Board} from './board/Board'
 
 const GameContent = () => {
   const {gameData} = useGameData()
 
   if (gameData && gameData.gameInfo.active) {
-    return <PlayingBoard />
+    return <Board />
   }
-  console.log('game data', gameData)
   return (
     <div>
       <p>Waiting for others ...</p>

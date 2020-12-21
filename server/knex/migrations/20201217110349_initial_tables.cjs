@@ -12,6 +12,8 @@ exports.up = async function (knex) {
     table.uuid('created_by').references('players.id').onDelete('CASCADE')
     table.integer('number_of_players').unsigned()
     table.boolean('active').default(false)
+    table.json('conf')
+    table.json('secret_conf')
   })
 
   await knex.schema.createTable('player_to_game', (table) => {
@@ -30,3 +32,23 @@ exports.down = async function (knex) {
   await knex.schema.dropTable('players')
   await knex.raw('DROP EXTENSION IF EXISTS "uuid-ossp"')
 }
+
+// TODO: next steps
+// 1. Show correct amount of players with logins and in correct order
+// 2. Highligh current president
+// 3. Choose next cancellor action
+// 4. Vote action
+
+/*
+JSON conf schema >>>
+action: oneOf('chooseCancelar', 'vote', 'shoot', ...)
+president: playerId
+remainingCardsCount: number
+discardedCardsCount: number
+liberalLawsCount: number
+fascistLawsCount: number
+
+JSON secret_conf schema >>>
+remainingCards: ['l', 'f', 'f', 'l', 'l']
+discardedCards: ['l', 'f']
+*/
