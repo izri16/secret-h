@@ -4,6 +4,7 @@ import {makeStyles, useTheme} from '@material-ui/core/styles'
 
 import {useGameData} from '../GameDataContext'
 import {useConfirmModal} from '../ConfirmModalContext'
+import {useSocket} from '../SocketContext'
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -38,6 +39,7 @@ const useStyles = makeStyles((theme) => {
 const Player = ({id, order, login, race}) => {
   const theme = useTheme()
   const {openModal} = useConfirmModal()
+  const {socket} = useSocket()
 
   const {
     gameData: {gameInfo},
@@ -77,7 +79,11 @@ const Player = ({id, order, login, race}) => {
         key={id}
         onClick={
           selectable
-            ? () => openModal(confirmMessage, () => alert('TODO'))
+            ? () =>
+                openModal(confirmMessage, () => {
+                  console.log('emitting ...', socket)
+                  socket.emit('chooseChancellor', {id})
+                })
             : undefined
         }
         className={styles.player}

@@ -5,7 +5,6 @@ import {
   DialogActions,
   Dialog,
   DialogContent,
-  DialogContentText,
   DialogTitle,
 } from '@material-ui/core'
 
@@ -19,7 +18,7 @@ const ConfirmModalContext = React.createContext({
 
 export const ConfirmModalProvider = ({children}) => {
   const [state, setState] = React.useState({
-    isVisible: null,
+    isVisible: false,
     confirmMessage: '',
     onConfirm: null,
   })
@@ -70,9 +69,7 @@ export const ConfirmModal = () => {
       transitionDuration={{enter: 500, exit: 0}}
     >
       <DialogTitle>Confirm action!</DialogTitle>
-      <DialogContent>
-        <DialogContentText>{confirmMessage}</DialogContentText>
-      </DialogContent>
+      <DialogContent>{confirmMessage}</DialogContent>
       <DialogActions>
         <Button onClick={closeModal} color="primary">
           Cancel

@@ -4,6 +4,7 @@ import {ioServer} from '../server.js'
 import knex from '../knex/knex.js'
 import {emitError, getGameData} from './utils.js'
 import {assignRaces} from '../utils.js'
+import {chooseChancellor} from './roundActions.js'
 
 const alreadyJoined = async (playerId, gameId) => {
   return !!(await knex('player_to_game')
@@ -72,24 +73,35 @@ const joinGame = async (socket) => {
   }
 }
 
+const registerListeners = (socket) => {
+  socket.on('chooseChancellor', chooseChancellor(socket))
+}
+
 export const init = async (socket) => {
   const {playerId, gameId} = socket
 
   const joined = await alreadyJoined(playerId, gameId)
 
+  // player is already registered in the game
   if (joined) {
     socket.join(socket.gameId)
+    registerListeners(socket)
+
     const gameData = await getGameData(gameId, playerId)
     socket.emit('game-data', gameData)
-  } else {
-    try {
-      await joinGame(socket)
-      socket.join(socket.gameId)
-      const gameData = await getGameData(gameId, playerId)
-      // send to all including sender
-      ioServer.in(gameId).emit('game-data', gameData)
-    } catch (err) {
-      emitError(socket)
-    }
+    return
+  }
+
+  // player not yet registered in the game
+  try {
+    await joinGame(socket)
+    socket.join(socket.gameId)
+    registerListeners(socket)
+
+    const gameData = await getGameData(gameId, playerId)
+    // send to all including sender
+    ioServer.in(gameId).emit('game-data', gameData)
+  } catch (err) {
+    emitError(socket)
   }
 }
