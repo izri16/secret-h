@@ -1,8 +1,5 @@
 module.exports = {
-  "indent": [
-    "error",
-    2
-  ],
+  "indent": 0,
   "linebreak-style": [
     "error",
     "unix"

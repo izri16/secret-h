@@ -1,6 +1,7 @@
 import React from 'react'
 import {SocketProvider} from './SocketContext'
 import {GameDataProvider, useGameData} from './GameDataContext'
+import {ConfirmModalProvider, ConfirmModal} from './ConfirmModalContext'
 import {Board} from './board/Board'
 
 const GameContent = () => {
@@ -18,10 +19,13 @@ const GameContent = () => {
 
 export const Game = () => {
   return (
-    <GameDataProvider>
-      <SocketProvider>
-        <GameContent />
-      </SocketProvider>
-    </GameDataProvider>
+    <ConfirmModalProvider>
+      <ConfirmModal />
+      <GameDataProvider>
+        <SocketProvider>
+          <GameContent />
+        </SocketProvider>
+      </GameDataProvider>
+    </ConfirmModalProvider>
   )
 }
