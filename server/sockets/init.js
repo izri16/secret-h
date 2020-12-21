@@ -3,20 +3,7 @@ import _ from 'lodash'
 import {ioServer} from '../server.js'
 import knex from '../knex/knex.js'
 import {emitError, getGameData} from './utils.js'
-import {raceConfigurations, race} from 'common/constants.js'
-
-const assignRaces = (playerRecords) => {
-  const numberOfPlayers = playerRecords.length
-  const conf = raceConfigurations[numberOfPlayers].races
-
-  const races = _.shuffle([
-    ..._.fill(Array(conf[race.liberal]), race.liberal),
-    ..._.fill(Array(conf[race.fascist] - 1), race.fascist),
-    ...[race.hitler],
-  ])
-
-  return playerRecords.map((r, i) => ({...r, race: races[i]}))
-}
+import {assignRaces} from '../utils.js'
 
 const alreadyJoined = async (playerId, gameId) => {
   return !!(await knex('player_to_game')
