@@ -56,7 +56,19 @@ const joinGame = async (socket) => {
     })
 
     // mark game as ready
-    await knex('games').where({id: gameId}).update({active: true})
+    await knex('games')
+      .where({id: gameId})
+      .update({
+        active: true,
+        conf: {
+          action: 'chooseCancelar',
+          president: recordsWithRaces[0].id,
+          drawPileCount: 17,
+          discardPileCount: 0,
+          liberalLawsCount: 0,
+          fascistLawsCount: 0,
+        },
+      })
   }
 }
 

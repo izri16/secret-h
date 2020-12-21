@@ -6,7 +6,7 @@ export const emitError = (socket) => {
 
 export const getGameData = async (gameId, playerId) => {
   const gameInfo = await knex('games')
-    .select('id', 'number_of_players', 'active')
+    .select('id', 'number_of_players', 'active', 'conf')
     .where({id: gameId})
     .first()
 

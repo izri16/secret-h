@@ -43,6 +43,14 @@ exports.seed = async function (knex) {
         created_by: players[0].id,
         number_of_players: gamePlayersCount,
         active: true,
+        conf: {
+          action: 'chooseCancelar',
+          president: gamePlayers[0].id,
+          drawPileCount: 17,
+          discardPileCount: 0,
+          liberalLawsCount: 0,
+          fascistLawsCount: 0,
+        },
       })
       .returning('*')
   )[0]
