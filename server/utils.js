@@ -14,7 +14,7 @@ export const playerInGame = async (playerId, gameId) => {
 
 export const gameActive = async (gameId) => {
   return (
-    await knex('game')
+    await knex('games')
       .select('active')
       .where({
         id: gameId,

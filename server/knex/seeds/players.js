@@ -44,8 +44,11 @@ exports.seed = async function (knex) {
         number_of_players: gamePlayersCount,
         active: true,
         conf: {
-          action: 'chooseCancelar',
+          action: 'chooseChancellor',
           president: gamePlayers[0].id,
+          chancellor: null,
+          prevPresident: null,
+          prevChancellor: null,
           drawPileCount: 17,
           discardPileCount: 0,
           liberalLawsCount: 0,

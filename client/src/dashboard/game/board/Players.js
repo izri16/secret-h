@@ -59,7 +59,10 @@ const Player = ({id, order, login, race}) => {
     unknown: '?',
   }[race]
 
+  console.log('aa', gameInfo.conf)
+
   const isPresident = id === gameInfo.conf.president
+  const isChancellor = id === gameInfo.conf.chancellor
   const selectable = !isPresident
 
   const styles = useStyles({selectable})
@@ -72,6 +75,9 @@ const Player = ({id, order, login, race}) => {
 
   return (
     <Grid container direction="column">
+      <Typography variant="caption" style={{color: 'yellow'}} align="center">
+        {isPresident ? 'President' : isChancellor ? 'Chancellor' : ''}&nbsp;
+      </Typography>
       <Typography variant="caption" style={{color}} align="center">
         {order}
       </Typography>
@@ -89,7 +95,8 @@ const Player = ({id, order, login, race}) => {
         className={styles.player}
         style={{
           background: color,
-          border: isPresident ? '2px solid yellow' : '2px solid #777',
+          border:
+            isPresident || isChancellor ? '2px solid yellow' : '2px solid #777',
         }}
       >
         {login}

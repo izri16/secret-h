@@ -62,8 +62,11 @@ const joinGame = async (socket) => {
       .update({
         active: true,
         conf: {
-          action: 'chooseCancelar',
+          action: 'chooseChancellor',
           president: recordsWithRaces[0].id,
+          chancellor: null,
+          prevPresident: null,
+          prevChancellor: null,
           drawPileCount: 17,
           discardPileCount: 0,
           liberalLawsCount: 0,
