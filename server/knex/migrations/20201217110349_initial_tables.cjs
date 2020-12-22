@@ -14,30 +14,19 @@ exports.up = async function (knex) {
     table.boolean('active').default(false)
     table.json('conf')
     table.json('secret_conf')
-  })
-
-  await knex.schema.createTable('player_to_game', (table) => {
-    table.uuid('game_id').references('games.id').onDelete('CASCADE')
-    table.uuid('player_id').references('players.id').onDelete('CASCADE')
-    table.boolean('killed').default(false)
-    table.integer('order')
-    table.string('race')
-    table.primary(['player_id', 'game_id'])
+    table.json('players')
   })
 }
 
 exports.down = async function (knex) {
   await knex.schema.dropTable('player_to_game')
   await knex.schema.dropTable('games')
-  await knex.schema.dropTable('players')
   await knex.raw('DROP EXTENSION IF EXISTS "uuid-ossp"')
 }
 
 // TODO: next steps
-// Better loging && error handling (inak sa neda kodit)
-// TODO: background card images
-// -2 (get rid of many-to-many table, just use json)
-// -1: show how each player voted (today), president-turn (today)
+// -3: Better loging && error handling (inak sa neda kodit)
+// -1: president-turn (today)
 // 0. run all queries in transaction
 // 1. Show correct amount of players with logins and in correct order
 // 2. Highligh current president

@@ -1,47 +1,43 @@
+import _ from 'lodash'
+
 import {ioServer} from '../server.js'
 import knex from '../knex/knex.js'
 import {emitError, getGameData} from './utils.js'
+import {getAlivePlayers} from '../utils.js'
 
-const isValidChancellor = async (gameId, playerId) => {
-  const gameConf = (
-    await knex('games').where({id: gameId, active: true}).select('conf').first()
-  ).conf
+const isValidChancellor = async (game, playerId) => {
+  const alivePlayers = getAlivePlayers(game.players)
 
-  const alivePlayersIds = await knex('player_to_game')
-    .where({game_id: gameId, killed: false})
-    .select('player_id')
-
-  if (!alivePlayersIds.find((p) => p.player_id === playerId)) {
+  if (!alivePlayers[playerId]) {
     return false
   }
 
-  if (playerId === gameConf.prevChancellor) {
+  if (playerId === game.conf.prevChancellor) {
     return false
   }
 
-  if (playerId === gameConf.president) {
+  if (playerId === game.conf.president) {
     return false
   }
 
-  if (alivePlayersIds.length > 5 && playerId === gameConf.prevPresident) {
+  if (
+    Object.keys(alivePlayers).length > 5 &&
+    playerId === game.conf.prevPresident
+  ) {
     return false
   }
   return true
 }
 
 export const chooseChancellor = (socket) => async (data) => {
-  const {playerId, gameId} = socket
+  const {playerId, game} = socket
 
-  const gameConf = (
-    await knex('games').where({id: gameId}).select('conf').first()
-  ).conf
-
-  if (gameConf.action !== 'chooseChancellor') {
+  if (!game.active || game.conf.action !== 'chooseChancellor') {
     emitError(socket)
     return
   }
 
-  const valid = await isValidChancellor(gameId, data.id)
+  const valid = await isValidChancellor(game, data.id)
 
   if (!valid) {
     emitError(socket)
@@ -49,7 +45,7 @@ export const chooseChancellor = (socket) => async (data) => {
   }
 
   const updatedConf = {
-    ...gameConf,
+    ...game.conf,
     chancellor: data.id,
     voted: [],
     votes: {},
@@ -61,27 +57,21 @@ export const chooseChancellor = (socket) => async (data) => {
   }
 
   await knex('games')
-    .where({id: gameId})
+    .where({id: game.id})
     .update({conf: updatedConf, secret_conf: updatedSecretConf})
 
-  const gameData = await getGameData(gameId, playerId)
-  ioServer.in(gameId).emit('game-data', gameData)
+  const gameData = await getGameData(game.id, playerId)
+  ioServer.in(game.id).emit('game-data', gameData)
 }
 
-const canVote = async (gameId, playerId) => {
-  const gameConf = (
-    await knex('games').where({id: gameId, active: true}).select('conf').first()
-  ).conf
+const canVote = async (game, playerId) => {
+  const alivePlayers = getAlivePlayers(game.players)
 
-  const alivePlayersIds = await knex('player_to_game')
-    .where({game_id: gameId, killed: false})
-    .select('player_id')
-
-  if (!alivePlayersIds.find((p) => p.player_id === playerId)) {
+  if (!alivePlayers[playerId]) {
     return false
   }
 
-  if (gameConf.voted.includes(playerId)) {
+  if (game.conf.voted.includes(playerId)) {
     return false
   }
 
@@ -89,64 +79,60 @@ const canVote = async (gameId, playerId) => {
 }
 
 export const vote = (socket) => async (data) => {
-  const {playerId, gameId} = socket
+  const {playerId, game} = socket
 
-  const {conf, secret_conf} = await knex('games')
-    .where({id: gameId})
-    .select('conf', 'secret_conf')
-    .first()
-
-  if (conf.action !== 'vote') {
+  if (!game.active || game.conf.action !== 'vote') {
     emitError(socket)
     return
   }
 
-  const valid = await canVote(gameId, playerId)
+  const valid = await canVote(game, playerId)
 
   if (!valid) {
     emitError(socket)
     return
   }
 
-  const alivePlayers = await knex('player_to_game')
-    .where({game_id: gameId, killed: false})
-    .select('player_id', 'order')
-    .orderBy('order')
+  const alivePlayers = getAlivePlayers(game.players)
+  const alivePlayersCount = Object.keys(alivePlayers).length
 
-  const alivePlayersCount = alivePlayers.length
-
-  const voted = [...conf.voted, playerId]
+  const voted = [...game.conf.voted, playerId]
   const votedAll = voted.length === alivePlayersCount
 
   const updatedSecretConf = {
-    ...secret_conf,
+    ...game.secret_conf,
     votes: {
-      ...secret_conf.votes,
+      ...game.secret_conf.votes,
       [playerId]: data.vote,
     },
   }
 
   const skipped =
     votedAll &&
-    Object.values(secret_conf.votes).filter((v) => v).length * 2 <=
+    Object.values(game.secret_conf.votes).filter((v) => v).length * 2 <=
       alivePlayersCount
 
   const currentPlayerIndex = alivePlayers.findIndex(
     (p) => p.player_id === playerId
   )
+
+  const sortedAlivePlayers = _.orderBy(
+    Object.values(alivePlayers),
+    (p) => p.order
+  )
   const nextPresident =
     currentPlayerIndex < alivePlayers.length - 1
-      ? alivePlayers[currentPlayerIndex + 1]
-      : alivePlayers[0]
+      ? sortedAlivePlayers[currentPlayerIndex + 1]
+      : sortedAlivePlayers[0]
 
   const updatedConf = {
-    ...conf,
+    ...game.conf,
     action: votedAll ? (skipped ? 'vote' : 'president-turn') : 'vote',
     voted,
     votes: updatedSecretConf.votes,
-    failedElectionsCount: conf.failedElectionsCount + (skipped ? 1 : 0),
-    president: skipped ? nextPresident.id : conf.president,
-    chancellor: skipped ? null : conf.chancellor,
+    failedElectionsCount: game.conf.failedElectionsCount + (skipped ? 1 : 0),
+    president: skipped ? nextPresident.id : game.conf.president,
+    chancellor: skipped ? null : game.conf.chancellor,
   }
 
   if (updatedConf.failedElectionsCount === 3) {
@@ -154,12 +140,12 @@ export const vote = (socket) => async (data) => {
   }
 
   await knex('games')
-    .where({id: gameId})
+    .where({id: game.id})
     .update({conf: updatedConf, secret_conf: updatedSecretConf})
 
-  const gameData = await getGameData(gameId, playerId)
+  const gameData = await getGameData(game.id, playerId)
 
   votedAll
-    ? ioServer.in(gameId).emit('game-data', gameData)
+    ? ioServer.in(game.id).emit('game-data', gameData)
     : socket.emit('game-data', gameData)
 }

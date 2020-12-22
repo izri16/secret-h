@@ -1,4 +1,5 @@
 import React from 'react'
+import _ from 'lodash'
 import {Box, Grid, Typography} from '@material-ui/core'
 import {makeStyles, useTheme, lighten} from '@material-ui/core/styles'
 
@@ -140,11 +141,11 @@ export const Players = () => {
     gameData: {playersInfo},
   } = useGameData()
 
-  const loggedInPlayerData = playersInfo.find(({id}) => playerData.id === id)
+  const loggedInPlayerData = playersInfo[playerData.id]
 
   return (
     <Box className={styles.players}>
-      {playersInfo.map((p) => {
+      {_.orderBy(Object.values(playersInfo), 'order').map((p) => {
         return (
           <Player loggedInPlayerData={loggedInPlayerData} key={p.id} {...p} />
         )

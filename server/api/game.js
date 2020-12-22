@@ -21,32 +21,15 @@ router.post('/', [auth], async function (req, res) {
       .insert({
         created_by: playerId,
         number_of_players: numberOfPlayers,
+        players: {
+          [playerId]: {id: playerId, killed: false, login: req.player.login},
+        },
       })
       .returning('*')
   )[0]
 
-  // add player to newly created game
-  await knex('player_to_game').insert({
-    player_id: playerId,
-    game_id: game.id,
-  })
-
   res.status(201)
   res.json({id: game.id, numberOfPlayers})
-})
-
-// delete game
-router.delete('/:id', [auth], async function (req, res) {
-  const playerId = req.player.id
-  const gameId = req.params.id
-
-  await knex('games').delete().where({
-    id: gameId,
-    created_by: playerId,
-  })
-
-  res.status(200)
-  res.json({})
 })
 
 export default router

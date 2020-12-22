@@ -1,12 +1,13 @@
 import _ from 'lodash'
 import bcrypt from 'bcrypt'
 
-import {assignRaces} from '../../utils.js'
+import {assignRacesAndOrder, getInitialGameConf} from '../../utils.js'
 
 const saltRounds = 8
 
 exports.seed = async function (knex) {
   await knex('players').del()
+  await knex('games').del()
 
   // TODO: create login && name for players, allow to change name during game
   const playerLogins = [
@@ -35,43 +36,23 @@ exports.seed = async function (knex) {
   // Initial active game
   const gamePlayersCount = 5
   let gamePlayers = players.slice(0, gamePlayersCount)
-  const orders = _.shuffle(_.range(1, gamePlayersCount + 1))
 
-  const game = (
-    await knex('games')
-      .insert({
-        created_by: players[0].id,
-        number_of_players: gamePlayersCount,
-        active: true,
-        conf: {
-          action: 'chooseChancellor',
-          president: gamePlayers[0].id,
-          chancellor: null,
-          prevPresident: null,
-          prevChancellor: null,
-          drawPileCount: 17,
-          discardPileCount: 0,
-          liberalLawsCount: 0,
-          fascistLawsCount: 0,
-          voted: [],
-          votes: {},
-          failedElectionsCount: 0,
-        },
-        secret_conf: {
-          votes: {},
-        },
-      })
-      .returning('*')
-  )[0]
-
-  gamePlayers = assignRaces(
-    gamePlayers.map((p, i) => ({
-      player_id: p.id,
-      game_id: game.id,
-      order: orders[i],
-      race: p.race,
+  gamePlayers = assignRacesAndOrder(
+    _.mapValues(_.keyBy(gamePlayers, 'id'), ({id, login}) => ({
+      id,
+      killed: false,
+      login,
     }))
   )
 
-  await knex('player_to_game').insert(gamePlayers)
+  await knex('games').insert({
+    created_by: players[0].id,
+    number_of_players: gamePlayersCount,
+    active: true,
+    conf: getInitialGameConf(gamePlayers),
+    secret_conf: {
+      votes: {},
+    },
+    players: gamePlayers,
+  })
 }

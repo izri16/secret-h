@@ -2,31 +2,6 @@ import _ from 'lodash'
 import knex from './knex/knex.js'
 import {raceConfigurations, race} from 'common/constants.js'
 
-export const playerInGame = async (playerId, gameId) => {
-  return !!(await knex('player_to_game')
-    .select('*')
-    .where({
-      player_id: playerId,
-      game_id: gameId,
-    })
-    .first())
-}
-
-export const gameActive = async (gameId) => {
-  return (
-    await knex('games')
-      .select('active')
-      .where({
-        id: gameId,
-      })
-      .first()
-  ).active
-}
-
-export const playerInActiveGame = async (playerId, gameId) => {
-  return (await playerInGame(playerId, gameId)) && (await gameActive(gameId))
-}
-
 export const logActiveGamesIds = async () => {
   const activeGames = await knex('games').select('id').where({
     active: true,
@@ -34,8 +9,10 @@ export const logActiveGamesIds = async () => {
   console.log('ACTIVE GAMES', activeGames)
 }
 
-export const assignRaces = (playerRecords) => {
-  const numberOfPlayers = playerRecords.length
+export const assignRacesAndOrder = (players) => {
+  const numberOfPlayers = Object.keys(players).length
+  const orders = _.shuffle(_.range(1, numberOfPlayers + 1))
+
   const conf = raceConfigurations[numberOfPlayers].races
 
   const races = _.shuffle([
@@ -44,5 +21,29 @@ export const assignRaces = (playerRecords) => {
     ...[race.hitler],
   ])
 
-  return playerRecords.map((r, i) => ({...r, race: races[i]}))
+  return _.fromPairs(
+    _.toPairs(players).map(([id, data], index) => [
+      id,
+      {...data, race: races[index], order: orders[index]},
+    ])
+  )
 }
+
+export const getAlivePlayers = (players) => {
+  return _.toPairs(_.toPairs(players).filter(([id, data]) => !data.killed)) // eslint-disable-line
+}
+
+export const getInitialGameConf = (players) => ({
+  action: 'chooseChancellor',
+  president: Object.values(players).find((p) => p.order === 1).id,
+  chancellor: null,
+  prevPresident: null,
+  prevChancellor: null,
+  drawPileCount: 17,
+  discardPileCount: 0,
+  liberalLawsCount: 0,
+  fascistLawsCount: 0,
+  voted: [],
+  votes: {},
+  failedElectionsCount: 0,
+})

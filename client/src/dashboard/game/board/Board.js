@@ -47,11 +47,11 @@ const useCardPlaceholderStyles = makeStyles((theme) => {
 const CardPlaceholder = ({race, position, children}) => {
   const styles = useCardPlaceholderStyles({race, position})
   const {
-    gameData: {playersInfo},
+    gameData: {gameInfo},
   } = useGameData()
 
   if (race === 'fascist') {
-    const conf = fascistCardsConf[playersInfo.length]
+    const conf = fascistCardsConf[gameInfo.number_of_players]
     let actions = conf[position] || []
 
     return (
