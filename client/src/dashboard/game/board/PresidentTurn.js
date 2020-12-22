@@ -9,10 +9,6 @@ import {
 import {makeStyles} from '@material-ui/core/styles'
 
 import {BoardCard} from './BoardCard'
-import {useSocket} from '../SocketContext'
-import {useConfirmModal} from '../ConfirmModalContext'
-import {useGameData} from '../GameDataContext'
-import {useAuth} from '../../../auth/AuthContext'
 
 // TODO: share styles
 const useStyles = makeStyles((theme) => ({
@@ -39,63 +35,39 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export const Vote = () => {
+export const PresidentTurn = () => {
   const styles = useStyles()
-  const {openModal} = useConfirmModal()
-  const {socket} = useSocket()
-  const {
-    gameData: {gameInfo},
-  } = useGameData()
-  const {playerData} = useAuth()
 
-  const voted = gameInfo.conf.voted.includes(playerData.id)
-
-  const yesMessage = (
-    <Typography variant="body2">
-      Vote <strong>YES</strong> for the government?
-    </Typography>
-  )
-  const onYes = () => {
-    openModal(yesMessage, () => {
-      socket.emit('vote', {vote: true})
-    })
-  }
-
-  const noMessage = (
-    <Typography variant="body2">
-      Vote <strong>NO</strong> for the government?
-    </Typography>
-  )
-  const onNo = () => {
-    openModal(noMessage, () => {
-      socket.emit('vote', {vote: false})
-    })
-  }
+  const isPresident = true
 
   return (
     <Backdrop open className={styles.backdrop}>
-      {voted ? (
+      {!isPresident ? (
         <Grid
           container
           direction="column"
           className={styles.wrapper}
           alignItems="center"
         >
-          <Typography>Waiting for all players to vote ...</Typography>
+          <Typography>Waiting for chancellor to choose law ...</Typography>
           <CircularProgress color="inherit" />
         </Grid>
       ) : (
         <Grid container direction="column" className={styles.wrapper}>
           <Box className={styles.voteInfo}>
-            <Typography align="center">Vote for the government</Typography>
+            <Typography align="center">Discard one law!</Typography>
           </Box>
           <Box className={styles.voteWrapper}>
             <div className={styles.cardWrapper}>
-              <BoardCard type="voteNo" onClick={onNo} />
+              <BoardCard type="fascist" onClick={() => null} />
             </div>
             <div className={styles.spacer} />
             <div className={styles.cardWrapper}>
-              <BoardCard type="voteYes" onClick={onYes} />
+              <BoardCard type="fascist" onClick={() => null} />
+            </div>
+            <div className={styles.spacer} />
+            <div className={styles.cardWrapper}>
+              <BoardCard type="liberal" onClick={() => null} />
             </div>
           </Box>
         </Grid>

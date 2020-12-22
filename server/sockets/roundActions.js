@@ -52,13 +52,12 @@ export const chooseChancellor = (socket) => async (data) => {
     ...gameConf,
     chancellor: data.id,
     voted: [],
+    votes: {},
     action: 'vote',
   }
 
   const updatedSecretConf = {
-    votes: {
-      [playerId]: data.vote,
-    },
+    votes: {},
   }
 
   await knex('games')
@@ -109,30 +108,49 @@ export const vote = (socket) => async (data) => {
     return
   }
 
-  const alivePlayersIdsCount = parseInt(
-    (
-      await knex('player_to_game')
-        .where({game_id: gameId, killed: false})
-        .count()
-        .first()
-    ).count
-  )
+  const alivePlayers = await knex('player_to_game')
+    .where({game_id: gameId, killed: false})
+    .select('player_id', 'order')
+    .orderBy('order')
+
+  const alivePlayersCount = alivePlayers.length
 
   const voted = [...conf.voted, playerId]
-  const votedAll = voted.length === alivePlayersIdsCount
-
-  const updatedConf = {
-    ...conf,
-    action: votedAll ? 'president-turn' : 'vote',
-    voted,
-  }
+  const votedAll = voted.length === alivePlayersCount
 
   const updatedSecretConf = {
     ...secret_conf,
     votes: {
-      ...secret_conf.voting,
+      ...secret_conf.votes,
       [playerId]: data.vote,
     },
+  }
+
+  const skipped =
+    votedAll &&
+    Object.values(secret_conf.votes).filter((v) => v).length * 2 <=
+      alivePlayersCount
+
+  const currentPlayerIndex = alivePlayers.findIndex(
+    (p) => p.player_id === playerId
+  )
+  const nextPresident =
+    currentPlayerIndex < alivePlayers.length - 1
+      ? alivePlayers[currentPlayerIndex + 1]
+      : alivePlayers[0]
+
+  const updatedConf = {
+    ...conf,
+    action: votedAll ? (skipped ? 'vote' : 'president-turn') : 'vote',
+    voted,
+    votes: updatedSecretConf.votes,
+    failedElectionsCount: conf.failedElectionsCount + (skipped ? 1 : 0),
+    president: skipped ? nextPresident.id : conf.president,
+    chancellor: skipped ? null : conf.chancellor,
+  }
+
+  if (updatedConf.failedElectionsCount === 3) {
+    throw new Error('TODO: handle 3 failed elections ...')
   }
 
   await knex('games')

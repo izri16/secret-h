@@ -34,6 +34,9 @@ exports.down = async function (knex) {
 }
 
 // TODO: next steps
+// Better loging && error handling (inak sa neda kodit)
+// -2 (get rid of many-to-many table, just use json)
+// -1: show how each player voted (today), president-turn (today)
 // 0. run all queries in transaction
 // 1. Show correct amount of players with logins and in correct order
 // 2. Highligh current president

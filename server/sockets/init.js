@@ -72,6 +72,8 @@ const joinGame = async (socket) => {
           liberalLawsCount: 0,
           fascistLawsCount: 0,
           voted: [],
+          votes: {},
+          failedElectionsCount: 0,
         },
         secret_confg: {
           votes: {},

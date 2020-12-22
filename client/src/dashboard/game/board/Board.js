@@ -6,6 +6,7 @@ import {BoardCard} from './BoardCard'
 import {StatusBar} from './StatusBar'
 import {Players} from './Players'
 import {Vote} from './Vote'
+import {PresidentTurn} from './PresidentTurn'
 
 import {useGameData} from '../GameDataContext'
 
@@ -147,6 +148,7 @@ export const Board = () => {
       </div>
 
       {gameInfo.conf.action === 'vote' && <Vote />}
+      {gameInfo.conf.action === 'president-turn' && <PresidentTurn />}
     </Box>
   )
 }

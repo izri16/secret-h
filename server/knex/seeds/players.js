@@ -8,24 +8,24 @@ const saltRounds = 8
 exports.seed = async function (knex) {
   await knex('players').del()
 
+  // TODO: create login && name for players, allow to change name during game
   const playerLogins = [
-    'a',
-    'b',
-    'c',
-    'd',
-    'e',
-    'f',
-    'g',
-    'h',
-    'i',
-    'j',
-    'k',
-    'l',
+    'Andrej Sabov',
+    'Marek Sabov',
+    'Stano Bernat',
+    'Richard Izip',
+    'Ivana Janickova',
+    'Patril Majercik',
+    'Martin Gazdag',
+    'Michal Racko',
+    'Katka Vlckova',
+    'Juraj Maslej',
+    'Jozko Vajda',
   ]
 
   const dataToInsert = await Promise.all(
     playerLogins.map(async (login) => {
-      const hash = await bcrypt.hash(login, saltRounds)
+      const hash = await bcrypt.hash('a', saltRounds)
       return {login, hashed_password: hash}
     })
   )
@@ -54,6 +54,8 @@ exports.seed = async function (knex) {
           liberalLawsCount: 0,
           fascistLawsCount: 0,
           voted: [],
+          votes: {},
+          failedElectionsCount: 0,
         },
         secret_conf: {
           votes: {},

@@ -5,6 +5,7 @@ module.exports = {
     "unix"
   ],
   "no-unused-vars": 1,
+  "no-unreachable": 1,
   "prettier/prettier": [
     "error",
     {
