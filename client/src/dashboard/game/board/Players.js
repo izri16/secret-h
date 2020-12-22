@@ -55,9 +55,9 @@ const Player = ({id, order, login, race, loggedInPlayerData}) => {
   } = useGameData()
 
   const color = {
-    fascist: lighten(theme.palette.fascist.main, 0.2),
-    liberal: lighten(theme.palette.liberal.main, 0.2),
-    hitler: lighten(theme.palette.fascist.dark, 0.2),
+    fascist: lighten(theme.palette.fascist.main, 0.25),
+    liberal: lighten(theme.palette.liberal.main, 0.25),
+    hitler: lighten(theme.palette.fascist.dark, 0.25),
     unknown: '#ddd',
   }[race]
 

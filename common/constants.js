@@ -76,11 +76,11 @@ const nineAndTen = {
   4: ['kill', 'veto'],
 }
 
-export const fascistCardsConf = () => ({
+export const fascistCardsConf = {
   5: fiveAndSix,
   6: fiveAndSix,
   7: sevenAndEight,
   8: sevenAndEight,
   9: nineAndTen,
   10: nineAndTen,
-})
+}

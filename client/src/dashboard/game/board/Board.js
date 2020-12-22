@@ -1,5 +1,5 @@
 import React from 'react'
-import {Paper, Box} from '@material-ui/core'
+import {Paper, Box, Typography} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 
 import {BoardCard} from './BoardCard'
@@ -7,8 +7,10 @@ import {StatusBar} from './StatusBar'
 import {Players} from './Players'
 import {Vote} from './Vote'
 import {PresidentTurn} from './PresidentTurn'
+import {CardActions} from './CardActions'
 
 import {useGameData} from '../GameDataContext'
+import {fascistCardsConf} from 'common/constants.js'
 
 const useCardPlaceholderStyles = makeStyles((theme) => {
   const border = (race) => `2px dashed ${theme.palette[race].dark}`
@@ -36,12 +38,46 @@ const useCardPlaceholderStyles = makeStyles((theme) => {
         }
       },
     },
+    endGame: {
+      marginTop: 80,
+    },
   }
 })
 
 const CardPlaceholder = ({race, position, children}) => {
   const styles = useCardPlaceholderStyles({race, position})
-  return <div className={styles.wrapper}>{children}</div>
+  const {
+    gameData: {playersInfo},
+  } = useGameData()
+
+  if (race === 'fascist') {
+    const conf = fascistCardsConf[playersInfo.length]
+    let actions = conf[position] || []
+
+    return (
+      <div className={styles.wrapper}>
+        {children}
+        {position < 5 ? (
+          <CardActions actions={actions} />
+        ) : (
+          <Typography variant="h6" align="center" className={styles.endGame}>
+            Fascists win
+          </Typography>
+        )}
+      </div>
+    )
+  }
+
+  return (
+    <div className={styles.wrapper}>
+      {children}
+      {position === 4 && (
+        <Typography variant="h6" align="center" className={styles.endGame}>
+          Liberals win
+        </Typography>
+      )}
+    </div>
+  )
 }
 
 const useScoreBoardStyles = makeStyles((theme) => {

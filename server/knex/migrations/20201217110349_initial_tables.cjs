@@ -35,6 +35,7 @@ exports.down = async function (knex) {
 
 // TODO: next steps
 // Better loging && error handling (inak sa neda kodit)
+// TODO: background card images
 // -2 (get rid of many-to-many table, just use json)
 // -1: show how each player voted (today), president-turn (today)
 // 0. run all queries in transaction
