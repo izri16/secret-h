@@ -6,7 +6,6 @@ import {makeStyles, useTheme, lighten} from '@material-ui/core/styles'
 import {useGameData} from '../GameDataContext'
 import {useConfirmModal} from '../ConfirmModalContext'
 import {useSocket} from '../SocketContext'
-import {useAuth} from '../../../auth/AuthContext'
 
 const yellow = '#e3c21e'
 
@@ -110,7 +109,6 @@ const Player = ({id, order, login, race, loggedInPlayerData}) => {
           selectable
             ? () =>
                 openModal(confirmMessage, () => {
-                  console.log('emitting ...', socket)
                   socket.emit('chooseChancellor', {id})
                 })
             : undefined
@@ -135,13 +133,12 @@ const Player = ({id, order, login, race, loggedInPlayerData}) => {
 
 export const Players = () => {
   const styles = useStyles()
-  const {playerData} = useAuth()
 
   const {
-    gameData: {playersInfo},
+    gameData: {playersInfo, playerId},
   } = useGameData()
 
-  const loggedInPlayerData = playersInfo[playerData.id]
+  const loggedInPlayerData = playersInfo[playerId]
 
   return (
     <Box className={styles.players}>

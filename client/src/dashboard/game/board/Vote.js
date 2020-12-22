@@ -12,7 +12,6 @@ import {BoardCard} from './BoardCard'
 import {useSocket} from '../SocketContext'
 import {useConfirmModal} from '../ConfirmModalContext'
 import {useGameData} from '../GameDataContext'
-import {useAuth} from '../../../auth/AuthContext'
 
 // TODO: share styles
 const useStyles = makeStyles((theme) => ({
@@ -44,11 +43,10 @@ export const Vote = () => {
   const {openModal} = useConfirmModal()
   const {socket} = useSocket()
   const {
-    gameData: {gameInfo},
+    gameData: {gameInfo, playerId},
   } = useGameData()
-  const {playerData} = useAuth()
 
-  const voted = gameInfo.conf.voted.includes(playerData.id)
+  const voted = gameInfo.conf.voted.includes(playerId)
 
   const yesMessage = (
     <Typography variant="body2">

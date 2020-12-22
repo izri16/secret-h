@@ -1,12 +1,13 @@
 import _ from 'lodash'
 import knex from './knex/knex.js'
 import {raceConfigurations, race} from 'common/constants.js'
+import {log} from './logger.js'
 
 export const logActiveGamesIds = async () => {
   const activeGames = await knex('games').select('id').where({
     active: true,
   })
-  console.log('ACTIVE GAMES', activeGames)
+  log.info('ACTIVE GAMES', JSON.stringify(activeGames))
 }
 
 export const assignRacesAndOrder = (players) => {
@@ -30,7 +31,7 @@ export const assignRacesAndOrder = (players) => {
 }
 
 export const getAlivePlayers = (players) => {
-  return _.toPairs(_.toPairs(players).filter(([id, data]) => !data.killed)) // eslint-disable-line
+  return _.fromPairs(_.toPairs(players).filter(([id, data]) => !data.killed)) // eslint-disable-line
 }
 
 export const getInitialGameConf = (players) => ({
@@ -47,3 +48,28 @@ export const getInitialGameConf = (players) => ({
   votes: {},
   failedElectionsCount: 0,
 })
+
+export const generateLaws = () => {
+  return _.shuffle([
+    ..._.range(0, 6).map(() => 'liberal'),
+    ..._.range(0, 11).map(() => 'fascist'),
+  ])
+}
+
+export const getPlayer = async (id) => {
+  return await knex('players')
+    .select('id', 'login')
+    .where({
+      id,
+    })
+    .first()
+}
+
+export const getGame = async (id) => {
+  return await knex('games')
+    .select('*')
+    .where({
+      id,
+    })
+    .first()
+}

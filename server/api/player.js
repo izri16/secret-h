@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt'
 import knex from '../knex/knex.js'
 import {auth} from '../middlewares/auth.js'
 import {config} from '../config.js'
+import {getPlayer} from '../utils.js'
 
 const router = express.Router()
 
@@ -11,8 +12,10 @@ const saltRounds = 11
 
 // get info about logged-in user
 router.get('/', [auth], async function (req, res) {
+  const player = await getPlayer(req.playerId)
+
   res.status(200)
-  res.json(req.player)
+  res.json(player)
 })
 
 // register new user

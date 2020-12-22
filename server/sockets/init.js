@@ -1,26 +1,34 @@
 import {ioServer} from '../server.js'
 import knex from '../knex/knex.js'
 import {emitError, getGameData} from './utils.js'
-import {assignRacesAndOrder, getInitialGameConf} from '../utils.js'
-import {chooseChancellor, vote} from './roundActions.js'
+import {
+  assignRacesAndOrder,
+  getInitialGameConf,
+  generateLaws,
+  getGame,
+  getPlayer,
+} from '../utils.js'
+import {chooseChancellor} from './chooseChancellor.js'
+import {vote} from './vote.js'
 import {log} from '../logger.js'
 
 const joinGame = async (game, player) => {
-  if (game.players.length === game.number_of_players) {
+  if (Object.keys(game.players).length === game.number_of_players) {
     throw new Error('Game is full')
   }
 
-  console.log('WAS THERe...')
-
   // add player to game
-  game = await knex('games')
-    .update({
-      players: {...game.players, [player.id]: {killed: false, ...player}},
-    })
-    .returning('*')
+  game = (
+    await knex('games')
+      .update({
+        players: {...game.players, [player.id]: {killed: false, ...player}},
+      })
+      .where({id: game.id})
+      .returning('*')
+  )[0]
 
   // all players registered, set random players order
-  if (game.players.length === game.number_of_players) {
+  if (Object.keys(game.players).length === game.number_of_players) {
     const playersWithRacesAndOrder = assignRacesAndOrder(game.players)
 
     // mark game as ready
@@ -29,8 +37,10 @@ const joinGame = async (game, player) => {
       .update({
         active: true,
         conf: getInitialGameConf(playersWithRacesAndOrder),
-        secret_confg: {
+        secret_conf: {
           votes: {},
+          remainingLaws: generateLaws(),
+          discartedLaws: [],
         },
         players: playersWithRacesAndOrder,
       })
@@ -43,14 +53,17 @@ const registerListeners = (socket) => {
 }
 
 export const init = async (socket) => {
-  const {player, game} = socket
+  const {playerId, gameId} = socket
+
+  const game = await getGame(gameId)
+  const player = await getPlayer(playerId)
 
   if (!game) {
     emitError(socket)
     return
   }
 
-  log.info(`Init socket for game:${game.id}, player:${player.id}`)
+  log.verbose(`Init socket for game:${game.id}, player:${player.id}`)
 
   const joined = game.players[player.id]
 
@@ -60,21 +73,22 @@ export const init = async (socket) => {
     registerListeners(socket)
 
     const gameData = await getGameData(game.id, player.id)
-    log.info(`player:${player.id} already joined game:${game.id}`)
+    log.verbose(`player:${player.id} already joined game:${game.id}`)
     socket.emit('game-data', gameData)
     return
   }
 
   // player not yet registered in the game
   try {
-    await joinGame(game, player.id)
+    await joinGame(game, player)
     socket.join(game.id)
     registerListeners(socket)
 
     const gameData = await getGameData(game.id, player.id)
-    log.info(`player:${player.id} newly joined game:${game.id}`)
+    log.verbose(`player:${player.id} newly joined game:${game.id}`)
     ioServer.in(game.id).emit('game-data', gameData)
   } catch (err) {
+    log.error(err)
     emitError(socket)
   }
 }

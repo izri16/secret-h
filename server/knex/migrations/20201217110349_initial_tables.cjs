@@ -24,6 +24,9 @@ exports.down = async function (knex) {
   await knex.raw('DROP EXTENSION IF EXISTS "uuid-ossp"')
 }
 
+// hitler should see others if 5-6 players
+// roundActions to multiple files
+
 // TODO: next steps
 // -1: president-turn (today)
 // 0. run all queries in transaction

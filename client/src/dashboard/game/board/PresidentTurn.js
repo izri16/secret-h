@@ -9,6 +9,7 @@ import {
 import {makeStyles} from '@material-ui/core/styles'
 
 import {BoardCard} from './BoardCard'
+import {useGameData} from '../GameDataContext'
 
 // TODO: share styles
 const useStyles = makeStyles((theme) => ({
@@ -27,6 +28,8 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: 16,
   },
   cardWrapper: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
     height: 200,
     width: 150,
   },
@@ -37,8 +40,11 @@ const useStyles = makeStyles((theme) => ({
 
 export const PresidentTurn = () => {
   const styles = useStyles()
+  const {
+    gameData: {gameInfo, extras, playerId},
+  } = useGameData()
 
-  const isPresident = true
+  const isPresident = gameInfo.conf.president === playerId
 
   return (
     <Backdrop open className={styles.backdrop}>
@@ -49,7 +55,7 @@ export const PresidentTurn = () => {
           className={styles.wrapper}
           alignItems="center"
         >
-          <Typography>Waiting for chancellor to choose law ...</Typography>
+          <Typography>Waiting for president to discard law ...</Typography>
           <CircularProgress color="inherit" />
         </Grid>
       ) : (
@@ -58,17 +64,11 @@ export const PresidentTurn = () => {
             <Typography align="center">Discard one law!</Typography>
           </Box>
           <Box className={styles.voteWrapper}>
-            <div className={styles.cardWrapper}>
-              <BoardCard type="fascist" onClick={() => null} />
-            </div>
-            <div className={styles.spacer} />
-            <div className={styles.cardWrapper}>
-              <BoardCard type="fascist" onClick={() => null} />
-            </div>
-            <div className={styles.spacer} />
-            <div className={styles.cardWrapper}>
-              <BoardCard type="liberal" onClick={() => null} />
-            </div>
+            {extras.presidentLaws.map((law, i) => (
+              <div key={i} className={styles.cardWrapper}>
+                <BoardCard type={law} onClick={() => null} />
+              </div>
+            ))}
           </Box>
         </Grid>
       )}
