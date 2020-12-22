@@ -4,6 +4,7 @@ module.exports = {
     "error",
     "unix"
   ],
+  "no-unused-vars": 1,
   "prettier/prettier": [
     "error",
     {

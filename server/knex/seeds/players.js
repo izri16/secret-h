@@ -53,6 +53,10 @@ exports.seed = async function (knex) {
           discardPileCount: 0,
           liberalLawsCount: 0,
           fascistLawsCount: 0,
+          voted: [],
+        },
+        secret_conf: {
+          votes: {},
         },
       })
       .returning('*')

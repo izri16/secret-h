@@ -10,21 +10,26 @@ const LOGIN_STATUS = {
 }
 
 const AuthContext = React.createContext({
-  loginStatus: LOGIN_STATUS.unknown,
+  authState: LOGIN_STATUS.unknown,
+  login: null,
+  logout: null,
+  playerData: null,
 })
 
 export const AuthProvider = ({children}) => {
   const [authState, setAuthState] = React.useState(LOGIN_STATUS.unknown)
+  const [playerData, setPlayerData] = React.useState(null)
 
   React.useEffect(() => {
     apiRequest('player', 'GET')
       .then((data) => {
+        setPlayerData(data)
         setAuthState(LOGIN_STATUS.loggedIn)
       })
       .catch(() => {
         setAuthState(LOGIN_STATUS.loggedOut)
       })
-  })
+  }, [authState])
 
   const login = (playerId) => {
     if (config.testingSessions) {
@@ -40,7 +45,7 @@ export const AuthProvider = ({children}) => {
   }
 
   return (
-    <AuthContext.Provider value={{authState, login, logout}}>
+    <AuthContext.Provider value={{authState, login, logout, playerData}}>
       {children}
     </AuthContext.Provider>
   )
@@ -49,7 +54,7 @@ export const AuthProvider = ({children}) => {
 export const useAuth = () => React.useContext(AuthContext)
 
 export const AuthRoute = ({children, ...rest}) => {
-  const {authState} = useAuth()
+  const {authState, playerData} = useAuth()
   return (
     <Route
       {...rest}
@@ -59,6 +64,9 @@ export const AuthRoute = ({children, ...rest}) => {
         }
         if (authState === LOGIN_STATUS.loggedOut) {
           return <Redirect to="/" />
+        }
+        if (authState === LOGIN_STATUS.loggedIn && !playerData) {
+          return <div>Loading ...</div>
         }
         return children
       }}

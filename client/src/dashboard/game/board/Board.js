@@ -5,6 +5,43 @@ import {makeStyles} from '@material-ui/core/styles'
 import {BoardCard} from './BoardCard'
 import {StatusBar} from './StatusBar'
 import {Players} from './Players'
+import {Vote} from './Vote'
+
+import {useGameData} from '../GameDataContext'
+
+const useCardPlaceholderStyles = makeStyles((theme) => {
+  const border = (race) => `2px dashed ${theme.palette[race].dark}`
+
+  return {
+    wrapper: {
+      height: '100%',
+      width: 'calc(100% / 6.5)',
+      background: ({race, position}) => {
+        if (race === 'liberal') {
+          return position === 4
+            ? theme.palette[race].dark
+            : theme.palette[race].main
+        } else {
+          return position < 3
+            ? theme.palette[race].main
+            : theme.palette[race].dark
+        }
+      },
+      border: ({race, position}) => {
+        if (race === 'liberal') {
+          return position < 4 ? border(race) : 'none'
+        } else {
+          return position < 3 ? border(race) : 'none'
+        }
+      },
+    },
+  }
+})
+
+const CardPlaceholder = ({race, position, children}) => {
+  const styles = useCardPlaceholderStyles({race, position})
+  return <div className={styles.wrapper}>{children}</div>
+}
 
 const useScoreBoardStyles = makeStyles((theme) => {
   return {
@@ -71,6 +108,9 @@ const useBoardStyles = makeStyles((theme) => {
 
 export const Board = () => {
   const styles = useBoardStyles()
+  const {
+    gameData: {gameInfo},
+  } = useGameData()
 
   return (
     <Box className={styles.room}>
@@ -82,7 +122,9 @@ export const Board = () => {
           <ScoreBoard type="fascist">
             {Array.from(Array(6)).map((__, i) => {
               return (
-                <BoardCard key={i} position={i} race="fascist" played={i < 1} />
+                <CardPlaceholder key={i} position={i} race="fascist">
+                  {i < 1 ? <BoardCard type="fascist" /> : null}
+                </CardPlaceholder>
               )
             })}
           </ScoreBoard>
@@ -91,7 +133,9 @@ export const Board = () => {
           <ScoreBoard type="liberal">
             {Array.from(Array(5)).map((__, i) => {
               return (
-                <BoardCard key={i} position={i} race="liberal" played={i < 3} />
+                <CardPlaceholder key={i} position={i} race="liberal">
+                  {i < 2 ? <BoardCard type="liberal" /> : null}
+                </CardPlaceholder>
               )
             })}
           </ScoreBoard>
@@ -101,6 +145,8 @@ export const Board = () => {
       <div className={styles.playersWrapper}>
         <Players />
       </div>
+
+      {gameInfo.conf.action === 'vote' && <Vote />}
     </Box>
   )
 }

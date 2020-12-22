@@ -1,8 +1,6 @@
 import React from 'react'
 import {Typography} from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles'
-
-// import {fascistCardsConf} from './constants'
+import {makeStyles, useTheme, darken} from '@material-ui/core/styles'
 
 const usePlayedCardStyles = makeStyles((theme) => {
   const common = {
@@ -12,13 +10,26 @@ const usePlayedCardStyles = makeStyles((theme) => {
   }
 
   return {
-    cardOuter: {
+    cardOuter: ({clickbable, color}) => ({
       ...common,
       background: 'white',
-    },
+      height: '100%',
+      '&:hover': clickbable
+        ? {
+            cursor: 'pointer',
+            '& *': {
+              color: darken(color, 0.3),
+            },
+            '& > div': {
+              background: darken(color, 0.3),
+            },
+          }
+        : {},
+    }),
     cardBorder: {
       ...common,
-      background: ({race}) => theme.palette[race].main,
+      transition: 'background .5s',
+      background: ({color}) => color,
     },
     cardContent: {
       ...common,
@@ -28,73 +39,37 @@ const usePlayedCardStyles = makeStyles((theme) => {
     },
     cardText: {
       paddingTop: 30,
-      color: ({race}) => theme.palette[race].main,
+      transition: 'color .5s',
+      color: ({color}) => color,
     },
   }
 })
 
-const PlayedCard = ({race}) => {
-  const styles = usePlayedCardStyles({race})
+export const BoardCard = ({type, onClick}) => {
+  const theme = useTheme()
+  const color = {
+    liberal: theme.palette.liberal.main,
+    fascist: theme.palette.fascist.main,
+    voteYes: '#888',
+    voteNo: '#888',
+  }[type]
+  const text = {
+    liberal: 'Liberal',
+    fascist: 'Fascist',
+    voteYes: 'Yes',
+    voteNo: 'No',
+  }[type]
+  const styles = usePlayedCardStyles({color, clickbable: !!onClick})
+
   return (
-    <div className={styles.cardOuter}>
+    <div className={styles.cardOuter} onClick={onClick}>
       <div className={styles.cardBorder}>
         <div className={styles.cardContent}>
           <Typography variant="h5" align="center" className={styles.cardText}>
-            {race === 'fascist' ? 'Fascist' : 'Liberal'}
+            {text}
           </Typography>
         </div>
       </div>
-    </div>
-  )
-}
-
-const useEmptyCardStyles = makeStyles((theme) => {
-  const border = (race) => `2px dashed ${theme.palette[race].dark}`
-
-  return {
-    wrapper: {
-      height: '100%',
-      background: ({race, position}) => {
-        if (race === 'liberal') {
-          return position === 4
-            ? theme.palette[race].dark
-            : theme.palette[race].main
-        } else {
-          return position < 3
-            ? theme.palette[race].main
-            : theme.palette[race].dark
-        }
-      },
-      border: ({race, position}) => {
-        if (race === 'liberal') {
-          return position < 4 ? border(race) : 'none'
-        } else {
-          return position < 3 ? border(race) : 'none'
-        }
-      },
-    },
-  }
-})
-
-const EmptyCard = ({race, position}) => {
-  const styles = useEmptyCardStyles({race, position})
-  return <div className={styles.wrapper} />
-}
-
-const useStyles = makeStyles(() => ({
-  wrapper: {
-    height: '100%',
-    width: 'calc(100% / 6.5)',
-  },
-}))
-
-export const BoardCard = ({race, position, played}) => {
-  const styles = useStyles()
-
-  return (
-    <div className={styles.wrapper}>
-      {played && <PlayedCard race={race} />}
-      {!played && <EmptyCard {...{race, position}} />}
     </div>
   )
 }

@@ -4,7 +4,7 @@ import {ioServer} from '../server.js'
 import knex from '../knex/knex.js'
 import {emitError, getGameData} from './utils.js'
 import {assignRaces} from '../utils.js'
-import {chooseChancellor} from './roundActions.js'
+import {chooseChancellor, vote} from './roundActions.js'
 
 const alreadyJoined = async (playerId, gameId) => {
   return !!(await knex('player_to_game')
@@ -71,6 +71,10 @@ const joinGame = async (socket) => {
           discardPileCount: 0,
           liberalLawsCount: 0,
           fascistLawsCount: 0,
+          voted: [],
+        },
+        secret_confg: {
+          votes: {},
         },
       })
   }
@@ -78,6 +82,7 @@ const joinGame = async (socket) => {
 
 const registerListeners = (socket) => {
   socket.on('chooseChancellor', chooseChancellor(socket))
+  socket.on('vote', vote(socket))
 }
 
 export const init = async (socket) => {

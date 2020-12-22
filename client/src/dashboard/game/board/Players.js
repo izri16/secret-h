@@ -59,8 +59,6 @@ const Player = ({id, order, login, race}) => {
     unknown: '?',
   }[race]
 
-  console.log('aa', gameInfo.conf)
-
   const isPresident = id === gameInfo.conf.president
   const isChancellor = id === gameInfo.conf.chancellor
   const selectable = !isPresident
