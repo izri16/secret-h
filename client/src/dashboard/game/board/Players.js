@@ -87,7 +87,7 @@ const Player = ({id, order, login, race, loggedInPlayerData}) => {
   )
 
   const vote = Object.keys(gameInfo.conf.votes).length
-    ? gameInfo.conf.votes[loggedInPlayerData.id]
+    ? gameInfo.conf.votes[id]
       ? '(Yes)'
       : '(No)'
     : ''

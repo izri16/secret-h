@@ -7,6 +7,7 @@ import {StatusBar} from './StatusBar'
 import {Players} from './Players'
 import {Vote} from './Vote'
 import {PresidentTurn} from './PresidentTurn'
+import {ChancellorTurn} from './ChancellorTurn'
 import {CardActions} from './CardActions'
 
 import {useGameData} from '../GameDataContext'
@@ -160,7 +161,9 @@ export const Board = () => {
             {Array.from(Array(6)).map((__, i) => {
               return (
                 <CardPlaceholder key={i} position={i} race="fascist">
-                  {i < 1 ? <BoardCard type="fascist" /> : null}
+                  {i < gameInfo.conf.fascistsLawsCount ? (
+                    <BoardCard type="fascist" />
+                  ) : null}
                 </CardPlaceholder>
               )
             })}
@@ -171,7 +174,9 @@ export const Board = () => {
             {Array.from(Array(5)).map((__, i) => {
               return (
                 <CardPlaceholder key={i} position={i} race="liberal">
-                  {i < 2 ? <BoardCard type="liberal" /> : null}
+                  {i < gameInfo.conf.liberalLawsCount ? (
+                    <BoardCard type="liberal" />
+                  ) : null}
                 </CardPlaceholder>
               )
             })}
@@ -185,6 +190,7 @@ export const Board = () => {
 
       {gameInfo.conf.action === 'vote' && <Vote />}
       {gameInfo.conf.action === 'president-turn' && <PresidentTurn />}
+      {gameInfo.conf.action === 'chancellor-turn' && <ChancellorTurn />}
     </Box>
   )
 }

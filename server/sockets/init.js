@@ -11,6 +11,7 @@ import {
 import {chooseChancellor} from './chooseChancellor.js'
 import {vote} from './vote.js'
 import {getData} from './getData.js'
+import {presidentTurn, chancellorTurn} from './chooseLaw.js'
 import {log} from '../logger.js'
 
 const joinGame = async (game, player) => {
@@ -52,6 +53,8 @@ const registerListeners = (socket) => {
   socket.on('chooseChancellor', chooseChancellor(socket))
   socket.on('vote', vote(socket))
   socket.on('getData', getData(socket))
+  socket.on('presidentTurn', presidentTurn(socket))
+  socket.on('chancellorTurn', chancellorTurn(socket))
 }
 
 export const init = async (socket) => {

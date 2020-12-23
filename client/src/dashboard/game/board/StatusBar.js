@@ -8,6 +8,7 @@ import {
   StepLabel,
 } from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
+import {useGameData} from '../GameDataContext'
 
 const useStatusBarStyles = makeStyles((theme) => {
   return {
@@ -65,13 +66,18 @@ const StepComponent = ({icon, active}) => {
 
 export const StatusBar = () => {
   const styles = useStatusBarStyles()
+
+  const {
+    gameData: {gameInfo},
+  } = useGameData()
+
   return (
     <Box className={styles.statusBar}>
       <Box className={styles.piles}>
         <Box className={styles.pileWrapper}>
           <Typography>Draw pile</Typography>
           <Paper className={styles.pile}>
-            <Typography>9</Typography>
+            <Typography>{gameInfo.conf.drawPileCount}</Typography>
           </Paper>
         </Box>
 
@@ -80,14 +86,17 @@ export const StatusBar = () => {
         <Box className={styles.pileWrapper}>
           <Typography>Discard pile</Typography>
           <Paper className={styles.pile}>
-            <Typography>8</Typography>
+            <Typography>{gameInfo.conf.discardPileCount}</Typography>
           </Paper>
         </Box>
       </Box>
 
       <Box className={styles.electionTrackerWrapper}>
         <Typography align="center">Failed election tracker</Typography>
-        <Stepper classes={{root: styles.electionTracker}} activeStep={1}>
+        <Stepper
+          classes={{root: styles.electionTracker}}
+          activeStep={gameInfo.conf.failedElectionsCount}
+        >
           {[0, 1, 2, 3].map((label) => (
             <Step key={label} completed={false}>
               <StepLabel StepIconComponent={StepComponent}></StepLabel>

@@ -3,6 +3,7 @@ import _ from 'lodash'
 import {ioServer} from '../server.js'
 import knex from '../knex/knex.js'
 import {getAlivePlayers, getGame, getPlayer, emitSocketError} from '../utils.js'
+import {chooseNextPresident} from './utils.js'
 
 const canVote = async (game, playerId) => {
   const alivePlayers = getAlivePlayers(game.players)
@@ -40,13 +41,13 @@ const getConfigAfterSuccessfullVote = (game, votes) => {
   const conf = {
     ...game.conf,
     action: 'president-turn',
-    voted: Object.keys(votes),
+    voted: [],
     failedElectionsCount: 0,
+    votes,
   }
 
   const secretConf = {
     ...game.secret_conf,
-    votes,
     presidentLaws,
     remainingLaws,
   }
@@ -55,36 +56,18 @@ const getConfigAfterSuccessfullVote = (game, votes) => {
 }
 
 const getConfigAfterFailedVote = (game, votes) => {
-  const alivePlayers = getAlivePlayers(game.players)
-
-  const currentPresidentIndex = alivePlayers[game.conf.president].order
-
-  const sortedAlivePlayers = _.orderBy(
-    Object.values(alivePlayers),
-    (p) => p.order
-  )
-
-  const nextPresident =
-    currentPresidentIndex < _.size(alivePlayers) - 1
-      ? sortedAlivePlayers[currentPresidentIndex + 1]
-      : sortedAlivePlayers[0]
-
   // TODO: case when failed election counter === 3
   const conf = {
     ...game.conf,
     action: 'chooseChancellor',
-    voted: Object.keys(votes),
+    voted: [],
     failedElectionsCount: game.conf.failedElectionsCount + 1,
-    president: nextPresident.id,
+    president: chooseNextPresident(game),
     chancellor: null,
-  }
-
-  const secretConf = {
-    ...game.secret_conf,
     votes,
   }
 
-  return {conf, secret_conf: secretConf}
+  return {conf, secret_conf: game.secret_conf}
 }
 
 export const vote = (socket) => async (data) => {
@@ -113,8 +96,7 @@ export const vote = (socket) => async (data) => {
 
   const skipped =
     votedAll &&
-    Object.values(game.secret_conf.votes).filter((v) => v).length * 2 <=
-      alivePlayersCount
+    Object.values(votes).filter((v) => v).length * 2 <= alivePlayersCount
 
   const {conf, secretConf} = !votedAll
     ? getConfigDuringVote(game, votes)

@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export const PresidentTurn = () => {
+export const ChancellorTurn = () => {
   const styles = useStyles()
   const {
     gameData: {gameInfo, extras, playerId},
@@ -48,56 +48,54 @@ export const PresidentTurn = () => {
   const {openModal} = useConfirmModal()
   const {socket} = useSocket()
 
-  const isPresident = gameInfo.conf.president === playerId
+  const isChancellor = gameInfo.conf.chancellor === playerId
 
   const liberalMessage = (
     <Typography variant="body2">
-      Discard <strong>liberal</strong> law?
+      Select <strong>liberal</strong> law?
     </Typography>
   )
-  const onDiscardLiberal = (index) => {
+  const onSelectLiberal = (index) => {
     openModal(liberalMessage, () => {
-      socket.emit('presidentTurn', {index})
+      socket.emit('chancellorTurn', {index})
     })
   }
 
   const fascistMessage = (
     <Typography variant="body2">
-      Discard <strong>fascist</strong> law?
+      Select <strong>fascist</strong> law?
     </Typography>
   )
-  const onDiscardFascist = (index) => {
+  const onSelectFascist = (index) => {
     openModal(fascistMessage, () => {
-      socket.emit('presidentTurn', {index})
+      socket.emit('chancellorTurn', {index})
     })
   }
 
   return (
     <Backdrop open className={styles.backdrop}>
-      {!isPresident ? (
+      {!isChancellor ? (
         <Grid
           container
           direction="column"
           className={styles.wrapper}
           alignItems="center"
         >
-          <Typography>Waiting for president to discard law ...</Typography>
+          <Typography>Waiting for chancellor to choose law ...</Typography>
           <CircularProgress color="inherit" />
         </Grid>
       ) : (
         <Grid container direction="column" className={styles.wrapper}>
           <Box className={styles.voteInfo}>
-            <Typography align="center">Discard one law!</Typography>
+            <Typography align="center">Choose one law!</Typography>
           </Box>
           <Box className={styles.voteWrapper}>
-            {extras.presidentLaws.map((law, i) => (
+            {extras.chancellorLaws.map((law, i) => (
               <div key={i} className={styles.cardWrapper}>
                 <BoardCard
                   type={law}
                   onClick={() =>
-                    law === 'liberal'
-                      ? onDiscardLiberal(i)
-                      : onDiscardFascist(i)
+                    law === 'liberal' ? onSelectLiberal(i) : onSelectFascist(i)
                   }
                 />
               </div>
