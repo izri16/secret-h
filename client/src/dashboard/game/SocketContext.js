@@ -27,6 +27,10 @@ export const SocketProvider = ({children}) => {
       query,
     })
 
+    socket.on('fetch-data', (data) => {
+      socket.emit('getData')
+    })
+
     socket.on('game-data', (data) => {
       setGameData(data)
     })

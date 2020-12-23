@@ -1,4 +1,4 @@
-import {emitError} from './utils.js'
+import {emitSocketError} from '../utils.js'
 import {config} from '../config.js'
 
 export const requireAuthAndGameId = async (socket, next) => {
@@ -9,7 +9,7 @@ export const requireAuthAndGameId = async (socket, next) => {
   }
 
   if (!playerId) {
-    emitError(socket)
+    emitSocketError(socket)
     return
   }
 

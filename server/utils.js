@@ -73,3 +73,7 @@ export const getGame = async (id) => {
     })
     .first()
 }
+
+export const emitSocketError = (socket) => {
+  socket.emit('socket-error', '')
+}

@@ -1,15 +1,16 @@
 import {ioServer} from '../server.js'
 import knex from '../knex/knex.js'
-import {emitError, getGameData} from './utils.js'
 import {
   assignRacesAndOrder,
   getInitialGameConf,
   generateLaws,
   getGame,
   getPlayer,
+  emitSocketError,
 } from '../utils.js'
 import {chooseChancellor} from './chooseChancellor.js'
 import {vote} from './vote.js'
+import {getData} from './getData.js'
 import {log} from '../logger.js'
 
 const joinGame = async (game, player) => {
@@ -50,6 +51,7 @@ const joinGame = async (game, player) => {
 const registerListeners = (socket) => {
   socket.on('chooseChancellor', chooseChancellor(socket))
   socket.on('vote', vote(socket))
+  socket.on('getData', getData(socket))
 }
 
 export const init = async (socket) => {
@@ -59,7 +61,7 @@ export const init = async (socket) => {
   const player = await getPlayer(playerId)
 
   if (!game) {
-    emitError(socket)
+    emitSocketError(socket)
     return
   }
 
@@ -72,9 +74,8 @@ export const init = async (socket) => {
     socket.join(game.id)
     registerListeners(socket)
 
-    const gameData = await getGameData(game.id, player.id)
     log.verbose(`player:${player.id} already joined game:${game.id}`)
-    socket.emit('game-data', gameData)
+    socket.emit('fetch-data')
     return
   }
 
@@ -84,11 +85,10 @@ export const init = async (socket) => {
     socket.join(game.id)
     registerListeners(socket)
 
-    const gameData = await getGameData(game.id, player.id)
     log.verbose(`player:${player.id} newly joined game:${game.id}`)
-    ioServer.in(game.id).emit('game-data', gameData)
+    ioServer.in(game.id).emit('fetch-data')
   } catch (err) {
     log.error(err)
-    emitError(socket)
+    emitSocketError(socket)
   }
 }

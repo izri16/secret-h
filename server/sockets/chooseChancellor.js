@@ -1,7 +1,6 @@
 import {ioServer} from '../server.js'
 import knex from '../knex/knex.js'
-import {emitError, getGameData} from './utils.js'
-import {getAlivePlayers, getGame} from '../utils.js'
+import {getAlivePlayers, getGame, emitSocketError} from '../utils.js'
 
 const isValidChancellor = async (game, playerId) => {
   const alivePlayers = getAlivePlayers(game.players)
@@ -28,19 +27,19 @@ const isValidChancellor = async (game, playerId) => {
 }
 
 export const chooseChancellor = (socket) => async (data) => {
-  const {playerId, gameId} = socket
+  const {gameId} = socket
 
   const game = await getGame(gameId)
 
   if (!game.active || game.conf.action !== 'chooseChancellor') {
-    emitError(socket)
+    emitSocketError(socket)
     return
   }
 
   const valid = await isValidChancellor(game, data.id)
 
   if (!valid) {
-    emitError(socket)
+    emitSocketError(socket)
     return
   }
 
@@ -61,6 +60,5 @@ export const chooseChancellor = (socket) => async (data) => {
     .where({id: game.id})
     .update({conf: updatedConf, secret_conf: updatedSecretConf})
 
-  const gameData = await getGameData(game.id, playerId)
-  ioServer.in(game.id).emit('game-data', gameData)
+  ioServer.in(game.id).emit('fetch-data')
 }

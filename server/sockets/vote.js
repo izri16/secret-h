@@ -2,8 +2,7 @@ import _ from 'lodash'
 
 import {ioServer} from '../server.js'
 import knex from '../knex/knex.js'
-import {emitError, getGameData} from './utils.js'
-import {getAlivePlayers, getGame, getPlayer} from '../utils.js'
+import {getAlivePlayers, getGame, getPlayer, emitSocketError} from '../utils.js'
 
 const canVote = async (game, playerId) => {
   const alivePlayers = getAlivePlayers(game.players)
@@ -19,6 +18,75 @@ const canVote = async (game, playerId) => {
   return true
 }
 
+const getConfigDuringVote = (game, votes) => {
+  const conf = {
+    ...game.conf,
+    voted: Object.keys(votes),
+  }
+
+  const secretConf = {
+    ...game.secret_conf,
+    votes,
+  }
+
+  return {conf, secretConf}
+}
+
+const getConfigAfterSuccessfullVote = (game, votes) => {
+  // TODO: check that "laws" may go empty
+  const presidentLaws = game.secret_conf.remainingLaws.slice(0, 3)
+  const remainingLaws = game.secret_conf.remainingLaws.slice(3)
+
+  const conf = {
+    ...game.conf,
+    action: 'president-turn',
+    voted: Object.keys(votes),
+    failedElectionsCount: 0,
+  }
+
+  const secretConf = {
+    ...game.secret_conf,
+    votes,
+    presidentLaws,
+    remainingLaws,
+  }
+
+  return {conf, secretConf}
+}
+
+const getConfigAfterFailedVote = (game, votes) => {
+  const alivePlayers = getAlivePlayers(game.players)
+
+  const currentPresidentIndex = alivePlayers[game.conf.president].order
+
+  const sortedAlivePlayers = _.orderBy(
+    Object.values(alivePlayers),
+    (p) => p.order
+  )
+
+  const nextPresident =
+    currentPresidentIndex < _.size(alivePlayers) - 1
+      ? sortedAlivePlayers[currentPresidentIndex + 1]
+      : sortedAlivePlayers[0]
+
+  // TODO: case when failed election counter === 3
+  const conf = {
+    ...game.conf,
+    action: 'chooseChancellor',
+    voted: Object.keys(votes),
+    failedElectionsCount: game.conf.failedElectionsCount + 1,
+    president: nextPresident.id,
+    chancellor: null,
+  }
+
+  const secretConf = {
+    ...game.secret_conf,
+    votes,
+  }
+
+  return {conf, secret_conf: secretConf}
+}
+
 export const vote = (socket) => async (data) => {
   const {playerId, gameId} = socket
 
@@ -26,68 +94,37 @@ export const vote = (socket) => async (data) => {
   const player = await getPlayer(playerId)
 
   if (!game.active || game.conf.action !== 'vote') {
-    emitError(socket)
+    emitSocketError(socket)
     return
   }
 
   const valid = await canVote(game, player.id)
-
   if (!valid) {
-    emitError(socket)
+    emitSocketError(socket)
     return
   }
 
-  const alivePlayers = getAlivePlayers(game.players)
-  const alivePlayersCount = Object.keys(alivePlayers).length
-
-  const voted = [...game.conf.voted, player.id]
-  const votedAll = voted.length === alivePlayersCount
-
-  const updatedSecretConf = {
-    ...game.secret_conf,
-    votes: {
-      ...game.secret_conf.votes,
-      [player.id]: data.vote,
-    },
+  const votes = {
+    ...game.secret_conf.votes,
+    [player.id]: data.vote,
   }
+  const alivePlayersCount = _.size(getAlivePlayers(game.players))
+  const votedAll = _.size(votes) === alivePlayersCount
 
   const skipped =
     votedAll &&
     Object.values(game.secret_conf.votes).filter((v) => v).length * 2 <=
       alivePlayersCount
 
-  const currentPlayerIndex = alivePlayers[player.id].order
-
-  const sortedAlivePlayers = _.orderBy(
-    Object.values(alivePlayers),
-    (p) => p.order
-  )
-  const nextPresident =
-    currentPlayerIndex < alivePlayers.length - 1
-      ? sortedAlivePlayers[currentPlayerIndex + 1]
-      : sortedAlivePlayers[0]
-
-  const updatedConf = {
-    ...game.conf,
-    action: votedAll ? (skipped ? 'vote' : 'president-turn') : 'vote',
-    voted,
-    votes: votedAll ? updatedSecretConf.votes : {},
-    failedElectionsCount: game.conf.failedElectionsCount + (skipped ? 1 : 0),
-    president: skipped ? nextPresident.id : game.conf.president,
-    chancellor: skipped ? null : game.conf.chancellor,
-  }
-
-  if (updatedConf.failedElectionsCount === 3) {
-    throw new Error('TODO: handle 3 failed elections ...')
-  }
+  const {conf, secretConf} = !votedAll
+    ? getConfigDuringVote(game, votes)
+    : !skipped
+    ? getConfigAfterSuccessfullVote(game, votes)
+    : getConfigAfterFailedVote(game, votes)
 
   await knex('games')
     .where({id: game.id})
-    .update({conf: updatedConf, secret_conf: updatedSecretConf})
+    .update({conf, secret_conf: secretConf})
 
-  const gameData = await getGameData(game.id, player.id)
-
-  votedAll
-    ? ioServer.in(game.id).emit('game-data', gameData)
-    : socket.emit('game-data', gameData)
+  votedAll ? ioServer.in(game.id).emit('fetch-data') : socket.emit('fetch-data')
 }
