@@ -10,6 +10,8 @@ import {PresidentTurn} from './PresidentTurn'
 import {ChancellorTurn} from './ChancellorTurn'
 import {CardActions} from './CardActions'
 import {GameResults} from './GameResults'
+import {KillPlayer} from './KillPlayer'
+import {Examine} from './Examine'
 
 import {useGameData} from '../GameDataContext'
 import {fascistCardsConf} from 'common/constants.js'
@@ -207,6 +209,8 @@ export const Board = () => {
       {gameInfo.conf.action === 'president-turn' && <PresidentTurn />}
       {gameInfo.conf.action === 'chancellor-turn' && <ChancellorTurn />}
       {gameInfo.conf.action === 'results' && <GameResults />}
+      {gameInfo.conf.action === 'kill' && <KillPlayer />}
+      {gameInfo.conf.action === 'examine' && <Examine />}
     </Box>
   )
 }

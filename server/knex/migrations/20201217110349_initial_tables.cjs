@@ -36,6 +36,7 @@ discardPileCount: number
 liberalLawsCount: number
 fascistsLawsCount: number
 failedElectionsCount: number
+veto: false
 
 JSON secret_conf schema >>>
 remainingLaws: ['liberal', 'fascist', ...]

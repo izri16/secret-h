@@ -47,6 +47,7 @@ export const getInitialGameConf = (players) => ({
   voted: [],
   votes: {},
   failedElectionsCount: 0,
+  veto: false,
 })
 
 export const generateLaws = () => {

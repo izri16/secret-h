@@ -35,3 +35,9 @@ httpServer.listen(config.port, async () => {
 // 9. style login / register / loading screens
 // 10. style select game screen
 // 11. final refactor & polish
+
+// Handling actions
+// 1. detect election of "fascist" law
+// 2. choose action if any or activate flag for "veto"
+// 3. change "conf.action"
+// 4. adjust "Players" to handle multiple actions on click and different "selectability" of players

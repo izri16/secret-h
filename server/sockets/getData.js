@@ -59,6 +59,15 @@ export const getData = (socket) => async () => {
     extras.chancellorLaws = gameInfo.secret_conf.chancellorLaws
   }
 
+  if (
+    // There is no "conf" for inactive game
+    gameInfo.active &&
+    gameInfo.conf.action === 'examine' &&
+    gameInfo.conf.president === playerId
+  ) {
+    extras.topCards = gameInfo.secret_conf.remainingLaws.slice(0, 3)
+  }
+
   socket.emit('game-data', {
     gameInfo: _.omit(gameInfo, 'secret_conf'),
     playersInfo,

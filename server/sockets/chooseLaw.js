@@ -2,9 +2,10 @@ import {ioServer} from '../server.js'
 import knex from '../knex/knex.js'
 import {getGame, emitSocketError} from '../utils.js'
 import {
-  chooseNextPresident,
   handleLawsShuffle,
   handleGameOver,
+  handleCardAction,
+  handleGovernmentChange,
 } from './utils.js'
 import {log} from '../logger.js'
 
@@ -35,20 +36,18 @@ export const chancellorTurn = (socket) => async (data) => {
     game.secret_conf.discartedLaws
   )
 
-  const updatedConf = {
-    ...game.conf,
-    liberalLawsCount:
-      game.conf.liberalLawsCount + (choosenLaw === 'liberal' ? 1 : 0),
-    fascistsLawsCount:
-      game.conf.fascistsLawsCount + (choosenLaw === 'fascist' ? 1 : 0),
-    drawPileCount: remainingLaws.length,
-    discardPileCount: discartedLaws.length,
-    action: 'chooseChancellor',
-    prevPresident: game.conf.president,
-    prevChancellor: game.conf.chancellor,
-    president: chooseNextPresident(game),
-    chancellor: null,
-  }
+  const updatedConf = handleGameOver(
+    {
+      ...game.conf,
+      liberalLawsCount:
+        game.conf.liberalLawsCount + (choosenLaw === 'liberal' ? 1 : 0),
+      fascistsLawsCount:
+        game.conf.fascistsLawsCount + (choosenLaw === 'fascist' ? 1 : 0),
+      drawPileCount: remainingLaws.length,
+      discardPileCount: discartedLaws.length,
+    },
+    game.players
+  )
 
   const updatedSecretConf = {
     ...game.secret_conf,
@@ -57,12 +56,16 @@ export const chancellorTurn = (socket) => async (data) => {
     discartedLaws,
   }
 
-  await knex('games')
-    .where({id: game.id})
-    .update({
-      conf: handleGameOver(updatedConf, game.players),
-      secret_conf: updatedSecretConf,
-    })
+  const updatedGame = handleGovernmentChange({
+    ...game,
+    conf:
+      updatedConf.action === 'results'
+        ? updatedConf
+        : handleCardAction(updatedConf, game.number_of_players, choosenLaw),
+    secret_conf: updatedSecretConf,
+  })
+
+  await knex('games').where({id: game.id}).update(updatedGame)
 
   ioServer.in(game.id).emit('fetch-data')
 }

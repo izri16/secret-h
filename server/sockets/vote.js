@@ -7,6 +7,8 @@ import {
   chooseNextPresident,
   handleLawsShuffle,
   handleGameOver,
+  handleCardAction,
+  handleGovernmentChange,
 } from './utils.js'
 
 const canVote = async (game, playerId) => {
@@ -67,21 +69,19 @@ const getConfigAfterFailedVote = (game, votes) => {
       game.secret_conf.discartedLaws
     )
 
-    const conf = {
-      ...game.conf,
-      liberalLawsCount:
-        game.conf.liberalLawsCount + (choosenLaw === 'liberal' ? 1 : 0),
-      fascistsLawsCount:
-        game.conf.fascistsLawsCount + (choosenLaw === 'fascist' ? 1 : 0),
-      drawPileCount: remainingLaws.length,
-      discardPileCount: discartedLaws.length,
-      failedElectionsCount: 0,
-      action: 'chooseChancellor',
-      prevPresident: null,
-      prevChancellor: null,
-      president: chooseNextPresident(game),
-      chancellor: null,
-    }
+    const conf = handleGameOver(
+      {
+        ...game.conf,
+        liberalLawsCount:
+          game.conf.liberalLawsCount + (choosenLaw === 'liberal' ? 1 : 0),
+        fascistsLawsCount:
+          game.conf.fascistsLawsCount + (choosenLaw === 'fascist' ? 1 : 0),
+        drawPileCount: remainingLaws.length,
+        discardPileCount: discartedLaws.length,
+        failedElectionsCount: 0,
+      },
+      game.players
+    )
 
     const secretConf = {
       ...game.secret_conf,
@@ -89,7 +89,14 @@ const getConfigAfterFailedVote = (game, votes) => {
       remainingLaws,
     }
 
-    return {conf, secret_conf: secretConf}
+    return handleGovernmentChange({
+      ...game,
+      conf:
+        conf.action === 'results'
+          ? conf
+          : handleCardAction(conf, game.number_of_players, choosenLaw),
+      secret_conf: secretConf,
+    })
   }
 
   const conf = {

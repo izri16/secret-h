@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import {getAlivePlayers} from '../utils.js'
+import {fascistCardsConf} from 'common/constants.js'
 
 export const chooseNextPresident = (game) => {
   const alivePlayers = getAlivePlayers(game.players)
@@ -53,6 +54,40 @@ export const handleGameOver = (conf, players) => {
         : hitlerElected
         ? 'hitler-elected'
         : 'fascist-laws',
+    },
+  }
+}
+
+export const handleCardAction = (conf, numberOfPlayers, choosenLaw) => {
+  const actions = fascistCardsConf[numberOfPlayers][conf.fascistsLawsCount - 1]
+
+  let veto = false
+  let action = 'chooseChancellor'
+
+  if (choosenLaw === 'liberal' || !actions) {
+    return {...conf, veto, action}
+  }
+
+  actions.forEach((a) => {
+    if (a === 'veto') {
+      veto = true
+    } else {
+      action = a
+    }
+  })
+
+  return {...conf, veto, action}
+}
+
+export const handleGovernmentChange = (game) => {
+  return {
+    ...game,
+    conf: {
+      ...game.conf,
+      prevPresident: game.conf.president,
+      prevChancellor: game.conf.chancellor,
+      president: chooseNextPresident(game),
+      chancellor: null,
     },
   }
 }
