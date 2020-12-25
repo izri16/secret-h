@@ -12,6 +12,7 @@ import {log} from './logger.js'
 expressServer.use('/api/player', player)
 expressServer.use('/api/game', game)
 
+// register sockets
 ioServer.on('connection', socketsInit)
 
 httpServer.listen(config.port, async () => {
@@ -20,19 +21,17 @@ httpServer.listen(config.port, async () => {
   await logActiveGamesIds()
 })
 
-// TODO: next steps (till new year)
-// 0. run all queries in transaction
-// 5. cleanup
-// 6. refactor Players
+// TODO: (actions)
+// 0: kill action
+// ...rest actions
 
-// TODO: future
-// 6. liberal / fascist win (game info), special state, final screen
-// 7. actions
-// 8. better logging
+// TODO: refactoring
+// 1. run all queries in transaction
+// 2. better logging
+// 3. refactor Players
+// 4. nicer error handling on FE
 
 // TODO: pre-prod
 // 9. style login / register / loading screens
 // 10. style select game screen
-
-// TODO: nice to have
-// => getData schema object check on each return
+// 11. final refactor & polish
