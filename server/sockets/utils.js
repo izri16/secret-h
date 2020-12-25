@@ -25,3 +25,34 @@ export const handleLawsShuffle = (remainingLaws, discartedLaws) => {
   }
   return {remainingLaws, discartedLaws}
 }
+
+export const handleGameOver = (conf, players) => {
+  const hitlerKilled = Object.values(players).find((p) => p.race === 'hitler')
+    .killed
+  const hitlerElected =
+    Object.values(players).find((p) => p.race === 'hitler').id ===
+      conf.chancellor &&
+    conf.action === 'president-turn' && // prev action was "vote"
+    conf.fascistsLawsCount >= 3
+  const liberalWins = conf.liberalLawsCount === 5 || hitlerKilled
+  const fascistWins = conf.fascistsLawsCount === 6 || hitlerElected
+
+  if (!liberalWins && !fascistWins) {
+    return conf
+  }
+
+  return {
+    ...conf,
+    action: 'results',
+    results: {
+      party: liberalWins ? 'liberal' : 'fascist',
+      reason: liberalWins
+        ? hitlerKilled
+          ? 'hitler-killed'
+          : 'liberal-laws'
+        : hitlerElected
+        ? 'hitler-elected'
+        : 'fascist-laws',
+    },
+  }
+}

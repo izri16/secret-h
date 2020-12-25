@@ -84,6 +84,7 @@ const Player = ({id, order, login, race, loggedInPlayerData}) => {
     .length
 
   const selectable =
+    gameInfo.conf.action !== 'results' &&
     gameInfo.conf.action === 'chooseChancellor' &&
     loggedInPlayerData.id === gameInfo.conf.president &&
     !isPresident &&

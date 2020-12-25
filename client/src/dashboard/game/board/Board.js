@@ -9,6 +9,7 @@ import {Vote} from './Vote'
 import {PresidentTurn} from './PresidentTurn'
 import {ChancellorTurn} from './ChancellorTurn'
 import {CardActions} from './CardActions'
+import {GameResults} from './GameResults'
 
 import {useGameData} from '../GameDataContext'
 import {fascistCardsConf} from 'common/constants.js'
@@ -19,7 +20,10 @@ const useCardPlaceholderStyles = makeStyles((theme) => {
   return {
     wrapper: {
       height: '100%',
+      position: 'relative',
       width: 'calc(100% / 6.5)',
+      display: 'flex',
+      justifyContent: 'center',
       background: ({race, position}) => {
         if (race === 'liberal') {
           return position === 4
@@ -42,6 +46,13 @@ const useCardPlaceholderStyles = makeStyles((theme) => {
     endGame: {
       marginTop: 80,
     },
+    front: {
+      position: 'relative',
+      zIndex: 1,
+    },
+    bg: {
+      position: 'absolute',
+    },
   }
 })
 
@@ -57,26 +68,30 @@ const CardPlaceholder = ({race, position, children}) => {
 
     return (
       <div className={styles.wrapper}>
-        {children}
-        {position < 5 ? (
-          <CardActions actions={actions} />
-        ) : (
-          <Typography variant="h6" align="center" className={styles.endGame}>
-            Fascists win
-          </Typography>
-        )}
+        <div className={styles.front}>{children}</div>
+        <div className={styles.bg}>
+          {position < 5 ? (
+            <CardActions actions={actions} />
+          ) : (
+            <Typography variant="h6" align="center" className={styles.endGame}>
+              Fascists win
+            </Typography>
+          )}
+        </div>
       </div>
     )
   }
 
   return (
     <div className={styles.wrapper}>
-      {children}
-      {position === 4 && (
-        <Typography variant="h6" align="center" className={styles.endGame}>
-          Liberals win
-        </Typography>
-      )}
+      <div className={styles.front}>{children}</div>
+      <div className={styles.bg}>
+        {position === 4 && (
+          <Typography variant="h6" align="center" className={styles.endGame}>
+            Liberals win
+          </Typography>
+        )}
+      </div>
     </div>
   )
 }
@@ -95,6 +110,7 @@ const useScoreBoardStyles = makeStyles((theme) => {
     },
     innerWrapper: {
       flex: 1,
+      height: 200,
       background: ({type}) =>
         type === 'fascist'
           ? theme.palette.fascist.main
@@ -133,7 +149,6 @@ const useBoardStyles = makeStyles((theme) => {
     },
     board: {
       width: '1000px',
-      height: '600px',
       display: 'flex',
       flexDirection: 'column',
       background: 'inherit',
@@ -191,6 +206,7 @@ export const Board = () => {
       {gameInfo.conf.action === 'vote' && <Vote />}
       {gameInfo.conf.action === 'president-turn' && <PresidentTurn />}
       {gameInfo.conf.action === 'chancellor-turn' && <ChancellorTurn />}
+      {gameInfo.conf.action === 'results' && <GameResults />}
     </Box>
   )
 }

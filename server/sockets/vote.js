@@ -3,7 +3,11 @@ import _ from 'lodash'
 import {ioServer} from '../server.js'
 import knex from '../knex/knex.js'
 import {getAlivePlayers, getGame, getPlayer, emitSocketError} from '../utils.js'
-import {chooseNextPresident, handleLawsShuffle} from './utils.js'
+import {
+  chooseNextPresident,
+  handleLawsShuffle,
+  handleGameOver,
+} from './utils.js'
 
 const canVote = async (game, playerId) => {
   const alivePlayers = getAlivePlayers(game.players)
@@ -137,7 +141,7 @@ export const vote = (socket) => async (data) => {
 
   await knex('games')
     .where({id: game.id})
-    .update({conf, secret_conf: secretConf})
+    .update({conf: handleGameOver(conf, game.players), secret_conf: secretConf})
 
   votedAll ? ioServer.in(game.id).emit('fetch-data') : socket.emit('fetch-data')
 }

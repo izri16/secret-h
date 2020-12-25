@@ -25,7 +25,9 @@ export const getData = (socket) => async () => {
 
     // Till game is not active there are no roles and order
     if (
-      (gameInfo.active && playerRace === 'liberal') ||
+      (gameInfo.conf.action !== 'results' &&
+        gameInfo.active &&
+        playerRace === 'liberal') ||
       (playerRace === 'hitler' && _.size(alivePlayers) > 6)
     ) {
       res = _.mapValues(res, (p) => ({
