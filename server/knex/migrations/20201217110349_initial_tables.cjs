@@ -24,31 +24,22 @@ exports.down = async function (knex) {
   await knex.raw('DROP EXTENSION IF EXISTS "uuid-ossp"')
 }
 
-// TODO: next steps (till new year)
-// 0. run all queries in transaction
-// 5. cleanup
-// => define schema in this file
-// => getData schema object check on each return
-
-// TODO: future
-// 6. liberal / fascist win (game info)
-// 7. actions
-// 8. better logging
-
-// TODO: pre-prod
-// 9. style login / register / loading screens
-// 10. style select game screen
-
 /*
 JSON conf schema >>>
-action: oneOf('chooseCancelar', 'vote', 'shoot', ...)
+action: oneOf('chooseCancelar', 'vote', 'president-turn', 'chancellor-turn', ...)
 president: playerId
-remainingCardsCount: number
-discardedCardsCount: number
+chancellor: playerId
+prevPresident: playerId
+prevChancellor: playerId
+drawPileCount: number
+discardPileCount: number
 liberalLawsCount: number
 fascistsLawsCount: number
+failedElectionsCount: number
 
 JSON secret_conf schema >>>
-remainingCards: ['l', 'f', 'f', 'l', 'l']
-discardedCards: ['l', 'f']
+remainingLaws: ['liberal', 'fascist', ...]
+discartedLaws: ['fascist']
+presidentLaws?: ['liberal', 'fascist', 'fascist']
+chancellorLaws?: ['liberal', 'fascist']
 */
