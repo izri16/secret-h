@@ -17,6 +17,9 @@ export const theme = createMuiTheme({
       main: '#CF692E',
       dark: '#87290D',
     },
+    selected: {
+      main: '#e3c21e',
+    },
   },
   typography: {
     fontFamily: ['Langar', 'cursive'].join(','),

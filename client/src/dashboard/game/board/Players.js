@@ -7,21 +7,14 @@ import {useGameData} from '../GameDataContext'
 import {useConfirmModal} from '../ConfirmModalContext'
 import {useSocket} from '../SocketContext'
 
-const yellow = '#e3c21e'
-
 const useStyles = makeStyles((theme) => {
   return {
     players: {
       display: 'flex',
+      position: 'relative',
+      zIndex: '9999',
     },
-    player: ({selectable, loggedInPlayer, race}) => {
-      // TODO: share
-      const color = {
-        fascist: lighten(theme.palette.fascist.main, 0.25),
-        liberal: lighten(theme.palette.liberal.main, 0.25),
-        hitler: lighten(theme.palette.fascist.dark, 0.25),
-        unknown: '#ddd',
-      }[race]
+    player: ({selectable, loggedInPlayer, race, color}) => {
       return {
         width: '70px',
         height: '70px',
@@ -42,7 +35,7 @@ const useStyles = makeStyles((theme) => {
 
         '&:hover': selectable
           ? {
-              background: yellow,
+              background: theme.palette.selected.main,
               cursor: 'pointer',
             }
           : {
@@ -51,8 +44,76 @@ const useStyles = makeStyles((theme) => {
             },
       }
     },
+    president: {
+      color: theme.palette.selected.main,
+    },
   }
 })
+
+const isSelectable = (gameInfo, playersInfo, loggedInPlayerId, playerId) => {
+  const alivePlayersCount = Object.values(playersInfo).filter((p) => !p.killed)
+    .length
+
+  const {action} = gameInfo.conf
+
+  if (
+    loggedInPlayerId === playerId ||
+    loggedInPlayerId !== gameInfo.conf.president
+  ) {
+    return false
+  }
+
+  if (
+    action === 'chooseChancellor' &&
+    (alivePlayersCount === 5 || gameInfo.conf.prevPresident !== playerId)
+  ) {
+    return true
+  }
+
+  if (
+    action === 'kill' ||
+    action === 'investigate' ||
+    action === 'choose-president'
+  ) {
+    return true
+  }
+
+  return false
+}
+
+const getConfirmMessage = (action, login) => {
+  if (action === 'chooseChancellor') {
+    return (
+      <Typography>
+        Select <span style={{fontWeight: 'bold'}}>{login}</span> as the next{' '}
+        <span style={{fontWeight: 'bold'}}>chancellor</span>?
+      </Typography>
+    )
+  }
+  if (action === 'kill') {
+    return (
+      <Typography>
+        Kill <span style={{fontWeight: 'bold'}}>{login}</span>?
+      </Typography>
+    )
+  }
+  if (action === 'choose-president') {
+    return (
+      <Typography>
+        Select <span style={{fontWeight: 'bold'}}>{login}</span> as the next{' '}
+        <span style={{fontWeight: 'bold'}}>president</span>?
+      </Typography>
+    )
+  }
+  if (action === 'investigate') {
+    return (
+      <Typography>
+        Investigate <span style={{fontWeight: 'bold'}}>{login}</span>?
+      </Typography>
+    )
+  }
+  return null
+}
 
 const Player = ({id, order, login, race, loggedInPlayerData}) => {
   const theme = useTheme()
@@ -80,28 +141,19 @@ const Player = ({id, order, login, race, loggedInPlayerData}) => {
   const isPresident = id === gameInfo.conf.president
   const isChancellor = id === gameInfo.conf.chancellor
 
-  const alivePlayersCount = Object.values(playersInfo).filter((p) => !p.killed)
-    .length
-
-  const selectable =
-    gameInfo.conf.action !== 'results' &&
-    gameInfo.conf.action === 'chooseChancellor' &&
-    loggedInPlayerData.id === gameInfo.conf.president &&
-    !isPresident &&
-    gameInfo.conf.prevChancellor !== id &&
-    (alivePlayersCount === 5 || gameInfo.conf.prevPresident !== id)
+  const selectable = isSelectable(
+    gameInfo,
+    playersInfo,
+    loggedInPlayerData.id,
+    id
+  )
 
   const styles = useStyles({
+    color,
     selectable,
     loggedInPlayer: loggedInPlayerData.id === id,
     race,
   })
-  const confirmMessage = (
-    <Typography>
-      Select <span style={{fontWeight: 'bold'}}>{login}</span> as the next{' '}
-      <span style={{fontWeight: 'bold'}}>chancellor</span>?
-    </Typography>
-  )
 
   const vote = Object.keys(gameInfo.conf.votes).length
     ? gameInfo.conf.votes[id]
@@ -109,12 +161,9 @@ const Player = ({id, order, login, race, loggedInPlayerData}) => {
       : '(No)'
     : ''
 
-  // TODO: there can be multiple reasons for selecting player
-  // TODO: based on the reason other players might be selectable
-
   return (
     <Grid container direction="column">
-      <Typography variant="caption" style={{color: yellow}} align="center">
+      <Typography variant="caption" className={styles.president} align="center">
         {isPresident ? 'President' : isChancellor ? 'Chancellor' : ''}&nbsp;
       </Typography>
       <Typography variant="caption" style={{color}} align="center">
@@ -124,17 +173,22 @@ const Player = ({id, order, login, race, loggedInPlayerData}) => {
         key={id}
         onClick={
           selectable
-            ? () =>
+            ? () => {
+                const confirmMessage = getConfirmMessage(
+                  gameInfo.conf.action,
+                  login
+                )
                 openModal(confirmMessage, () => {
                   socket.emit('chooseChancellor', {id})
                 })
+              }
             : undefined
         }
         className={styles.player}
         style={{
           border:
             isPresident || isChancellor
-              ? `3px solid ${yellow}`
+              ? `3px solid ${theme.palette.selected.main}`
               : '1px solid #777',
         }}
       >
