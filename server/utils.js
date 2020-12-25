@@ -43,7 +43,7 @@ export const getInitialGameConf = (players) => ({
   drawPileCount: 17,
   discardPileCount: 0,
   liberalLawsCount: 0,
-  fascistLawsCount: 0,
+  fascistsLawsCount: 0,
   voted: [],
   votes: {},
   failedElectionsCount: 0,

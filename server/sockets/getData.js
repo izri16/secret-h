@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import knex from '../knex/knex.js'
+import {getAlivePlayers} from '../utils.js'
 
 export const getData = (socket) => async () => {
   const {gameId, playerId} = socket
@@ -17,6 +18,7 @@ export const getData = (socket) => async () => {
     .first()
 
   const playerRace = gameInfo.players[playerId].race
+  const alivePlayers = getAlivePlayers(gameInfo.players)
 
   const playersInfo = (() => {
     let res = gameInfo.players
@@ -24,7 +26,7 @@ export const getData = (socket) => async () => {
     // Till game is not active there are no roles and order
     if (
       (gameInfo.active && playerRace === 'liberal') ||
-      playerRace === 'hitler'
+      (playerRace === 'hitler' && _.size(alivePlayers) > 6)
     ) {
       res = _.mapValues(res, (p) => ({
         ...p,

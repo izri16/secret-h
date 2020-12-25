@@ -3,7 +3,7 @@ import _ from 'lodash'
 import {ioServer} from '../server.js'
 import knex from '../knex/knex.js'
 import {getAlivePlayers, getGame, getPlayer, emitSocketError} from '../utils.js'
-import {chooseNextPresident} from './utils.js'
+import {chooseNextPresident, handleLawsShuffle} from './utils.js'
 
 const canVote = async (game, playerId) => {
   const alivePlayers = getAlivePlayers(game.players)
@@ -34,7 +34,6 @@ const getConfigDuringVote = (game, votes) => {
 }
 
 const getConfigAfterSuccessfullVote = (game, votes) => {
-  // TODO: check that "laws" may go empty
   const presidentLaws = game.secret_conf.remainingLaws.slice(0, 3)
   const remainingLaws = game.secret_conf.remainingLaws.slice(3)
 
@@ -56,7 +55,39 @@ const getConfigAfterSuccessfullVote = (game, votes) => {
 }
 
 const getConfigAfterFailedVote = (game, votes) => {
-  // TODO: case when failed election counter === 3
+  if (game.conf.failedElectionsCount === 2) {
+    const choosenLaw = game.secret_conf.remainingLaws[0]
+
+    const {discartedLaws, remainingLaws} = handleLawsShuffle(
+      game.secret_conf.remainingLaws.slice(1),
+      game.secret_conf.discartedLaws
+    )
+
+    const conf = {
+      ...game.conf,
+      liberalLawsCount:
+        game.conf.liberalLawsCount + (choosenLaw === 'liberal' ? 1 : 0),
+      fascistsLawsCount:
+        game.conf.fascistsLawsCount + (choosenLaw === 'fascist' ? 1 : 0),
+      drawPileCount: remainingLaws.length,
+      discardPileCount: discartedLaws.length,
+      failedElectionsCount: 0,
+      action: 'chooseChancellor',
+      prevPresident: null,
+      prevChancellor: null,
+      president: chooseNextPresident(game),
+      chancellor: null,
+    }
+
+    const secretConf = {
+      ...game.secret_conf,
+      discartedLaws,
+      remainingLaws,
+    }
+
+    return {conf, secret_conf: secretConf}
+  }
+
   const conf = {
     ...game.conf,
     action: 'chooseChancellor',

@@ -14,34 +14,43 @@ const useStyles = makeStyles((theme) => {
     players: {
       display: 'flex',
     },
-    player: ({selectable, loggedInPlayer}) => ({
-      width: '70px',
-      height: '70px',
-      borderRadius: '35px',
-      background: 'white',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      textAlign: 'center',
-      marginRight: theme.spacing(0.5),
-      marginLeft: theme.spacing(0.5),
-      color: '#333',
-      overflow: 'hidden',
-      fontSize: '12px',
-      padding: 4,
-      transition: 'background .3s',
-      textDecoration: loggedInPlayer ? 'underline' : 'none',
+    player: ({selectable, loggedInPlayer, race}) => {
+      // TODO: share
+      const color = {
+        fascist: lighten(theme.palette.fascist.main, 0.25),
+        liberal: lighten(theme.palette.liberal.main, 0.25),
+        hitler: lighten(theme.palette.fascist.dark, 0.25),
+        unknown: '#ddd',
+      }[race]
+      return {
+        width: '70px',
+        height: '70px',
+        borderRadius: '35px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        textAlign: 'center',
+        marginRight: theme.spacing(0.5),
+        marginLeft: theme.spacing(0.5),
+        background: color,
+        color: '#333',
+        overflow: 'hidden',
+        fontSize: '12px',
+        padding: 4,
+        transition: 'background .3s',
+        textDecoration: loggedInPlayer ? 'underline' : 'none',
 
-      '&:hover': selectable
-        ? {
-            background: `${yellow} !important`,
-            cursor: 'pointer',
-          }
-        : {
-            background: 'initial',
-            cursor: 'initial',
-          },
-    }),
+        '&:hover': selectable
+          ? {
+              background: yellow,
+              cursor: 'pointer',
+            }
+          : {
+              background: color,
+              cursor: 'initial',
+            },
+      }
+    },
   }
 })
 
@@ -51,7 +60,7 @@ const Player = ({id, order, login, race, loggedInPlayerData}) => {
   const {socket} = useSocket()
 
   const {
-    gameData: {gameInfo},
+    gameData: {gameInfo, playersInfo},
   } = useGameData()
 
   const color = {
@@ -70,14 +79,21 @@ const Player = ({id, order, login, race, loggedInPlayerData}) => {
 
   const isPresident = id === gameInfo.conf.president
   const isChancellor = id === gameInfo.conf.chancellor
+
+  const alivePlayersCount = Object.values(playersInfo).filter((p) => !p.killed)
+    .length
+
   const selectable =
     gameInfo.conf.action === 'chooseChancellor' &&
     loggedInPlayerData.id === gameInfo.conf.president &&
-    !isPresident
+    !isPresident &&
+    gameInfo.conf.prevChancellor !== id &&
+    (alivePlayersCount === 5 || gameInfo.conf.prevPresident !== id)
 
   const styles = useStyles({
     selectable,
     loggedInPlayer: loggedInPlayerData.id === id,
+    race,
   })
   const confirmMessage = (
     <Typography>
@@ -115,7 +131,6 @@ const Player = ({id, order, login, race, loggedInPlayerData}) => {
         }
         className={styles.player}
         style={{
-          background: color,
           border:
             isPresident || isChancellor
               ? `3px solid ${yellow}`

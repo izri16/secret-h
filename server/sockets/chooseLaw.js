@@ -1,9 +1,11 @@
 import {ioServer} from '../server.js'
 import knex from '../knex/knex.js'
 import {getGame, emitSocketError} from '../utils.js'
-import {chooseNextPresident} from './utils.js'
+import {chooseNextPresident, handleLawsShuffle} from './utils.js'
+import {log} from '../logger.js'
 
 export const chancellorTurn = (socket) => async (data) => {
+  log.info('Chancellor turn data', JSON.stringify(data))
   const {gameId, playerId} = socket
 
   const game = await getGame(gameId)
@@ -17,21 +19,26 @@ export const chancellorTurn = (socket) => async (data) => {
     return
   }
 
-  const discartedLaws = [
+  const choosenLaw = game.secret_conf.chancellorLaws[data.index]
+
+  game.secret_conf.discartedLaws = [
     ...game.secret_conf.discartedLaws,
     ...game.secret_conf.chancellorLaws.filter((law, i) => i !== data.index),
   ]
 
-  const choosenLaw = game.secret_conf.chancellorLaws[data.index]
+  const {discartedLaws, remainingLaws} = handleLawsShuffle(
+    game.secret_conf.remainingLaws,
+    game.secret_conf.discartedLaws
+  )
 
   const updatedConf = {
     ...game.conf,
     liberalLawsCount:
       game.conf.liberalLawsCount + (choosenLaw === 'liberal' ? 1 : 0),
     fascistsLawsCount:
-      game.conf.liberalLawsCount + (choosenLaw === 'fascist' ? 1 : 0),
-    drawPileCount: game.conf.drawPileCount - 3,
-    discardPileCount: game.conf.discardPileCount + 2,
+      game.conf.fascistsLawsCount + (choosenLaw === 'fascist' ? 1 : 0),
+    drawPileCount: remainingLaws.length,
+    discardPileCount: discartedLaws.length,
     action: 'chooseChancellor',
     prevPresident: game.conf.president,
     prevChancellor: game.conf.chancellor,
@@ -40,9 +47,10 @@ export const chancellorTurn = (socket) => async (data) => {
   }
 
   const updatedSecretConf = {
-    chancellorLaws: [],
-    discartedLaws,
     ...game.secret_conf,
+    chancellorLaws: [],
+    remainingLaws,
+    discartedLaws,
   }
 
   await knex('games')
@@ -53,6 +61,7 @@ export const chancellorTurn = (socket) => async (data) => {
 }
 
 export const presidentTurn = (socket) => async (data) => {
+  log.info('President turn data', JSON.stringify(data))
   const {gameId, playerId} = socket
 
   const game = await getGame(gameId)
@@ -82,10 +91,10 @@ export const presidentTurn = (socket) => async (data) => {
   ]
 
   const updatedSecretConf = {
+    ...game.secret_conf,
     presidentLaws: [],
     chancellorLaws,
     discartedLaws,
-    ...game.secret_conf,
   }
 
   await knex('games')
