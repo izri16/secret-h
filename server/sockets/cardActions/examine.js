@@ -1,6 +1,7 @@
 import {ioServer} from '../../server.js'
 import knex from '../../knex/knex.js'
 import {getGame, emitSocketError} from '../../utils.js'
+import {handleGovernmentChange} from '../utils.js'
 import {log} from '../../logger.js'
 
 export const examineFinished = (socket) => async () => {
@@ -18,14 +19,8 @@ export const examineFinished = (socket) => async () => {
     return
   }
 
-  await knex('games')
-    .where({id: game.id})
-    .update({
-      conf: {
-        ...game.conf,
-        action: 'chooseChancellor',
-      },
-    })
+  const updatedGame = handleGovernmentChange(game)
+  await knex('games').where({id: game.id}).update(updatedGame)
 
   ioServer.in(game.id).emit('fetch-data')
 }

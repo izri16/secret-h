@@ -43,10 +43,11 @@ export const Vote = () => {
   const {openModal} = useConfirmModal()
   const {socket} = useSocket()
   const {
-    gameData: {gameInfo, playerId},
+    gameData: {gameInfo, playerId, playersInfo},
   } = useGameData()
 
   const voted = gameInfo.conf.voted.includes(playerId)
+  const killed = playersInfo[playerId].killed
 
   const yesMessage = (
     <Typography variant="body2">
@@ -69,6 +70,8 @@ export const Vote = () => {
       socket.emit('vote', {vote: false})
     })
   }
+
+  if (killed) return null
 
   return (
     <Backdrop open className={styles.backdrop}>

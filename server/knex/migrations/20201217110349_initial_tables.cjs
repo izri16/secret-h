@@ -37,10 +37,13 @@ liberalLawsCount: number
 fascistsLawsCount: number
 failedElectionsCount: number
 veto: false
+voted: []
+votes: {}
 
 JSON secret_conf schema >>>
 remainingLaws: ['liberal', 'fascist', ...]
 discartedLaws: ['fascist']
 presidentLaws?: ['liberal', 'fascist', 'fascist']
 chancellorLaws?: ['liberal', 'fascist']
+votes: {}
 */

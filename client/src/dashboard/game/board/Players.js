@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => {
       position: 'relative',
       zIndex: '9999',
     },
-    player: ({selectable, loggedInPlayer, race, color}) => {
+    player: ({selectable, loggedInPlayer, color}) => {
       return {
         width: '70px',
         height: '70px',
@@ -58,13 +58,15 @@ const isSelectable = (gameInfo, playersInfo, loggedInPlayerId, playerId) => {
 
   if (
     loggedInPlayerId === playerId ||
-    loggedInPlayerId !== gameInfo.conf.president
+    loggedInPlayerId !== gameInfo.conf.president ||
+    playersInfo[playerId].killed
   ) {
     return false
   }
 
   if (
     action === 'chooseChancellor' &&
+    gameInfo.conf.prevChancellor !== playerId &&
     (alivePlayersCount === 5 || gameInfo.conf.prevPresident !== playerId)
   ) {
     return true
@@ -81,41 +83,53 @@ const isSelectable = (gameInfo, playersInfo, loggedInPlayerId, playerId) => {
   return false
 }
 
-const getConfirmMessage = (action, login) => {
+const getConfirmConf = (socket, action, id, login) => {
   if (action === 'chooseChancellor') {
-    return (
-      <Typography>
-        Select <span style={{fontWeight: 'bold'}}>{login}</span> as the next{' '}
-        <span style={{fontWeight: 'bold'}}>chancellor</span>?
-      </Typography>
-    )
+    return {
+      message: (
+        <Typography>
+          Select <span style={{fontWeight: 'bold'}}>{login}</span> as the next{' '}
+          <span style={{fontWeight: 'bold'}}>chancellor</span>?
+        </Typography>
+      ),
+      onConfirm: () => socket.emit('chooseChancellor', {id}),
+    }
   }
   if (action === 'kill') {
-    return (
-      <Typography>
-        Kill <span style={{fontWeight: 'bold'}}>{login}</span>?
-      </Typography>
-    )
+    return {
+      message: (
+        <Typography>
+          Kill <span style={{fontWeight: 'bold'}}>{login}</span>?
+        </Typography>
+      ),
+      onConfirm: () => socket.emit('kill', {id}),
+    }
   }
   if (action === 'choose-president') {
-    return (
-      <Typography>
-        Select <span style={{fontWeight: 'bold'}}>{login}</span> as the next{' '}
-        <span style={{fontWeight: 'bold'}}>president</span>?
-      </Typography>
-    )
+    return {
+      message: (
+        <Typography>
+          Select <span style={{fontWeight: 'bold'}}>{login}</span> as the next{' '}
+          <span style={{fontWeight: 'bold'}}>president</span>?
+        </Typography>
+      ),
+      onConfirm: () => socket.emit('choose-president', {id}),
+    }
   }
   if (action === 'investigate') {
-    return (
-      <Typography>
-        Investigate <span style={{fontWeight: 'bold'}}>{login}</span>?
-      </Typography>
-    )
+    return {
+      message: (
+        <Typography>
+          Investigate <span style={{fontWeight: 'bold'}}>{login}</span>?
+        </Typography>
+      ),
+      onConfirm: () => socket.emit('investigate', {id}),
+    }
   }
   return null
 }
 
-const Player = ({id, order, login, race, loggedInPlayerData}) => {
+const Player = ({id, order, login, race, loggedInPlayerId}) => {
   const theme = useTheme()
   const {openModal} = useConfirmModal()
   const {socket} = useSocket()
@@ -140,19 +154,15 @@ const Player = ({id, order, login, race, loggedInPlayerData}) => {
 
   const isPresident = id === gameInfo.conf.president
   const isChancellor = id === gameInfo.conf.chancellor
+  const killed = playersInfo[id].killed
+  const killedStyles = {opacity: killed ? 0.4 : 1}
 
-  const selectable = isSelectable(
-    gameInfo,
-    playersInfo,
-    loggedInPlayerData.id,
-    id
-  )
+  const selectable = isSelectable(gameInfo, playersInfo, loggedInPlayerId, id)
 
   const styles = useStyles({
     color,
     selectable,
-    loggedInPlayer: loggedInPlayerData.id === id,
-    race,
+    loggedInPlayer: loggedInPlayerId === id,
   })
 
   const vote = Object.keys(gameInfo.conf.votes).length
@@ -166,35 +176,44 @@ const Player = ({id, order, login, race, loggedInPlayerData}) => {
       <Typography variant="caption" className={styles.president} align="center">
         {isPresident ? 'President' : isChancellor ? 'Chancellor' : ''}&nbsp;
       </Typography>
-      <Typography variant="caption" style={{color}} align="center">
+      <Typography
+        variant="caption"
+        style={{color, ...killedStyles}}
+        align="center"
+      >
         {order}
       </Typography>
       <Typography
-        key={id}
         onClick={
           selectable
             ? () => {
-                const confirmMessage = getConfirmMessage(
+                const {message, onConfirm} = getConfirmConf(
+                  socket,
                   gameInfo.conf.action,
+                  id,
                   login
                 )
-                openModal(confirmMessage, () => {
-                  socket.emit('chooseChancellor', {id})
-                })
+                openModal(message, onConfirm)
               }
             : undefined
         }
         className={styles.player}
         style={{
-          border:
-            isPresident || isChancellor
-              ? `3px solid ${theme.palette.selected.main}`
-              : '1px solid #777',
+          border: killed
+            ? '3px solid black'
+            : isPresident || isChancellor
+            ? `3px solid ${theme.palette.selected.main}`
+            : '1px solid #777',
+          ...killedStyles,
         }}
       >
         {login}
       </Typography>
-      <Typography variant="caption" style={{color}} align="center">
+      <Typography
+        variant="caption"
+        style={{color, ...killedStyles}}
+        align="center"
+      >
         {raceLabel} {vote}
       </Typography>
     </Grid>
@@ -208,14 +227,12 @@ export const Players = () => {
     gameData: {playersInfo, playerId},
   } = useGameData()
 
-  const loggedInPlayerData = playersInfo[playerId]
+  const loggedInPlayerId = playersInfo[playerId].id
 
   return (
     <Box className={styles.players}>
       {_.orderBy(Object.values(playersInfo), 'order').map((p) => {
-        return (
-          <Player loggedInPlayerData={loggedInPlayerData} key={p.id} {...p} />
-        )
+        return <Player loggedInPlayerId={loggedInPlayerId} key={p.id} {...p} />
       })}
     </Box>
   )

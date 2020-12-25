@@ -9,6 +9,7 @@ import {
   handleGameOver,
   handleCardAction,
   handleGovernmentChange,
+  getHasCardAction,
 } from './utils.js'
 
 const canVote = async (game, playerId) => {
@@ -89,12 +90,18 @@ const getConfigAfterFailedVote = (game, votes) => {
       remainingLaws,
     }
 
-    return handleGovernmentChange({
+    const hasCardAction =
+      conf.action !== 'results' &&
+      choosenLaw === 'fascist' &&
+      getHasCardAction(conf, game.number_of_players)
+
+    const transformer = !hasCardAction ? handleGovernmentChange : (i) => i
+
+    return transformer({
       ...game,
-      conf:
-        conf.action === 'results'
-          ? conf
-          : handleCardAction(conf, game.number_of_players, choosenLaw),
+      conf: hasCardAction
+        ? handleCardAction(conf, game.number_of_players)
+        : conf,
       secret_conf: secretConf,
     })
   }

@@ -16,25 +16,33 @@ expressServer.use('/api/game', game)
 ioServer.on('connection', socketsInit)
 
 httpServer.listen(config.port, async () => {
+  // TODO: change message on heroku
   log.info(`Secret-Hitler app listening at http://localhost:${config.port}`)
 
   await logActiveGamesIds()
 })
 
+// Bugs: (tomorrow)
+// last player does not become president
+// killing hitler does not end game
+
 // TODO: (actions)
-// 0: kill action
-// ...rest actions
+// 1. choose-president action
+// 2. player investigate action
+// 3. veto
 
 // TODO: refactoring
 // 1. run all queries in transaction
 // 2. better logging
-// 3. refactor Players
-// 4. nicer error handling on FE
+// 3. nicer error handling on FE
 
 // TODO: pre-prod
-// 9. style login / register / loading screens
-// 10. style select game screen
-// 11. final refactor & polish
+// 1. style login / register / loading screens
+// 2. style select game screen
+// 3. final refactor & polish
+
+// TODO: prod
+// 1. auto-restarts with pm2
 
 // Handling actions
 // 1. detect election of "fascist" law

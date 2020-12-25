@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import knex from './knex/knex.js'
-import {raceConfigurations, race} from 'common/constants.js'
+import {raceConfigurations} from 'common/constants.js'
 import {log} from './logger.js'
 
 export const logActiveGamesIds = async () => {
@@ -17,9 +17,9 @@ export const assignRacesAndOrder = (players) => {
   const conf = raceConfigurations[numberOfPlayers].races
 
   const races = _.shuffle([
-    ..._.fill(Array(conf[race.liberal]), race.liberal),
-    ..._.fill(Array(conf[race.fascist] - 1), race.fascist),
-    ...[race.hitler],
+    ..._.fill(Array(conf['liberal']), 'liberal'),
+    ..._.fill(Array(conf['fascist'] - 1), 'fascist'),
+    ...['hitler'],
   ])
 
   return _.fromPairs(
@@ -34,9 +34,11 @@ export const getAlivePlayers = (players) => {
   return _.fromPairs(_.toPairs(players).filter(([id, data]) => !data.killed)) // eslint-disable-line
 }
 
-export const getInitialGameConf = (players) => ({
-  action: 'chooseChancellor',
-  president: Object.values(players).find((p) => p.order === 1).id,
+export const getInitialGameConf = (players, active = true) => ({
+  action: active ? 'chooseChancellor' : null,
+  president: active
+    ? Object.values(players).find((p) => p.order === 1).id
+    : null,
   chancellor: null,
   prevPresident: null,
   prevChancellor: null,

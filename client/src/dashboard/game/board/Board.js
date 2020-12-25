@@ -172,6 +172,7 @@ export const Board = () => {
       <div className={styles.boardWrapper}>
         <Paper className={styles.board}>
           <StatusBar />
+
           <div style={{height: 12}} />
 
           <ScoreBoard type="fascist">
@@ -187,6 +188,7 @@ export const Board = () => {
           </ScoreBoard>
 
           <div style={{height: 12}} />
+
           <ScoreBoard type="liberal">
             {Array.from(Array(5)).map((__, i) => {
               return (
@@ -208,7 +210,11 @@ export const Board = () => {
       {gameInfo.conf.action === 'vote' && <Vote />}
       {gameInfo.conf.action === 'president-turn' && <PresidentTurn />}
       {gameInfo.conf.action === 'chancellor-turn' && <ChancellorTurn />}
+
+      {/* Final results */}
       {gameInfo.conf.action === 'results' && <GameResults />}
+
+      {/* Card actions */}
       {gameInfo.conf.action === 'kill' && <KillPlayer />}
       {gameInfo.conf.action === 'examine' && <Examine />}
     </Box>

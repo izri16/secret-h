@@ -33,8 +33,8 @@ exports.seed = async function (knex) {
 
   const players = await knex('players').insert(dataToInsert).returning('*')
 
-  // Initial active game
-  const gamePlayersCount = 5
+  // 5 players fresh game
+  let gamePlayersCount = 5
   let gamePlayers = players.slice(0, gamePlayersCount)
 
   gamePlayers = assignRacesAndOrder(
@@ -52,6 +52,49 @@ exports.seed = async function (knex) {
     conf: getInitialGameConf(gamePlayers),
     secret_conf: {
       votes: {},
+    },
+    players: gamePlayers,
+  })
+
+  // 5 players game, 3 fascists laws
+  gamePlayersCount = 5
+  gamePlayers = players.slice(0, gamePlayersCount)
+
+  gamePlayers = assignRacesAndOrder(
+    _.mapValues(_.keyBy(gamePlayers, 'id'), ({id, login}) => ({
+      id,
+      killed: false,
+      login,
+    }))
+  )
+
+  await knex('games').insert({
+    created_by: players[0].id,
+    number_of_players: gamePlayersCount,
+    active: true,
+    conf: {
+      ...getInitialGameConf(gamePlayers),
+      fascistsLawsCount: 3,
+      liberalLawsCount: 2,
+    },
+    secret_conf: {
+      votes: {},
+      remainingLaws: [
+        'liberal',
+        'fascist',
+        'liberal',
+        'liberal',
+        'fascist',
+        'fascist',
+      ],
+      discartedLaws: [
+        'fascist',
+        'liberal',
+        'fascist',
+        'fascist',
+        'fascist',
+        'fascist',
+      ],
     },
     players: gamePlayers,
   })

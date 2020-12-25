@@ -2,7 +2,7 @@ import express from 'express'
 
 import knex from '../knex/knex.js'
 import {auth} from '../middlewares/auth.js'
-import {getPlayer} from '../utils.js'
+import {getPlayer, getInitialGameConf} from '../utils.js'
 
 const router = express.Router()
 
@@ -27,6 +27,8 @@ router.post('/', [auth], async function (req, res) {
         players: {
           [playerId]: {...player, killed: false},
         },
+        conf: getInitialGameConf({}, false),
+        secret_conf: {},
       })
       .returning('*')
   )[0]

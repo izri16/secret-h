@@ -6,6 +6,7 @@ import {
   handleGameOver,
   handleCardAction,
   handleGovernmentChange,
+  getHasCardAction,
 } from './utils.js'
 import {log} from '../logger.js'
 
@@ -56,12 +57,18 @@ export const chancellorTurn = (socket) => async (data) => {
     discartedLaws,
   }
 
-  const updatedGame = handleGovernmentChange({
+  const hasCardAction =
+    updatedConf.action !== 'results' &&
+    choosenLaw === 'fascist' &&
+    getHasCardAction(updatedConf, game.number_of_players)
+
+  const transformer = !hasCardAction ? handleGovernmentChange : (i) => i
+
+  const updatedGame = transformer({
     ...game,
-    conf:
-      updatedConf.action === 'results'
-        ? updatedConf
-        : handleCardAction(updatedConf, game.number_of_players, choosenLaw),
+    conf: hasCardAction
+      ? handleCardAction(updatedConf, game.number_of_players)
+      : updatedConf,
     secret_conf: updatedSecretConf,
   })
 

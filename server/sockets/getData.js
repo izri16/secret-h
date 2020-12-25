@@ -39,34 +39,30 @@ export const getData = (socket) => async () => {
     return res
   })()
 
-  const extras = {}
+  const extras = (() => {
+    if (!gameInfo.active) return {}
 
-  if (
-    // There is no "conf" for inactive game
-    gameInfo.active &&
-    gameInfo.conf.action === 'president-turn' &&
-    gameInfo.conf.president === playerId
-  ) {
-    extras.presidentLaws = gameInfo.secret_conf.presidentLaws
-  }
+    if (
+      gameInfo.conf.action === 'president-turn' &&
+      gameInfo.conf.president === playerId
+    ) {
+      return {presidentLaws: gameInfo.secret_conf.presidentLaws}
+    }
 
-  if (
-    // There is no "conf" for inactive game
-    gameInfo.active &&
-    gameInfo.conf.action === 'chancellor-turn' &&
-    gameInfo.conf.chancellor === playerId
-  ) {
-    extras.chancellorLaws = gameInfo.secret_conf.chancellorLaws
-  }
+    if (
+      gameInfo.conf.action === 'chancellor-turn' &&
+      gameInfo.conf.chancellor === playerId
+    ) {
+      return {chancellorLaws: gameInfo.secret_conf.chancellorLaws}
+    }
 
-  if (
-    // There is no "conf" for inactive game
-    gameInfo.active &&
-    gameInfo.conf.action === 'examine' &&
-    gameInfo.conf.president === playerId
-  ) {
-    extras.topCards = gameInfo.secret_conf.remainingLaws.slice(0, 3)
-  }
+    if (
+      gameInfo.conf.action === 'examine' &&
+      gameInfo.conf.president === playerId
+    ) {
+      return {topCards: gameInfo.secret_conf.remainingLaws.slice(0, 3)}
+    }
+  })()
 
   socket.emit('game-data', {
     gameInfo: _.omit(gameInfo, 'secret_conf'),

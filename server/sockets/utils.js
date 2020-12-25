@@ -13,8 +13,8 @@ export const chooseNextPresident = (game) => {
   )
 
   const nextPresident =
-    currentPresidentOrder < _.size(alivePlayers) - 1
-      ? sortedAlivePlayers[currentPresidentOrder] // not written as "currentPresidentOrder + 1" as starts from 1
+    currentPresidentOrder < _.size(alivePlayers) // no -1 as "order" starts from 1
+      ? sortedAlivePlayers[currentPresidentOrder] // not written as "currentPresidentOrder + 1" as "order" starts from 1
       : sortedAlivePlayers[0]
   return nextPresident.id
 }
@@ -30,6 +30,7 @@ export const handleLawsShuffle = (remainingLaws, discartedLaws) => {
 export const handleGameOver = (conf, players) => {
   const hitlerKilled = Object.values(players).find((p) => p.race === 'hitler')
     .killed
+
   const hitlerElected =
     Object.values(players).find((p) => p.race === 'hitler').id ===
       conf.chancellor &&
@@ -58,13 +59,18 @@ export const handleGameOver = (conf, players) => {
   }
 }
 
-export const handleCardAction = (conf, numberOfPlayers, choosenLaw) => {
+export const getHasCardAction = (conf, numberOfPlayers) => {
+  const actions = fascistCardsConf[numberOfPlayers][conf.fascistsLawsCount - 1]
+  return !!actions
+}
+
+export const handleCardAction = (conf, numberOfPlayers) => {
   const actions = fascistCardsConf[numberOfPlayers][conf.fascistsLawsCount - 1]
 
   let veto = false
   let action = 'chooseChancellor'
 
-  if (choosenLaw === 'liberal' || !actions) {
+  if (!actions) {
     return {...conf, veto, action}
   }
 
@@ -84,6 +90,7 @@ export const handleGovernmentChange = (game) => {
     ...game,
     conf: {
       ...game.conf,
+      action: 'chooseChancellor',
       prevPresident: game.conf.president,
       prevChancellor: game.conf.chancellor,
       president: chooseNextPresident(game),
