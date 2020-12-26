@@ -66,7 +66,6 @@ const StepComponent = ({icon, active}) => {
 
 export const StatusBar = () => {
   const styles = useStatusBarStyles()
-
   const {
     gameData: {gameInfo},
   } = useGameData()
@@ -81,7 +80,7 @@ export const StatusBar = () => {
           </Paper>
         </Box>
 
-        <Box style={{marginLeft: 16}} />
+        <Box ml={2} />
 
         <Box className={styles.pileWrapper}>
           <Typography>Discard pile</Typography>

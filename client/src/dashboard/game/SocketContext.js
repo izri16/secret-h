@@ -12,7 +12,6 @@ export const SocketProvider = ({children}) => {
   const [socket, setSocket] = React.useState(null)
   const {gameId, setGameData} = useGameData()
 
-  // TODO: in revolt there were nasty issues with useEffect, but class component worked,
   React.useEffect(() => {
     const query = {
       gameId,

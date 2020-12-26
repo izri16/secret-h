@@ -1,5 +1,5 @@
 import React from 'react'
-import {Typography} from '@material-ui/core'
+import {Typography, Box} from '@material-ui/core'
 import {makeStyles, useTheme, darken} from '@material-ui/core/styles'
 
 const usePlayedCardStyles = makeStyles((theme) => {
@@ -62,14 +62,14 @@ export const BoardCard = ({type, onClick}) => {
   const styles = usePlayedCardStyles({color, clickbable: !!onClick})
 
   return (
-    <div className={styles.cardOuter} onClick={onClick}>
-      <div className={styles.cardBorder}>
-        <div className={styles.cardContent}>
+    <Box className={styles.cardOuter} onClick={onClick}>
+      <Box className={styles.cardBorder}>
+        <Box className={styles.cardContent}>
           <Typography variant="h5" align="center" className={styles.cardText}>
             {text}
           </Typography>
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Box>
+    </Box>
   )
 }

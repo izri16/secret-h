@@ -5,14 +5,10 @@ import {makeStyles} from '@material-ui/core/styles'
 import {BoardCard} from './BoardCard'
 import {StatusBar} from './StatusBar'
 import {Players} from './Players'
-import {Vote} from './Vote'
-import {PresidentTurn} from './PresidentTurn'
-import {ChancellorTurn} from './ChancellorTurn'
-import {CardActions} from './CardActions'
+import {BoardCardActions} from './BoardCardActions'
 import {GameResults} from './GameResults'
-import {KillPlayer} from './KillPlayer'
-import {Examine} from './Examine'
-import {Investigate} from './Investigate'
+import {PresidentTurn, ChancellorTurn, Vote} from './election'
+import {ChoosePresident, KillPlayer, Investigate, Examine} from './cardActions'
 
 import {useGameData} from '../GameDataContext'
 import {fascistCardsConf} from 'common/constants.js'
@@ -70,32 +66,32 @@ const CardPlaceholder = ({race, position, children}) => {
     let actions = conf[position] || []
 
     return (
-      <div className={styles.wrapper}>
-        <div className={styles.front}>{children}</div>
-        <div className={styles.bg}>
+      <Box className={styles.wrapper}>
+        <Box className={styles.front}>{children}</Box>
+        <Box className={styles.bg}>
           {position < 5 ? (
-            <CardActions actions={actions} />
+            <BoardCardActions actions={actions} />
           ) : (
             <Typography variant="h6" align="center" className={styles.endGame}>
               Fascists win
             </Typography>
           )}
-        </div>
-      </div>
+        </Box>
+      </Box>
     )
   }
 
   return (
-    <div className={styles.wrapper}>
-      <div className={styles.front}>{children}</div>
-      <div className={styles.bg}>
+    <Box className={styles.wrapper}>
+      <Box className={styles.front}>{children}</Box>
+      <Box className={styles.bg}>
         {position === 4 && (
           <Typography variant="h6" align="center" className={styles.endGame}>
             Liberals win
           </Typography>
         )}
-      </div>
-    </div>
+      </Box>
+    </Box>
   )
 }
 
@@ -128,9 +124,9 @@ const useScoreBoardStyles = makeStyles((theme) => {
 const ScoreBoard = ({children, type}) => {
   const styles = useScoreBoardStyles({type})
   return (
-    <div className={styles.wrapper}>
-      <div className={styles.innerWrapper}>{children}</div>
-    </div>
+    <Box className={styles.wrapper}>
+      <Box className={styles.innerWrapper}>{children}</Box>
+    </Box>
   )
 }
 
@@ -170,11 +166,11 @@ export const Board = () => {
 
   return (
     <Box className={styles.room}>
-      <div className={styles.boardWrapper}>
+      <Box className={styles.boardWrapper}>
         <Paper className={styles.board}>
           <StatusBar />
 
-          <div style={{height: 12}} />
+          <Box mt={1.5} />
 
           <ScoreBoard type="fascist">
             {Array.from(Array(6)).map((__, i) => {
@@ -188,7 +184,7 @@ export const Board = () => {
             })}
           </ScoreBoard>
 
-          <div style={{height: 12}} />
+          <Box mt={1.5} />
 
           <ScoreBoard type="liberal">
             {Array.from(Array(5)).map((__, i) => {
@@ -202,23 +198,25 @@ export const Board = () => {
             })}
           </ScoreBoard>
         </Paper>
-      </div>
+      </Box>
 
-      <div className={styles.playersWrapper}>
+      <Box className={styles.playersWrapper}>
         <Players />
-      </div>
+      </Box>
 
+      {/* Election actions */}
       {gameInfo.conf.action === 'vote' && <Vote />}
       {gameInfo.conf.action === 'president-turn' && <PresidentTurn />}
       {gameInfo.conf.action === 'chancellor-turn' && <ChancellorTurn />}
-
-      {/* Final results */}
-      {gameInfo.conf.action === 'results' && <GameResults />}
 
       {/* Card actions */}
       {gameInfo.conf.action === 'kill' && <KillPlayer />}
       {gameInfo.conf.action === 'examine' && <Examine />}
       {gameInfo.conf.action === 'investigate' && <Investigate />}
+      {gameInfo.conf.action === 'choose-president' && <ChoosePresident />}
+
+      {/* Final results */}
+      {gameInfo.conf.action === 'results' && <GameResults />}
     </Box>
   )
 }

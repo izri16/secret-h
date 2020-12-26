@@ -61,7 +61,7 @@ const registerListeners = (socket) => {
   socket.on('chancellorTurn', chancellorTurn(socket))
 
   // card actions
-  socket.on('examineFinished', examineFinished(socket))
+  socket.on('examine-finished', examineFinished(socket))
   socket.on('kill', kill(socket))
   socket.on('investigate', investigate(socket))
   socket.on('investigate-finished', investigateFinished(socket))

@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme) => {
   }
 })
 
-export const CardActions = ({actions}) => {
+export const BoardCardActions = ({actions}) => {
   const styles = useStyles()
 
   if (!actions || !actions.length) return null
@@ -57,7 +57,7 @@ export const CardActions = ({actions}) => {
 
   return (
     <Box className={styles.wrapper}>
-      <div className={styles.icon}>{icon}</div>
+      <Box className={styles.icon}>{icon}</Box>
       {actions.map((action, i) => (
         <Typography
           key={i}
