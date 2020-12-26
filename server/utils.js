@@ -35,7 +35,7 @@ export const getAlivePlayers = (players) => {
 }
 
 export const getInitialGameConf = (players, active = true) => ({
-  action: active ? 'chooseChancellor' : null,
+  action: active ? 'choose-chancellor' : null,
   president: active
     ? Object.values(players).find((p) => p.order === 1).id
     : null,

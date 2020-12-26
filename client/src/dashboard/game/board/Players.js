@@ -65,7 +65,7 @@ const isSelectable = (gameInfo, playersInfo, loggedInPlayerId, playerId) => {
   }
 
   if (
-    action === 'chooseChancellor' &&
+    action === 'choose-chancellor' &&
     gameInfo.conf.prevChancellor !== playerId &&
     (alivePlayersCount === 5 || gameInfo.conf.prevPresident !== playerId)
   ) {
@@ -84,7 +84,7 @@ const isSelectable = (gameInfo, playersInfo, loggedInPlayerId, playerId) => {
 }
 
 const getConfirmConf = (socket, action, id, login) => {
-  if (action === 'chooseChancellor') {
+  if (action === 'choose-chancellor') {
     return {
       message: (
         <Typography>
@@ -92,7 +92,7 @@ const getConfirmConf = (socket, action, id, login) => {
           <span style={{fontWeight: 'bold'}}>chancellor</span>?
         </Typography>
       ),
-      onConfirm: () => socket.emit('chooseChancellor', {id}),
+      onConfirm: () => socket.emit('choose-chancellor', {id}),
     }
   }
   if (action === 'kill') {

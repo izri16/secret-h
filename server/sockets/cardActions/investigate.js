@@ -48,7 +48,7 @@ export const investigate = (socket) => async (data) => {
   const updatedGame = {
     ...game,
     secret_conf: {
-      ...game.secretConf,
+      ...game.secret_conf,
       investigateInfo: {
         id: data.id,
         race: investigatedPlayerRace,

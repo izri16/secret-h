@@ -41,8 +41,6 @@ const getConfigDuringVote = (game, votes) => {
 }
 
 const getConfigAfterSuccessfullVote = (game, votes) => {
-  console.log('game', game.secret_conf)
-
   const presidentLaws = game.secret_conf.remainingLaws.slice(0, 3)
   const remainingLaws = game.secret_conf.remainingLaws.slice(3)
 
@@ -110,7 +108,7 @@ const getConfigAfterFailedVote = (game, votes) => {
 
   const conf = {
     ...game.conf,
-    action: 'chooseChancellor',
+    action: 'choose-chancellor',
     voted: [],
     failedElectionsCount: game.conf.failedElectionsCount + 1,
     president: chooseNextPresident(game),

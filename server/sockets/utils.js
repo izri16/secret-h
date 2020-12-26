@@ -68,7 +68,7 @@ export const handleCardAction = (conf, numberOfPlayers) => {
   const actions = fascistCardsConf[numberOfPlayers][conf.fascistsLawsCount - 1]
 
   let veto = false
-  let action = 'chooseChancellor'
+  let action = 'choose-chancellor'
 
   if (!actions) {
     return {...conf, veto, action}
@@ -90,7 +90,7 @@ export const handleGovernmentChange = (game) => {
     ...game,
     conf: {
       ...game.conf,
-      action: 'chooseChancellor',
+      action: 'choose-chancellor',
       prevPresident: game.conf.president,
       prevChancellor: game.conf.chancellor,
       president: chooseNextPresident(game),

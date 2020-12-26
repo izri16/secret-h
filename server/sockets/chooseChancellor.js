@@ -31,7 +31,7 @@ export const chooseChancellor = (socket) => async (data) => {
 
   const game = await getGame(gameId)
 
-  if (!game.active || game.conf.action !== 'chooseChancellor') {
+  if (!game.active || game.conf.action !== 'choose-chancellor') {
     emitSocketError(socket)
     return
   }

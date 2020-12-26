@@ -54,7 +54,7 @@ const joinGame = async (game, player) => {
 
 const registerListeners = (socket) => {
   // base actions
-  socket.on('chooseChancellor', chooseChancellor(socket))
+  socket.on('choose-chancellor', chooseChancellor(socket))
   socket.on('vote', vote(socket))
   socket.on('getData', getData(socket))
   socket.on('presidentTurn', presidentTurn(socket))
