@@ -50,6 +50,7 @@ export const getInitialGameConf = (players, active = true) => ({
   votes: {},
   failedElectionsCount: 0,
   veto: false,
+  returnToPrevPresident: false,
 })
 
 export const generateLaws = () => {

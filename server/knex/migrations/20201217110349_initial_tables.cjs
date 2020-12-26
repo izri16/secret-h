@@ -39,6 +39,7 @@ failedElectionsCount: number
 veto: false
 voted: []
 votes: {}
+returnToPrevPresident: boolean
 
 JSON secret_conf schema >>>
 remainingLaws: ['liberal', 'fascist', ...]

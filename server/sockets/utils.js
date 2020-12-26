@@ -2,20 +2,23 @@ import _ from 'lodash'
 import {getAlivePlayers} from '../utils.js'
 import {fascistCardsConf} from 'common/constants.js'
 
-export const chooseNextPresident = (game) => {
+export const chooseNextPresident = (game, currentPresident) => {
   const alivePlayers = getAlivePlayers(game.players)
-
-  const currentPresidentOrder = alivePlayers[game.conf.president].order
 
   const sortedAlivePlayers = _.orderBy(
     Object.values(alivePlayers),
     (p) => p.order
   )
 
+  const currentPresidentIndex = sortedAlivePlayers.findIndex(
+    (p) => p.id === currentPresident || p.id === game.conf.president
+  )
+
   const nextPresident =
-    currentPresidentOrder < _.size(alivePlayers) // no -1 as "order" starts from 1
-      ? sortedAlivePlayers[currentPresidentOrder] // not written as "currentPresidentOrder + 1" as "order" starts from 1
+    currentPresidentIndex < _.size(alivePlayers) - 1
+      ? sortedAlivePlayers[currentPresidentIndex + 1]
       : sortedAlivePlayers[0]
+
   return nextPresident.id
 }
 
@@ -85,7 +88,40 @@ export const handleCardAction = (conf, numberOfPlayers) => {
   return {...conf, veto, action}
 }
 
-export const handleGovernmentChange = (game) => {
+export const handleGovernmentChange = (game, choosenPresidentId) => {
+  // "choose-president" action
+  if (choosenPresidentId) {
+    return {
+      ...game,
+      conf: {
+        ...game.conf,
+        action: 'choose-chancellor',
+        prevPresident: game.conf.president,
+        prevChancellor: game.conf.chancellor,
+        president: choosenPresidentId,
+        chancellor: null,
+        returnToPrevPresident: true,
+      },
+    }
+  }
+
+  // "turn" after "choose-president" action
+  if (game.conf.returnToPrevPresident) {
+    return {
+      ...game,
+      conf: {
+        ...game.conf,
+        action: 'choose-chancellor',
+        prevPresident: game.conf.president,
+        prevChancellor: game.conf.chancellor,
+        president: chooseNextPresident(game, game.conf.prevPresident),
+        chancellor: null,
+        returnToPrevPresident: false,
+      },
+    }
+  }
+
+  // default case
   return {
     ...game,
     conf: {

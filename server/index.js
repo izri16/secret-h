@@ -22,14 +22,8 @@ httpServer.listen(config.port, async () => {
   await logActiveGamesIds()
 })
 
-// Bugs: (tomorrow)
-// last player does not become president
-// killing hitler does not end game
-
 // TODO: (actions)
-// 1. choose-president action
-// 2. player investigate action
-// 3. veto
+// 1. veto
 
 // TODO: refactoring
 // 1. run all queries in transaction
@@ -43,9 +37,3 @@ httpServer.listen(config.port, async () => {
 
 // TODO: prod
 // 1. auto-restarts with pm2
-
-// Handling actions
-// 1. detect election of "fascist" law
-// 2. choose action if any or activate flag for "veto"
-// 3. change "conf.action"
-// 4. adjust "Players" to handle multiple actions on click and different "selectability" of players
