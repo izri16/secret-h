@@ -62,6 +62,14 @@ export const getData = (socket) => async () => {
     ) {
       return {topCards: gameInfo.secret_conf.remainingLaws.slice(0, 3)}
     }
+
+    if (
+      gameInfo.conf.action === 'investigate' &&
+      gameInfo.conf.president === playerId
+    ) {
+      return {investigateInfo: gameInfo.secret_conf.investigateInfo}
+    }
+    return {}
   })()
 
   socket.emit('game-data', {

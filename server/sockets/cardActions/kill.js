@@ -7,7 +7,7 @@ import {handleGovernmentChange, handleGameOver} from '../utils.js'
 import {log} from '../../logger.js'
 
 export const kill = (socket) => async (data) => {
-  log.info('Killing plater', data.id)
+  log.info('Killing player', data.id)
   const {gameId, playerId} = socket
 
   const game = await getGame(gameId)

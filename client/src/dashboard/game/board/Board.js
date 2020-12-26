@@ -12,6 +12,7 @@ import {CardActions} from './CardActions'
 import {GameResults} from './GameResults'
 import {KillPlayer} from './KillPlayer'
 import {Examine} from './Examine'
+import {Investigate} from './Investigate'
 
 import {useGameData} from '../GameDataContext'
 import {fascistCardsConf} from 'common/constants.js'
@@ -217,6 +218,7 @@ export const Board = () => {
       {/* Card actions */}
       {gameInfo.conf.action === 'kill' && <KillPlayer />}
       {gameInfo.conf.action === 'examine' && <Examine />}
+      {gameInfo.conf.action === 'investigate' && <Investigate />}
     </Box>
   )
 }

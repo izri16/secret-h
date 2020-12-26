@@ -5,7 +5,7 @@ import {handleGovernmentChange} from '../utils.js'
 import {log} from '../../logger.js'
 
 export const examineFinished = (socket) => async () => {
-  log.info('Examine finished')
+  log.info('Top 3 cards examination finished')
   const {gameId, playerId} = socket
 
   const game = await getGame(gameId)
