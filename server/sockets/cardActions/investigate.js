@@ -2,10 +2,9 @@ import {ioServer} from '../../server.js'
 import knex from '../../knex/knex.js'
 import {getGame, emitSocketError} from '../../utils.js'
 import {handleGovernmentChange} from '../utils.js'
-import {log} from '../../logger.js'
 
 export const investigateFinished = (socket) => async () => {
-  log.info('Investigation finished')
+  socket.log.info('Investigation finished')
   const {gameId, playerId} = socket
 
   const game = await getGame(gameId)
@@ -26,7 +25,7 @@ export const investigateFinished = (socket) => async () => {
 }
 
 export const investigate = (socket) => async (data) => {
-  log.info('Investigating player', data.id)
+  socket.log.info('Investigating player', data.id)
   const {gameId, playerId} = socket
 
   const game = await getGame(gameId)

@@ -8,10 +8,9 @@ import {
   handleGovernmentChange,
   getHasCardAction,
 } from './utils.js'
-import {log} from '../logger.js'
 
 export const chancellorTurnVeto = (socket) => async () => {
-  log.info('Chancellor turn veto')
+  socket.log.info('Chancellor turn veto')
   const {gameId, playerId} = socket
 
   const game = await getGame(gameId)
@@ -38,7 +37,7 @@ export const chancellorTurnVeto = (socket) => async () => {
 }
 
 export const chancellorTurn = (socket) => async (data) => {
-  log.info('Chancellor turn data', JSON.stringify(data))
+  socket.log.info('Chancellor turn', data)
   const {gameId, playerId} = socket
 
   const game = await getGame(gameId)
@@ -109,7 +108,7 @@ export const chancellorTurn = (socket) => async (data) => {
 }
 
 export const presidentTurnVeto = (socket) => async (data) => {
-  log.info('President turn veto data', JSON.stringify(data))
+  socket.log.info('President turn veto', data)
 
   const {gameId, playerId} = socket
 
@@ -222,7 +221,7 @@ export const presidentTurnVeto = (socket) => async (data) => {
 }
 
 export const presidentTurn = (socket) => async (data) => {
-  log.info('President turn data', JSON.stringify(data))
+  socket.log.info('President turn', data)
   const {gameId, playerId} = socket
 
   const game = await getGame(gameId)

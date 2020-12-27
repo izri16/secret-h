@@ -4,10 +4,9 @@ import {ioServer} from '../../server.js'
 import knex from '../../knex/knex.js'
 import {getGame, emitSocketError} from '../../utils.js'
 import {handleGovernmentChange, handleGameOver} from '../utils.js'
-import {log} from '../../logger.js'
 
 export const kill = (socket) => async (data) => {
-  log.info('Killing player', data.id)
+  socket.log.info('Killing player', data)
   const {gameId, playerId} = socket
 
   const game = await getGame(gameId)

@@ -7,7 +7,7 @@ export const logActiveGamesIds = async () => {
   const activeGames = await knex('games').select('id').where({
     active: true,
   })
-  log.info('ACTIVE GAMES', JSON.stringify(activeGames))
+  log.info('ACTIVE GAMES', activeGames)
 }
 
 export const assignRacesAndOrder = (players) => {

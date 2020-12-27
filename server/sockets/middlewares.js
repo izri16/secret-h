@@ -1,5 +1,6 @@
 import {emitSocketError} from '../utils.js'
 import {config} from '../config.js'
+import {createSocketLogger} from '../logger.js'
 
 export const requireAuthAndGameId = async (socket, next) => {
   // check for cross-site socket hijacking
@@ -26,6 +27,7 @@ export const requireAuthAndGameId = async (socket, next) => {
 
   socket.gameId = gameId
   socket.playerId = playerId
+  socket.log = createSocketLogger(gameId, playerId)
 
   next()
 }

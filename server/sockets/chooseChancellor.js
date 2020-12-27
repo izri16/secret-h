@@ -27,6 +27,7 @@ const isValidChancellor = async (game, playerId) => {
 }
 
 export const chooseChancellor = (socket) => async (data) => {
+  socket.log.info('Choose chancellor', data)
   const {gameId} = socket
 
   const game = await getGame(gameId)

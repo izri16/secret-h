@@ -21,7 +21,6 @@ import {examineFinished} from './cardActions/examine.js'
 import {kill} from './cardActions/kill.js'
 import {investigate, investigateFinished} from './cardActions/investigate.js'
 import {choosePresident} from './cardActions/choosePresident.js'
-import {log} from '../logger.js'
 
 const joinGame = async (game, player) => {
   if (Object.keys(game.players).length === game.number_of_players) {
@@ -87,7 +86,7 @@ export const init = async (socket) => {
     return
   }
 
-  log.verbose(`Init socket for game:${game.id}, player:${player.id}`)
+  socket.log.verbose('Init game')
 
   const joined = game.players[player.id]
 
@@ -96,7 +95,7 @@ export const init = async (socket) => {
     socket.join(game.id)
     registerListeners(socket)
 
-    log.verbose(`player:${player.id} already joined game:${game.id}`)
+    socket.log.verbose(`Already joined`)
     socket.emit('fetch-data')
     return
   }
@@ -107,10 +106,10 @@ export const init = async (socket) => {
     socket.join(game.id)
     registerListeners(socket)
 
-    log.verbose(`player:${player.id} newly joined game:${game.id}`)
+    socket.log.verbose(`Joined`)
     ioServer.in(game.id).emit('fetch-data')
   } catch (err) {
-    log.error(err)
+    socket.log.error(err)
     emitSocketError(socket)
   }
 }

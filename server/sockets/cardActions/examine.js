@@ -2,10 +2,9 @@ import {ioServer} from '../../server.js'
 import knex from '../../knex/knex.js'
 import {getGame, emitSocketError} from '../../utils.js'
 import {handleGovernmentChange} from '../utils.js'
-import {log} from '../../logger.js'
 
 export const examineFinished = (socket) => async () => {
-  log.info('Top 3 cards examination finished')
+  socket.log.info('Top 3 cards examination finished')
   const {gameId, playerId} = socket
 
   const game = await getGame(gameId)

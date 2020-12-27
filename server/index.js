@@ -19,7 +19,9 @@ httpServer.listen(config.port, async () => {
   // TODO: change message on heroku
   log.info(`Secret-Hitler app listening at http://localhost:${config.port}`)
 
-  await logActiveGamesIds()
+  if (config.dev) {
+    await logActiveGamesIds()
+  }
 })
 
 // TODO: refactoring
@@ -31,7 +33,6 @@ httpServer.listen(config.port, async () => {
 // 2. style select game screen
 // 3. nicer error handling on FE
 // 4. final refactor & polish
-// 5. nicer logging
 
 // TODO: prod
 // 1. auto-restarts with pm2

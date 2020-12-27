@@ -132,6 +132,7 @@ const getConfigAfterFailedVote = (game, votes) => {
 }
 
 export const vote = (socket) => async (data) => {
+  socket.log.info('Vote', data)
   const {playerId, gameId} = socket
 
   const game = await getGame(gameId)
