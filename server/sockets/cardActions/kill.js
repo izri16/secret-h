@@ -32,7 +32,7 @@ export const kill = (socket) => async (data) => {
 
   const updatedGame = transformer({
     ...game,
-    conf: handleGameOver(game.conf, updatedPlayers),
+    conf: updatedConf,
     players: updatedPlayers,
   })
   await knex('games').where({id: game.id}).update(updatedGame)

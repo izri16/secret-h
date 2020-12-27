@@ -85,12 +85,15 @@ export const chancellorTurn = (socket) => async (data) => {
     discartedLaws,
   }
 
+  const gameOver = updatedConf.action !== 'results'
+
   const hasCardAction =
-    updatedConf.action !== 'results' &&
+    !gameOver &&
     choosenLaw === 'fascist' &&
     getHasCardAction(updatedConf, game.number_of_players)
 
-  const transformer = !hasCardAction ? handleGovernmentChange : (i) => i
+  const transformer =
+    !hasCardAction && !gameOver ? handleGovernmentChange : (i) => i
 
   const updatedGame = transformer({
     ...game,
