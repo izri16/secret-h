@@ -1,7 +1,7 @@
 {
   "name": "secret-h",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server/index.js",
   "license": "MIT",
   "private": true,
   "workspaces": [
@@ -13,7 +13,14 @@
     "concurrently": "^5.3.0"
   },
   "scripts": {
+    "build:client": "cd client && yarn build",
+    "migrate:server": "cd server && yarn migrate",
+    "build": "yarn build:client && yarn migrate:server",
     "dev": "concurrently 'cd client && yarn dev' 'cd server && yarn dev'",
-    "test": "concurrently 'cd client && yarn test' 'cd server && yarn test'"
+    "test": "concurrently 'cd client && yarn test' 'cd server && yarn test'",
+    "start": "cd server && yarn start"
+  },
+  "engines": {
+    "node": "14.x"
   }
 }

@@ -1,5 +1,8 @@
+import express from 'express'
+import path from 'path'
 import {expressServer, httpServer, ioServer} from './server.js'
 import {config} from './config.js'
+import {__dirname} from './nodeUtils.js'
 
 import player from './api/player.js'
 import game from './api/game.js'
@@ -11,6 +14,15 @@ import {log} from './logger.js'
 // api endpoints
 expressServer.use('/api/player', player)
 expressServer.use('/api/game', game)
+
+// server client app
+if (!config.dev) {
+  const root = path.join(__dirname, '../client/build')
+  expressServer.use(express.static(root))
+  expressServer.get('*', function (req, res) {
+    res.sendFile('index.html', {root})
+  })
+}
 
 // register sockets
 ioServer.on('connection', socketsInit)

@@ -21,7 +21,7 @@ export const SocketProvider = ({children}) => {
       query.playerId = sessionStorage.getItem('playerId')
     }
 
-    const socket = io(config.socketServerUrl, {
+    const socket = io(config.serverUrl, {
       withCredentials: true,
       query,
     })

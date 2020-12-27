@@ -34,6 +34,7 @@ export const appSession = session({
 app.use(appSession)
 app.use(bodyParser.json())
 
+// check for cross-site socket hijacking, (cors are by default disabled)
 if (config.dev) {
   app.use(cors(corsOptions))
 }

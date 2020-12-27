@@ -1,4 +1,4 @@
-exports.up = async function (knex) {
+export const up = async function (knex) {
   await knex.raw('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"')
 
   await knex.schema.createTable('players', (table) => {
@@ -18,9 +18,9 @@ exports.up = async function (knex) {
   })
 }
 
-exports.down = async function (knex) {
-  await knex.schema.dropTable('player_to_game')
+export const down = async function (knex) {
   await knex.schema.dropTable('games')
+  await knex.schema.dropTable('players')
   await knex.raw('DROP EXTENSION IF EXISTS "uuid-ossp"')
 }
 

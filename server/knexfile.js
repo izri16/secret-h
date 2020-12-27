@@ -1,13 +1,10 @@
-import {dirname} from 'path'
-import {fileURLToPath} from 'url'
+import './pg.js'
 
 import {config} from './config.js'
-
-// Note: there is not __dirname when "type: module" for node
-const __dirname = dirname(fileURLToPath(import.meta.url))
+import {__dirname} from './nodeUtils.js'
 
 export default {
-  client: 'postgresql',
+  client: 'pg',
   connection: config.dbConnection,
   pool: {
     min: 2,

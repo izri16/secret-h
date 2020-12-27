@@ -5,7 +5,7 @@ import {assignRacesAndOrder, getInitialGameConf} from '../../utils.js'
 
 const saltRounds = 8
 
-exports.seed = async function (knex) {
+export const seed = async function (knex) {
   await knex('players').del()
   await knex('games').del()
 
