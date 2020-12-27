@@ -52,12 +52,18 @@ export const BoardCard = ({type, onClick}) => {
     fascist: theme.palette.fascist.main,
     voteYes: '#888',
     voteNo: '#888',
+    veto: '#888',
+    'discard-veto': '#888',
+    'confirm-veto': '#888',
   }[type]
   const text = {
     liberal: 'Liberal',
     fascist: 'Fascist',
     voteYes: 'Yes',
     voteNo: 'No',
+    veto: 'Request veto',
+    'discard-veto': 'Discard veto',
+    'confirm-veto': 'Confirm veto',
   }[type]
   const styles = usePlayedCardStyles({color, clickbable: !!onClick})
 

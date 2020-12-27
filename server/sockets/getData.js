@@ -43,14 +43,18 @@ export const getData = (socket) => async () => {
     if (!gameInfo.active) return {}
 
     if (
-      gameInfo.conf.action === 'president-turn' &&
+      ['president-turn', 'president-turn-veto'].includes(
+        gameInfo.conf.action
+      ) &&
       gameInfo.conf.president === playerId
     ) {
       return {presidentLaws: gameInfo.secret_conf.presidentLaws}
     }
 
     if (
-      gameInfo.conf.action === 'chancellor-turn' &&
+      ['chancellor-turn', 'chancellor-turn-veto'].includes(
+        gameInfo.conf.action
+      ) &&
       gameInfo.conf.chancellor === playerId
     ) {
       return {chancellorLaws: gameInfo.secret_conf.chancellorLaws}

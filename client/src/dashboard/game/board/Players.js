@@ -67,7 +67,7 @@ const isSelectable = (gameInfo, playersInfo, loggedInPlayerId, playerId) => {
   if (
     action === 'choose-chancellor' &&
     gameInfo.conf.prevChancellor !== playerId &&
-    (alivePlayersCount === 5 || gameInfo.conf.prevPresident !== playerId)
+    (alivePlayersCount <= 5 || gameInfo.conf.prevPresident !== playerId)
   ) {
     return true
   }

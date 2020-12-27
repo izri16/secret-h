@@ -11,7 +11,12 @@ import {
 import {chooseChancellor} from './chooseChancellor.js'
 import {vote} from './vote.js'
 import {getData} from './getData.js'
-import {presidentTurn, chancellorTurn} from './chooseLaw.js'
+import {
+  presidentTurn,
+  presidentTurnVeto,
+  chancellorTurn,
+  chancellorTurnVeto,
+} from './chooseLaw.js'
 import {examineFinished} from './cardActions/examine.js'
 import {kill} from './cardActions/kill.js'
 import {investigate, investigateFinished} from './cardActions/investigate.js'
@@ -59,7 +64,9 @@ const registerListeners = (socket) => {
   socket.on('vote', vote(socket))
   socket.on('getData', getData(socket))
   socket.on('presidentTurn', presidentTurn(socket))
+  socket.on('presidentTurnVeto', presidentTurnVeto(socket))
   socket.on('chancellorTurn', chancellorTurn(socket))
+  socket.on('chancellorTurnVeto', chancellorTurnVeto(socket))
 
   // card actions
   socket.on('examine-finished', examineFinished(socket))

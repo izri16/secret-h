@@ -7,7 +7,7 @@ import {useSocket} from '../../SocketContext'
 import {useConfirmModal} from '../../ConfirmModalContext'
 import {Backdrop, useCommonStyles, WaitingMessage, Message} from '../utils'
 
-export const PresidentTurn = () => {
+export const PresidentTurn = ({veto}) => {
   const commonStyles = useCommonStyles()
   const {
     gameData: {gameInfo, extras, playerId},
@@ -42,25 +42,58 @@ export const PresidentTurn = () => {
     <Backdrop>
       {isPresident ? (
         <>
-          <Message>Discard one law!</Message>
+          <Message>{veto ? 'Allow veto?' : 'Discard one law!'}</Message>
           <Grid container justify="space-between">
-            {extras.presidentLaws.map((law, i) => (
-              <Box key={i} className={commonStyles.cardWrapper}>
-                <BoardCard
-                  type={law}
-                  onClick={() =>
-                    law === 'liberal'
-                      ? onDiscardLiberal(i)
-                      : onDiscardFascist(i)
-                  }
-                />
-              </Box>
-            ))}
+            {!veto &&
+              extras.presidentLaws.map((law, i) => (
+                <Box key={i} className={commonStyles.cardWrapper}>
+                  <BoardCard
+                    type={law}
+                    onClick={() =>
+                      law === 'liberal'
+                        ? onDiscardLiberal(i)
+                        : onDiscardFascist(i)
+                    }
+                  />
+                </Box>
+              ))}
+            {veto && (
+              <>
+                <Box className={commonStyles.cardWrapper}>
+                  <BoardCard
+                    type="discard-veto"
+                    onClick={() =>
+                      openModal(
+                        <Typography variant="body2">Discard veto</Typography>,
+                        () => {
+                          socket.emit('presidentTurnVeto', {veto: false})
+                        }
+                      )
+                    }
+                  />
+                </Box>
+                <Box className={commonStyles.cardWrapper}>
+                  <BoardCard
+                    type="confirm-veto"
+                    onClick={() =>
+                      openModal(
+                        <Typography variant="body2">Confirm veto</Typography>,
+                        () => {
+                          socket.emit('presidentTurnVeto', {veto: true})
+                        }
+                      )
+                    }
+                  />
+                </Box>
+              </>
+            )}
           </Grid>
         </>
       ) : (
         <WaitingMessage>
-          Waiting for president to discard law ...
+          {veto
+            ? 'Waiting for president to allow veto ...'
+            : 'Waiting for president to discard law ...'}
         </WaitingMessage>
       )}
     </Backdrop>

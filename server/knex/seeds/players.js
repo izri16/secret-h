@@ -68,6 +68,24 @@ exports.seed = async function (knex) {
     }))
   )
 
+  let remainingLaws = [
+    'liberal',
+    'fascist',
+    'liberal',
+    'liberal',
+    'fascist',
+    'fascist',
+  ]
+
+  let discartedLaws = [
+    'fascist',
+    'liberal',
+    'fascist',
+    'fascist',
+    'fascist',
+    'fascist',
+  ]
+
   await knex('games').insert({
     created_by: players[0].id,
     number_of_players: gamePlayersCount,
@@ -76,25 +94,13 @@ exports.seed = async function (knex) {
       ...getInitialGameConf(gamePlayers),
       fascistsLawsCount: 3,
       liberalLawsCount: 2,
+      drawPileCount: remainingLaws.length,
+      discardPileCount: discartedLaws.length,
     },
     secret_conf: {
       votes: {},
-      remainingLaws: [
-        'liberal',
-        'fascist',
-        'liberal',
-        'liberal',
-        'fascist',
-        'fascist',
-      ],
-      discartedLaws: [
-        'fascist',
-        'liberal',
-        'fascist',
-        'fascist',
-        'fascist',
-        'fascist',
-      ],
+      remainingLaws,
+      discartedLaws,
     },
     players: gamePlayers,
   })

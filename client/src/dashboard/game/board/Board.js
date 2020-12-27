@@ -207,7 +207,11 @@ export const Board = () => {
       {/* Election actions */}
       {gameInfo.conf.action === 'vote' && <Vote />}
       {gameInfo.conf.action === 'president-turn' && <PresidentTurn />}
+      {gameInfo.conf.action === 'president-turn-veto' && <PresidentTurn veto />}
       {gameInfo.conf.action === 'chancellor-turn' && <ChancellorTurn />}
+      {gameInfo.conf.action === 'chancellor-turn-veto' && (
+        <ChancellorTurn veto />
+      )}
 
       {/* Card actions */}
       {gameInfo.conf.action === 'kill' && <KillPlayer />}

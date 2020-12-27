@@ -22,8 +22,8 @@ httpServer.listen(config.port, async () => {
   await logActiveGamesIds()
 })
 
-// TODO: (actions)
-// 1. veto
+// TODO:
+// election tracker should reset only if law is placed on desk
 
 // TODO: refactoring
 // 1. run all queries in transaction

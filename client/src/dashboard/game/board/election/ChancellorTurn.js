@@ -6,7 +6,7 @@ import {useSocket} from '../../SocketContext'
 import {useConfirmModal} from '../../ConfirmModalContext'
 import {Backdrop, useCommonStyles, WaitingMessage, Message} from '../utils'
 
-export const ChancellorTurn = () => {
+export const ChancellorTurn = ({veto}) => {
   const commonStyles = useCommonStyles()
   const {
     gameData: {gameInfo, extras, playerId},
@@ -37,6 +37,13 @@ export const ChancellorTurn = () => {
     })
   }
 
+  const vetoMessage = <Typography variant="body2">Request veto?</Typography>
+  const onVeto = (index) => {
+    openModal(vetoMessage, () => {
+      socket.emit('chancellorTurnVeto')
+    })
+  }
+
   return (
     <Backdrop>
       {isChancellor ? (
@@ -53,6 +60,11 @@ export const ChancellorTurn = () => {
                 />
               </Box>
             ))}
+            {veto && (
+              <Box className={commonStyles.cardWrapper}>
+                <BoardCard type="veto" onClick={onVeto} />
+              </Box>
+            )}
           </Grid>
         </>
       ) : (

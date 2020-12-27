@@ -50,6 +50,7 @@ const getConfigAfterSuccessfullVote = (game, votes) => {
     voted: [],
     failedElectionsCount: 0,
     votes,
+    drawPileCount: remainingLaws.length,
   }
 
   const secretConf = {
@@ -63,12 +64,24 @@ const getConfigAfterSuccessfullVote = (game, votes) => {
 
 const getConfigAfterFailedVote = (game, votes) => {
   if (game.conf.failedElectionsCount === 2) {
-    const choosenLaw = game.secret_conf.remainingLaws[0]
+    let discartedLaws = game.secret_conf.discardLaws
+    let remainingLaws = game.secret_conf.remainingLaws
 
-    const {discartedLaws, remainingLaws} = handleLawsShuffle(
-      game.secret_conf.remainingLaws.slice(1),
-      game.secret_conf.discartedLaws
-    )
+    if (game.secret_conf.remainingLaws.length === 0) {
+      // we need to shuffle as there is nothing to draw random law from
+      const shuffled = handleLawsShuffle(remainingLaws, discartedLaws)
+      discartedLaws = shuffled.discartedLaws
+      remainingLaws = shuffled.remainingLaws
+    }
+
+    // draw random law and remove it from remaining laws
+    const choosenLaw = game.secret_conf.remainingLaws[0]
+    remainingLaws = remainingLaws.slice(1)
+
+    // there might be a need for shuffle after choosing random law
+    const shuffled = handleLawsShuffle(remainingLaws, discartedLaws)
+    discartedLaws = shuffled.discartedLaws
+    remainingLaws = shuffled.remainingLaws
 
     const conf = handleGameOver(
       {
