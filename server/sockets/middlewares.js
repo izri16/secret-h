@@ -2,6 +2,15 @@ import {emitSocketError} from '../utils.js'
 import {config} from '../config.js'
 
 export const requireAuthAndGameId = async (socket, next) => {
+  // check for cross-site socket hijacking
+  if (
+    !config.dev &&
+    socket.handshake.headers.origin !== socket.handshake.headers.host
+  ) {
+    socket.disconnect(true)
+    return
+  }
+
   let playerId = socket.request.session.playerId
 
   if (config.testingSessions) {
