@@ -73,6 +73,7 @@ export const chancellorTurn = (socket) => async (data) => {
         game.conf.fascistsLawsCount + (choosenLaw === 'fascist' ? 1 : 0),
       drawPileCount: remainingLaws.length,
       discardPileCount: discartedLaws.length,
+      failedElectionsCount: 0,
     },
     game.players
   )

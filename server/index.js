@@ -22,18 +22,16 @@ httpServer.listen(config.port, async () => {
   await logActiveGamesIds()
 })
 
-// TODO:
-// election tracker should reset only if law is placed on desk
-
 // TODO: refactoring
 // 1. run all queries in transaction
-// 2. better logging
-// 3. nicer error handling on FE
+// 2. testing
 
 // TODO: pre-prod
 // 1. style login / register / loading screens
 // 2. style select game screen
-// 3. final refactor & polish
+// 3. nicer error handling on FE
+// 4. final refactor & polish
+// 5. nicer logging
 
 // TODO: prod
 // 1. auto-restarts with pm2

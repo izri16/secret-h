@@ -48,7 +48,6 @@ const getConfigAfterSuccessfullVote = (game, votes) => {
     ...game.conf,
     action: 'president-turn',
     voted: [],
-    failedElectionsCount: 0,
     votes,
     drawPileCount: remainingLaws.length,
   }
