@@ -1,6 +1,14 @@
 import React from 'react'
 import {useHistory} from 'react-router-dom'
+import {TextField, Button, Grid} from '@material-ui/core'
+import {makeStyles} from '@material-ui/styles'
 import {apiRequest} from '../utils/api'
+
+const useStyles = makeStyles((theme) => ({
+  input: {
+    width: 350,
+  },
+}))
 
 const useFormData = () => {
   const history = useHistory()
@@ -30,21 +38,24 @@ const useFormData = () => {
 }
 
 export const CreateGame = () => {
+  const styles = useStyles()
   const {formData, onChange, onSubmit} = useFormData()
 
   return (
-    <div>
-      <p>Create game</p>
-      <form onSubmit={onSubmit}>
-        <label>Number of players</label>
-        <input
+    <form onSubmit={onSubmit}>
+      <Grid container direction="column">
+        <TextField
+          label="Number of players"
           type="number"
           name="numberOfPlayers"
+          variant="outlined"
           value={formData.numberOfPlayers}
           onChange={onChange('numberOfPlayers')}
-        ></input>
-        <button type="submit">Create game</button>
-      </form>
-    </div>
+          required
+          className={styles.input}
+        />
+        <Button type="submit">Create game</Button>
+      </Grid>
+    </form>
   )
 }

@@ -1,4 +1,5 @@
 import React from 'react'
+import {Button} from '@material-ui/core'
 import {apiRequest} from '../utils/api'
 import {useAuth} from '../auth/AuthContext'
 
@@ -10,5 +11,9 @@ export const Logout = () => {
     logout()
   }
 
-  return <button onClick={onLogout}>Logout</button>
+  return (
+    <Button color="secondary" onClick={onLogout}>
+      Logout
+    </Button>
+  )
 }
