@@ -1,5 +1,6 @@
 import React from 'react'
 import {Route, Redirect} from 'react-router-dom'
+import {CircularProgress} from '@material-ui/core'
 import {apiRequest} from '../utils/api'
 import {config} from '../config'
 
@@ -60,13 +61,13 @@ export const AuthRoute = ({children, ...rest}) => {
       {...rest}
       render={({location}) => {
         if (authState === LOGIN_STATUS.unknown) {
-          return <div>Loading ...</div>
+          return <CircularProgress color="secondary" />
         }
         if (authState === LOGIN_STATUS.loggedOut) {
           return <Redirect to="/" />
         }
         if (authState === LOGIN_STATUS.loggedIn && !playerData) {
-          return <div>Loading ...</div>
+          return <CircularProgress color="secondary" />
         }
         return children
       }}
@@ -81,7 +82,7 @@ export const NoAuthRoute = ({children, ...rest}) => {
       {...rest}
       render={({location}) => {
         if (authState === LOGIN_STATUS.unknown) {
-          return <div>Loading ...</div>
+          return <CircularProgress color="secondary" />
         }
         if (authState === LOGIN_STATUS.loggedIn) {
           return <Redirect to="/dashboard" />

@@ -1,6 +1,15 @@
 import React from 'react'
+import {TextField, Button, Grid} from '@material-ui/core'
+import {makeStyles} from '@material-ui/styles'
 import {apiRequest} from '../utils/api'
 import {useAuth} from '../auth/AuthContext'
+
+const useStyles = makeStyles((theme) => ({
+  input: {
+    width: 300,
+    marginBottom: theme.spacing(2),
+  },
+}))
 
 const useFormData = () => {
   const {login} = useAuth()
@@ -32,30 +41,34 @@ const useFormData = () => {
 }
 
 export const Login = () => {
+  const styles = useStyles()
   const {formData, onChange, onSubmit} = useFormData()
 
   return (
-    <div>
-      <p>Dummy login</p>
-      <form onSubmit={onSubmit}>
-        <label>Login</label>
-        <input
+    <form onSubmit={onSubmit}>
+      <Grid container direction="column">
+        <TextField
+          label="Login"
           type="text"
           name="login"
+          variant="outlined"
           value={formData.login}
           onChange={onChange('login')}
-        ></input>
-
-        <label>Password</label>
-        <input
+          className={styles.input}
+          required
+        />
+        <TextField
+          label="Password"
           type="password"
           name="password"
+          variant="outlined"
           value={formData.password}
           onChange={onChange('password')}
-        ></input>
-
-        <button type="submit">Login</button>
-      </form>
-    </div>
+          className={styles.input}
+          required
+        />
+        <Button type="submit">Login</Button>
+      </Grid>
+    </form>
   )
 }
