@@ -63,7 +63,7 @@ const getConfigAfterSuccessfullVote = (game, votes) => {
 
 const getConfigAfterFailedVote = (game, votes) => {
   if (game.conf.failedElectionsCount === 2) {
-    let discartedLaws = game.secret_conf.discardLaws
+    let discartedLaws = game.secret_conf.discartedLaws
     let remainingLaws = game.secret_conf.remainingLaws
 
     if (game.secret_conf.remainingLaws.length === 0) {
@@ -92,6 +92,7 @@ const getConfigAfterFailedVote = (game, votes) => {
         drawPileCount: remainingLaws.length,
         discardPileCount: discartedLaws.length,
         failedElectionsCount: 0,
+        allSelectable: true,
       },
       game.players
     )
@@ -114,7 +115,7 @@ const getConfigAfterFailedVote = (game, votes) => {
       conf: hasCardAction
         ? handleCardAction(conf, game.number_of_players)
         : conf,
-      secret_conf: secretConf,
+      secretConf: secretConf,
     })
   }
 
@@ -128,7 +129,7 @@ const getConfigAfterFailedVote = (game, votes) => {
     votes,
   }
 
-  return {conf, secret_conf: game.secret_conf}
+  return {conf, secretConf: game.secret_conf}
 }
 
 export const vote = (socket) => async (data) => {

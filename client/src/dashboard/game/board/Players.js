@@ -50,7 +50,13 @@ const useStyles = makeStyles((theme) => {
   }
 })
 
-const isSelectable = (gameInfo, playersInfo, loggedInPlayerId, playerId) => {
+const isSelectable = (
+  gameInfo,
+  playersInfo,
+  loggedInPlayerId,
+  playerId,
+  allSelectable
+) => {
   const alivePlayersCount = Object.values(playersInfo).filter((p) => !p.killed)
     .length
 
@@ -66,8 +72,10 @@ const isSelectable = (gameInfo, playersInfo, loggedInPlayerId, playerId) => {
 
   if (
     action === 'choose-chancellor' &&
-    gameInfo.conf.prevChancellor !== playerId &&
-    (alivePlayersCount <= 5 || gameInfo.conf.prevPresident !== playerId)
+    (gameInfo.conf.prevChancellor !== playerId || allSelectable) &&
+    (alivePlayersCount <= 5 ||
+      allSelectable ||
+      gameInfo.conf.prevPresident !== playerId)
   ) {
     return true
   }
@@ -129,7 +137,7 @@ const getConfirmConf = (socket, action, id, login) => {
   return null
 }
 
-const Player = ({id, order, login, race, loggedInPlayerId}) => {
+const Player = ({id, order, login, race, loggedInPlayerId, allSelectable}) => {
   const theme = useTheme()
   const {openModal} = useConfirmModal()
   const {socket} = useSocket()
@@ -157,7 +165,13 @@ const Player = ({id, order, login, race, loggedInPlayerId}) => {
   const killed = playersInfo[id].killed
   const killedStyles = {opacity: killed ? 0.4 : 1}
 
-  const selectable = isSelectable(gameInfo, playersInfo, loggedInPlayerId, id)
+  const selectable = isSelectable(
+    gameInfo,
+    playersInfo,
+    loggedInPlayerId,
+    id,
+    allSelectable
+  )
 
   const styles = useStyles({
     color,
@@ -224,7 +238,7 @@ export const Players = () => {
   const styles = useStyles()
 
   const {
-    gameData: {playersInfo, playerId},
+    gameData: {playersInfo, playerId, gameInfo},
   } = useGameData()
 
   const loggedInPlayerId = playersInfo[playerId].id
@@ -232,7 +246,14 @@ export const Players = () => {
   return (
     <Box className={styles.players}>
       {_.orderBy(Object.values(playersInfo), 'order').map((p) => {
-        return <Player loggedInPlayerId={loggedInPlayerId} key={p.id} {...p} />
+        return (
+          <Player
+            allSelectable={gameInfo.conf.allSelectable}
+            loggedInPlayerId={loggedInPlayerId}
+            key={p.id}
+            {...p}
+          />
+        )
       })}
     </Box>
   )

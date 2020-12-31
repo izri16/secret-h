@@ -9,17 +9,18 @@ const isValidChancellor = async (game, playerId) => {
     return false
   }
 
-  if (playerId === game.conf.prevChancellor) {
+  if (playerId === game.conf.prevChancellor && !game.conf.allSelectable) {
     return false
   }
 
-  if (playerId === game.conf.president) {
+  if (playerId === game.conf.president && !game.conf.allSelectable) {
     return false
   }
 
   if (
     Object.keys(alivePlayers).length > 5 &&
-    playerId === game.conf.prevPresident
+    playerId === game.conf.prevPresident &&
+    !game.conf.allSelectable
   ) {
     return false
   }

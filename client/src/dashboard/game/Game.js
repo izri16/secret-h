@@ -74,6 +74,9 @@ const GameContent = () => {
             alignItems="center"
             className={styles.innerWrapper}
           >
+            <Typography className={styles.section}>
+              {gameData.gameInfo.id}
+            </Typography>
             <Typography
               className={styles.section}
             >{`Waiting for ${remainingPlayersCount} others ...`}</Typography>

@@ -73,6 +73,7 @@ export const chancellorTurn = (socket) => async (data) => {
       drawPileCount: remainingLaws.length,
       discardPileCount: discartedLaws.length,
       failedElectionsCount: 0,
+      allSelectable: false,
     },
     game.players
   )
@@ -84,7 +85,7 @@ export const chancellorTurn = (socket) => async (data) => {
     discartedLaws,
   }
 
-  const gameOver = updatedConf.action !== 'results'
+  const gameOver = updatedConf.action === 'results'
 
   const hasCardAction =
     !gameOver &&
@@ -159,6 +160,7 @@ export const presidentTurnVeto = (socket) => async (data) => {
           drawPileCount: remainingLaws.length,
           discardPileCount: discartedLaws.length,
           failedElectionsCount: 0,
+          allSelectable: true,
         },
         game.players
       )
