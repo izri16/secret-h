@@ -1,5 +1,5 @@
 import React from 'react'
-import {TextField, Button, Grid} from '@material-ui/core'
+import {TextField, Button, Grid, Typography} from '@material-ui/core'
 import {makeStyles} from '@material-ui/styles'
 import {Formik} from 'formik'
 import {LoginSchema} from 'common/schemas'
@@ -18,7 +18,7 @@ export const Login = () => {
   const styles = useStyles()
   const {login} = useAuth()
 
-  const onSubmit = async (values, setSubmitting) => {
+  const onSubmit = async (values, setSubmitting, setErrors) => {
     const {data: player} = await apiRequest('player/login', 'POST', {
       login: values.login,
       password: values.password,
@@ -28,7 +28,9 @@ export const Login = () => {
       login(player.id)
     } else {
       setSubmitting(false)
-      alert('Unxepected error ...')
+      setErrors({
+        failedLogin: 'Invalid credentials!',
+      })
     }
   }
 
@@ -39,15 +41,15 @@ export const Login = () => {
         password: '',
       }}
       validationSchema={LoginSchema}
-      onSubmit={(values, {setSubmitting}) => {
-        onSubmit(values, setSubmitting)
+      onSubmit={(values, {setSubmitting, setErrors}) => {
+        onSubmit(values, setSubmitting, setErrors)
       }}
     >
       {(formProps) => {
         const getCommonProps = CommonFormPropsFactory(formProps, {
           className: styles.input,
         })
-        const {handleSubmit, isSubmitting} = formProps
+        const {handleSubmit, isSubmitting, errors} = formProps
         return (
           <form onSubmit={handleSubmit} noValidate>
             <Grid container direction="column">
@@ -61,6 +63,11 @@ export const Login = () => {
                 label="Password"
                 {...getCommonProps('password')}
               />
+              {errors && errors.failedLogin && (
+                <Typography variant="caption" color="error">
+                  {errors.failedLogin}
+                </Typography>
+              )}
               <Button type="submit" disabled={isSubmitting}>
                 Login
               </Button>
