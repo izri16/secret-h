@@ -5,35 +5,50 @@ import * as Yup from 'yup'
 import {CommonRegistrationSchema, LoginSchema} from 'common/schemas.js'
 import knex from '../knex/knex.js'
 import {auth} from '../middlewares/auth.js'
-import {validateRequest} from '../middlewares/schema.js'
+import {requestShape, responseShape} from '../middlewares/schema.js'
 import {config} from '../config.js'
 import {getPlayer} from '../utils.js'
 
 const router = express.Router()
 
-// get info about logged-in user
-router.get('/', [auth], async function (req, res) {
-  const player = await getPlayer(req.playerId)
-  res.status(200)
-  res.json(player)
+const UserResponseSchema = Yup.object({
+  id: Yup.string().uuid().required(),
+  login: Yup.string().required(),
 })
+  .noUnknown(true)
+  .strict()
+
+// get info about logged-in user
+router.get(
+  '/',
+  [auth],
+  responseShape(UserResponseSchema),
+  async function (req, res) {
+    const player = await getPlayer(req.playerId)
+    res.status(200)
+    res.json(player)
+  }
+)
 
 // register new user
 router.post(
   '/',
-  [validateRequest({body: Yup.object(CommonRegistrationSchema)})],
+  [
+    requestShape({body: Yup.object(CommonRegistrationSchema)}),
+    responseShape(UserResponseSchema),
+  ],
   async function (req, res) {
     const saltRounds = 11
     const {password, login, pin} = req.body
     const hashedPassword = await bcrypt.hash(password, saltRounds)
 
-    const authError = () => {
-      res.status(401)
-      res.json('Invalid PIN or user exists')
+    const error = () => {
+      res.status(400)
+      res.json({})
     }
 
     if (pin !== config.pin) {
-      return authError()
+      return error()
     }
 
     const playerExists = !!(await knex('players')
@@ -43,7 +58,7 @@ router.post(
       })
       .first())
     if (playerExists) {
-      return authError()
+      return error()
     }
 
     const player = (
@@ -63,7 +78,7 @@ router.post(
 
 router.post(
   '/login',
-  [validateRequest({body: LoginSchema})],
+  [requestShape({body: LoginSchema}), responseShape(UserResponseSchema)],
   async function (req, res) {
     const {password, login} = req.body
 
@@ -76,7 +91,7 @@ router.post(
 
     const authError = () => {
       res.status(401)
-      res.json('Invalid credentials')
+      res.json({reason: 'Invalid credentials'})
     }
 
     if (!player) {
@@ -96,15 +111,10 @@ router.post(
   }
 )
 
-router.post(
-  '/logout',
-  [validateRequest({})],
-  [auth],
-  async function (req, res) {
-    req.session.destroy()
-    res.status(200)
-    res.json({})
-  }
-)
+router.post('/logout', [auth], async function (req, res) {
+  req.session.destroy()
+  res.status(200)
+  res.json({})
+})
 
 export default router
