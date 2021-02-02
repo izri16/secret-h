@@ -10,7 +10,8 @@
     "common"
   ],
   "dependencies": {
-    "concurrently": "^5.3.0"
+    "concurrently": "^5.3.0",
+    "yup": "^0.32.8"
   },
   "scripts": {
     "build:client": "cd client && yarn build",

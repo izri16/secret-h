@@ -1,83 +1,110 @@
 import express from 'express'
 import bcrypt from 'bcrypt'
+import * as Yup from 'yup'
 
+import {CommonRegistrationSchema, LoginSchema} from 'common/schemas.js'
 import knex from '../knex/knex.js'
 import {auth} from '../middlewares/auth.js'
+import {validateRequest} from '../middlewares/schema.js'
 import {config} from '../config.js'
 import {getPlayer} from '../utils.js'
 
 const router = express.Router()
 
-const saltRounds = 11
-
 // get info about logged-in user
 router.get('/', [auth], async function (req, res) {
   const player = await getPlayer(req.playerId)
-
   res.status(200)
   res.json(player)
 })
 
 // register new user
-router.post('/', async function (req, res) {
-  const {password, login, pin} = req.body
-  const hashedPassword = await bcrypt.hash(password, saltRounds)
+router.post(
+  '/',
+  [validateRequest({body: Yup.object(CommonRegistrationSchema)})],
+  async function (req, res) {
+    const saltRounds = 11
+    const {password, login, pin} = req.body
+    const hashedPassword = await bcrypt.hash(password, saltRounds)
 
-  if (pin !== config.pin) {
-    res.status(401)
-    res.json({})
-    return
-  }
+    const authError = () => {
+      res.status(401)
+      res.json('Invalid PIN or user exists')
+    }
 
-  const player = (
-    await knex('players')
-      .insert({
+    if (pin !== config.pin) {
+      return authError()
+    }
+
+    const playerExists = !!(await knex('players')
+      .select('id')
+      .where({
         login,
-        hashed_password: hashedPassword,
       })
-      .returning('*')
-  )[0]
+      .first())
+    if (playerExists) {
+      return authError()
+    }
 
-  req.session.playerId = player.id
+    const player = (
+      await knex('players')
+        .insert({
+          login,
+          hashed_password: hashedPassword,
+        })
+        .returning('*')
+    )[0]
 
-  res.status(201)
-  res.json({login, playerId: player.id})
-})
-
-router.post('/login', async function (req, res) {
-  const {password, login} = req.body
-
-  const player = await knex('players')
-    .select('*')
-    .where({
-      login,
-    })
-    .first()
-
-  if (!player) {
-    res.status(401)
-    res.json({})
-    return
+    req.session.playerId = player.id
+    res.status(201)
+    res.json({login, id: player.id})
   }
+)
 
-  const passwordMatch = await bcrypt.compare(password, player.hashed_password)
+router.post(
+  '/login',
+  [validateRequest({body: LoginSchema})],
+  async function (req, res) {
+    const {password, login} = req.body
 
-  if (!passwordMatch) {
-    res.status(401)
-    res.json({})
-    return
+    const player = await knex('players')
+      .select('*')
+      .where({
+        login,
+      })
+      .first()
+
+    const authError = () => {
+      res.status(401)
+      res.json('Invalid credentials')
+    }
+
+    if (!player) {
+      // dummy hashing
+      await bcrypt.compare(password, password)
+      return authError()
+    }
+
+    const passwordMatch = await bcrypt.compare(password, player.hashed_password)
+    if (!passwordMatch) {
+      return authError()
+    }
+
+    req.session.playerId = player.id
+    res.status(200)
+    res.json({login, id: player.id})
   }
+)
 
-  req.session.playerId = player.id
-
-  res.status(200)
-  res.json({playerId: player.id})
-})
-
-router.post('/logout', [auth], async function (req, res) {
-  req.session.destroy()
-  res.status(200)
-  res.json({})
-})
+router.post(
+  '/logout',
+  [validateRequest({})],
+  [auth],
+  async function (req, res) {
+    req.session.destroy()
+    res.status(200)
+    res.json({})
+  }
+)
 
 export default router

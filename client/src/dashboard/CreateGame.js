@@ -3,7 +3,7 @@ import {useHistory} from 'react-router-dom'
 import {TextField, Button, Grid} from '@material-ui/core'
 import {makeStyles} from '@material-ui/styles'
 import {Formik} from 'formik'
-import * as Yup from 'yup'
+import {CreateGameSchema} from 'common/schemas'
 import {apiRequest} from '../utils/api'
 import {CommonFormPropsFactory} from '../utils/forms'
 
@@ -12,13 +12,6 @@ const useStyles = makeStyles((theme) => ({
     width: 350,
   },
 }))
-
-const CreateGameSchema = Yup.object().shape({
-  numberOfPlayers: Yup.number()
-    .min(5, 'Min number of players is 5!')
-    .max(10, 'Max number of players is 10!')
-    .required('Number of players is required!'),
-})
 
 export const CreateGame = () => {
   const styles = useStyles()

@@ -2,7 +2,7 @@ import React from 'react'
 import {TextField, Button, Grid} from '@material-ui/core'
 import {makeStyles} from '@material-ui/styles'
 import {Formik} from 'formik'
-import * as Yup from 'yup'
+import {LoginSchema} from 'common/schemas'
 import {apiRequest} from '../utils/api'
 import {CommonFormPropsFactory} from '../utils/forms'
 import {useAuth} from '../auth/AuthContext'
@@ -14,23 +14,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const LoginSchema = Yup.object({
-  login: Yup.string().required('Login is required!'),
-  password: Yup.string().required('Password is required!'),
-})
-
 export const Login = () => {
   const styles = useStyles()
   const {login} = useAuth()
 
   const onSubmit = async (values, setSubmitting) => {
     try {
-      const res = await apiRequest('player/login', 'POST', {
+      const player = await apiRequest('player/login', 'POST', {
         login: values.login,
         password: values.password,
       })
       setSubmitting(false)
-      login(res.playerId)
+      login(player.id)
     } catch (error) {
       setSubmitting(false)
       alert('Unxepected error ...')

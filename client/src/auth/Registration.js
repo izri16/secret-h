@@ -3,6 +3,7 @@ import {TextField, Grid, Button} from '@material-ui/core'
 import {makeStyles} from '@material-ui/styles'
 import {Formik} from 'formik'
 import * as Yup from 'yup'
+import {CommonRegistrationSchema} from 'common/schemas'
 import {apiRequest} from '../utils/api'
 import {useAuth} from '../auth/AuthContext'
 import {CommonFormPropsFactory} from '../utils/forms'
@@ -15,12 +16,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 const RegistrationSchema = Yup.object({
-  login: Yup.string().required('Login is required!'),
-  pin: Yup.string().required('Secret pin is required!'),
-  password: Yup.string()
-    .min(8, 'Password must have at least 8 characters!')
-    .max(40, 'Password can not be longer than 40 characters!')
-    .required('Password is required!'),
+  ...CommonRegistrationSchema,
   passwordConfirmation: Yup.string().oneOf(
     [Yup.ref('password'), null],
     'Passwords must match!'
@@ -33,13 +29,13 @@ export const Registration = () => {
 
   const onSubmit = async (values, setSubmitting) => {
     try {
-      const res = await apiRequest('player', 'POST', {
+      const player = await apiRequest('player', 'POST', {
         login: values.login,
         password: values.password,
         pin: values.pin,
       })
       setSubmitting(false)
-      login(res.playerId)
+      login(player.id)
     } catch (error) {
       setSubmitting(false)
       alert('Unxepected error ...')
