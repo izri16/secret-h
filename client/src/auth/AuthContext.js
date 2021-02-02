@@ -22,14 +22,14 @@ export const AuthProvider = ({children}) => {
   const [playerData, setPlayerData] = React.useState(null)
 
   React.useEffect(() => {
-    apiRequest('player', 'GET')
-      .then((data) => {
-        setPlayerData(data)
+    apiRequest('player', 'GET').then(({data: player}) => {
+      if (player) {
+        setPlayerData(player)
         setAuthState(LOGIN_STATUS.loggedIn)
-      })
-      .catch(() => {
+      } else {
         setAuthState(LOGIN_STATUS.loggedOut)
-      })
+      }
+    })
   }, [authState])
 
   const login = (playerId) => {

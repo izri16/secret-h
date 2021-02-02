@@ -18,13 +18,13 @@ export const CreateGame = () => {
   const history = useHistory()
 
   const onSubmit = async (values, setSubmitting) => {
-    try {
-      const game = await apiRequest('game', 'POST', {
-        numberOfPlayers: values.numberOfPlayers,
-      })
+    const {data: game} = await apiRequest('game', 'POST', {
+      numberOfPlayers: values.numberOfPlayers,
+    })
+    if (game) {
       setSubmitting(false)
       history.push(`game/${game.id}`)
-    } catch (error) {
+    } else {
       setSubmitting(false)
       alert('Unxepected error ...')
     }

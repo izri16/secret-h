@@ -19,14 +19,14 @@ export const Login = () => {
   const {login} = useAuth()
 
   const onSubmit = async (values, setSubmitting) => {
-    try {
-      const player = await apiRequest('player/login', 'POST', {
-        login: values.login,
-        password: values.password,
-      })
+    const {data: player} = await apiRequest('player/login', 'POST', {
+      login: values.login,
+      password: values.password,
+    })
+    if (player) {
       setSubmitting(false)
       login(player.id)
-    } catch (error) {
+    } else {
       setSubmitting(false)
       alert('Unxepected error ...')
     }

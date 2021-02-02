@@ -20,12 +20,16 @@ export const apiRequest = async (path, method, data) => {
     options.body = JSON.stringify(data)
   }
 
-  const response = await fetch(url, options)
+  try {
+    const response = await fetch(url, options)
+    const data = await response.json()
 
-  // Just ignore all errors for start
-  if (response.status >= 400) {
-    throw new Error('Unsuccessfull request')
+    return {
+      status: response.status,
+      error: response.ok ? null : data,
+      data: response.ok ? data : null,
+    }
+  } catch (error) {
+    return {status: 500, error, data: null}
   }
-
-  return await response.json()
 }

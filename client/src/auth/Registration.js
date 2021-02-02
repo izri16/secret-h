@@ -28,15 +28,15 @@ export const Registration = () => {
   const {login} = useAuth()
 
   const onSubmit = async (values, setSubmitting) => {
-    try {
-      const player = await apiRequest('player', 'POST', {
-        login: values.login,
-        password: values.password,
-        pin: values.pin,
-      })
+    const {data: player} = await apiRequest('player', 'POST', {
+      login: values.login,
+      password: values.password,
+      pin: values.pin,
+    })
+    if (player) {
       setSubmitting(false)
       login(player.id)
-    } catch (error) {
+    } else {
       setSubmitting(false)
       alert('Unxepected error ...')
     }
