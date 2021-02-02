@@ -9,6 +9,7 @@ export const apiRequest = async (path, method, data) => {
     credentials: config.dev ? 'include' : 'same-origin',
     headers: {
       'Content-Type': 'application/json',
+      'x-csrf': 1,
     },
   }
 
