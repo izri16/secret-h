@@ -4,6 +4,7 @@ import {makeStyles} from '@material-ui/styles'
 import {Formik} from 'formik'
 import {LoginSchema} from 'common/schemas'
 import {apiRequest} from '../utils/api'
+import {useErrorHandling} from '../ErrorHandler'
 import {CommonFormPropsFactory} from '../utils/forms'
 import {useAuth} from '../auth/AuthContext'
 
@@ -17,20 +18,24 @@ const useStyles = makeStyles((theme) => ({
 export const Login = () => {
   const styles = useStyles()
   const {login} = useAuth()
+  const {setError} = useErrorHandling()
 
   const onSubmit = async (values, setSubmitting, setErrors) => {
-    const {data: player} = await apiRequest('player/login', 'POST', {
+    const {data: player, status} = await apiRequest('player/login', 'POST', {
       login: values.login,
       password: values.password,
     })
+    setSubmitting(false)
     if (player) {
-      setSubmitting(false)
       login(player.id)
     } else {
-      setSubmitting(false)
-      setErrors({
-        failedLogin: 'Invalid credentials!',
-      })
+      if (status < 500) {
+        setErrors({
+          failedLogin: 'Invalid credentials!',
+        })
+      } else {
+        setError(true)
+      }
     }
   }
 

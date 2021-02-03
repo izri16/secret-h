@@ -7,6 +7,7 @@ import {CommonRegistrationSchema} from 'common/schemas'
 import {apiRequest} from '../utils/api'
 import {useAuth} from '../auth/AuthContext'
 import {CommonFormPropsFactory} from '../utils/forms'
+import {useErrorHandling} from '../ErrorHandler'
 
 const useStyles = makeStyles((theme) => ({
   input: {
@@ -26,21 +27,25 @@ const RegistrationSchema = Yup.object({
 export const Registration = () => {
   const styles = useStyles()
   const {login} = useAuth()
+  const {setError} = useErrorHandling()
 
   const onSubmit = async (values, setSubmitting, setErrors) => {
-    const {data: player} = await apiRequest('player', 'POST', {
+    const {data: player, status} = await apiRequest('player', 'POST', {
       login: values.login,
       password: values.password,
       pin: values.pin,
     })
+    setSubmitting(false)
     if (player) {
-      setSubmitting(false)
       login(player.id)
     } else {
-      setSubmitting(false)
-      setErrors({
-        failedRegistration: 'Please try another username or check PIN.',
-      })
+      if (status < 500) {
+        setErrors({
+          failedRegistration: 'Please try another username or check PIN.',
+        })
+      } else {
+        setError(true)
+      }
     }
   }
 

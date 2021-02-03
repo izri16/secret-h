@@ -8,6 +8,7 @@ import {AuthProvider, AuthRoute, NoAuthRoute} from './auth/AuthContext'
 import {Dashboard} from './dashboard/Dashboard'
 import {Game} from './dashboard/game/Game'
 import {theme} from './theme'
+import {ErrorDialog, ErrorHandlingProvider} from './ErrorHandler'
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {
@@ -71,9 +72,12 @@ const AppContent = () => {
 
 const App = () => (
   <ThemeProvider theme={theme}>
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    <ErrorHandlingProvider>
+      <ErrorDialog />
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </ErrorHandlingProvider>
   </ThemeProvider>
 )
 

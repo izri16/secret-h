@@ -44,7 +44,7 @@ router.post(
 
     const error = () => {
       res.status(400)
-      res.json({})
+      res.json({reason: 'Invalid PIN or user exists'})
     }
 
     if (pin !== config.pin) {
