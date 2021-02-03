@@ -27,6 +27,15 @@ if (!config.dev) {
 // register sockets
 ioServer.on('connection', socketsInit)
 
+// NOTE!: all async middlewares & handlers should be wrapped in try/catch
+// as express can not handle errors from async code. Catched errors should
+// be passed to "next" function.
+// Error middleware:
+expressServer.use(function (err, req, res, next) {
+  console.error('UNEXPECTED_ERROR', err)
+  next(err)
+})
+
 httpServer.listen(config.port, async () => {
   // TODO: change message on heroku
   log.info(`Secret-Hitler app listening at http://localhost:${config.port}`)
