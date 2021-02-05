@@ -1,10 +1,10 @@
 import {
   handleLawsShuffle,
   handleGameOver,
-  handleCardAction,
+  gameStateAfterNewLaw,
   handleGovernmentChange,
-  getHasCardAction,
-} from './utils.js'
+  drawRandomLaw,
+} from '../utils.js'
 
 export const chancellorTurnTransformer = (game, data) => {
   const choosenLaw = game.secret_conf.chancellorLaws[data.index]
@@ -33,31 +33,13 @@ export const chancellorTurnTransformer = (game, data) => {
     },
     game.players
   )
-
   const updatedSecretConf = {
     ...game.secret_conf,
     chancellorLaws: [],
     remainingLaws,
     discartedLaws,
   }
-
-  const gameOver = updatedConf.action === 'results'
-
-  const hasCardAction =
-    !gameOver &&
-    choosenLaw === 'fascist' &&
-    getHasCardAction(updatedConf, game.number_of_players)
-
-  const transformer =
-    !hasCardAction && !gameOver ? handleGovernmentChange : (i) => i
-
-  return transformer({
-    ...game,
-    conf: hasCardAction
-      ? handleCardAction(updatedConf, game.number_of_players)
-      : updatedConf,
-    secret_conf: updatedSecretConf,
-  })
+  return gameStateAfterNewLaw(game, updatedConf, updatedSecretConf, choosenLaw)
 }
 
 export const presidentTurnTransformer = (game, data) => {
@@ -84,5 +66,65 @@ export const presidentTurnTransformer = (game, data) => {
     ...game,
     conf: updatedConf,
     secret_conf: updatedSecretConf,
+  }
+}
+
+export const presidentTurnVetoTransformer = (game, data) => {
+  // president confirmed veto
+  if (data.veto) {
+    let discartedLaws = [
+      ...game.secret_conf.discartedLaws,
+      ...game.secret_conf.chancellorLaws,
+    ]
+    let remainingLaws = game.secret_conf.remainingLaws
+
+    // 3 failed votes, law must be selected at random
+    if (game.conf.failedElectionsCount === 2) {
+      return drawRandomLaw({
+        ...game,
+        game: {
+          ...game.conf,
+          discardPileCount: discartedLaws.length,
+        },
+        secret_conf: {
+          ...game.secret_conf,
+          discartedLaws,
+        },
+      })
+    } else {
+      // there might be a need for shuffle
+      const shuffled = handleLawsShuffle(remainingLaws, discartedLaws)
+      discartedLaws = shuffled.discartedLaws
+      remainingLaws = shuffled.remainingLaws
+
+      const conf = {
+        ...game.conf,
+        drawPileCount: remainingLaws.length,
+        discardPileCount: discartedLaws.length,
+        failedElectionsCount: game.conf.failedElectionsCount + 1,
+      }
+
+      const secret_conf = {
+        ...game.secret_conf,
+        discartedLaws,
+        remainingLaws,
+        chancellorLaws: [],
+      }
+
+      // no need to handle card action as "veto" is the last action
+      return handleGovernmentChange({
+        ...game,
+        conf,
+        secret_conf,
+      })
+    }
+  } else {
+    return {
+      ...game,
+      conf: {
+        ...game.conf,
+        action: 'chancellor-turn',
+      },
+    }
   }
 }

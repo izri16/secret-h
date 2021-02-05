@@ -1,5 +1,5 @@
 import '../mock.js'
-import {chancellorTurnTransformer} from '../../sockets/chooseLawUtils.js'
+import {chancellorTurnTransformer} from '../../sockets/chooseLaw/transformers.js'
 import {nameToId} from '../common.js'
 import {mockedGameCore} from './common.js'
 

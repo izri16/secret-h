@@ -1,8 +1,8 @@
 import './mock.js'
-import {chancellorTurnTransformer} from '../sockets/chooseLawUtils.js'
+import {chancellorTurnTransformer} from '../sockets/chooseLaw/transformers.js'
 import {nameToId, mockedGameCore} from './common.js'
 
-describe('CHANCELLOR TURN BASE', () => {
+describe('CHANCELLOR TURN', () => {
   it('First round of the game', () => {
     const game = {
       ...mockedGameCore,

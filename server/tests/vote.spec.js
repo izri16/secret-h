@@ -4,8 +4,8 @@ import {voteTransformer} from '../sockets/vote.js'
 import {mockedGameCore, nameToId} from './common.js'
 
 describe('VOTE', () => {
-  it('Successfull vote after 1 unsucessfull vote', () => {
-    const game = {
+  describe('Base cases', () => {
+    const getGame = () => ({
       ...mockedGameCore,
       // We do not care about other properties, default, even incosistent values should be fine
       conf: {
@@ -28,61 +28,42 @@ describe('VOTE', () => {
           [nameToId.michal]: false,
         },
       },
-    }
+    })
+    it('Successfull vote after 1 unsucessfull vote', () => {
+      const game = getGame()
 
-    // "richard" is voting as the last from the players
-    const {game: updatedGame} = voteTransformer(nameToId.richard, game, {
-      vote: true,
+      // "richard" is voting as the last from the players
+      const {game: updatedGame} = voteTransformer(nameToId.richard, game, {
+        vote: true,
+      })
+      expect(updatedGame.conf.votes).toEqual({
+        ...game.secret_conf.votes,
+        [nameToId.richard]: true,
+      })
+      expect(updatedGame.conf.voted).toEqual([])
+      expect(updatedGame.secret_conf.votes).toEqual({})
+      expect(updatedGame.conf.action).toEqual('president-turn')
+      // failed election tracker is only reset once law is elected, due to "veto" action
+      expect(updatedGame.conf.failedElectionsCount).toEqual(1)
     })
-    expect(updatedGame.conf.votes).toEqual({
-      ...game.secret_conf.votes,
-      [nameToId.richard]: true,
-    })
-    expect(updatedGame.conf.voted).toEqual([])
-    expect(updatedGame.secret_conf.votes).toEqual({})
-    expect(updatedGame.conf.action).toEqual('president-turn')
-    // failed election tracker is only reset once law is elected, due to "veto" action
-    expect(updatedGame.conf.failedElectionsCount).toEqual(1)
-  })
 
-  it('First unsuccessfull vote', () => {
-    const game = {
-      ...mockedGameCore,
-      // We do not care about other properties, default, even incosistent values should be fine
-      conf: {
-        ...mockedGameCore.conf,
-        action: 'vote',
-        voted: [
-          nameToId.marek,
-          nameToId.andrej,
-          nameToId.stano,
-          nameToId.michal,
-        ],
-        failedElectionsCount: 0,
-      },
-      secret_conf: {
-        ...mockedGameCore.secret_conf,
-        votes: {
-          [nameToId.marek]: true,
-          [nameToId.andrej]: true,
-          [nameToId.stano]: false,
-          [nameToId.michal]: false,
-        },
-      },
-    }
+    it('First unsuccessfull vote', () => {
+      const game = getGame()
+      game.conf.failedElectionsCount = 0
 
-    // "richard" is voting as the last from the players
-    const {game: updatedGame} = voteTransformer(nameToId.richard, game, {
-      vote: false,
+      // "richard" is voting as the last from the players
+      const {game: updatedGame} = voteTransformer(nameToId.richard, game, {
+        vote: false,
+      })
+      expect(updatedGame.conf.votes).toEqual({
+        ...game.secret_conf.votes,
+        [nameToId.richard]: false,
+      })
+      expect(updatedGame.conf.voted).toEqual([])
+      expect(updatedGame.secret_conf.votes).toEqual({})
+      expect(updatedGame.conf.action).toEqual('choose-chancellor')
+      expect(updatedGame.conf.failedElectionsCount).toEqual(1)
     })
-    expect(updatedGame.conf.votes).toEqual({
-      ...game.secret_conf.votes,
-      [nameToId.richard]: false,
-    })
-    expect(updatedGame.conf.voted).toEqual([])
-    expect(updatedGame.secret_conf.votes).toEqual({})
-    expect(updatedGame.conf.action).toEqual('choose-chancellor')
-    expect(updatedGame.conf.failedElectionsCount).toEqual(1)
   })
 
   describe('Third unsuccessfull vote', () => {

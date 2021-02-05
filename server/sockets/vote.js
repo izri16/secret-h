@@ -6,11 +6,8 @@ import {config} from '../config.js'
 import {getGame, getPlayer, emitSocketError} from '../utils.js'
 import {
   chooseNextPresident,
-  handleLawsShuffle,
+  drawRandomLaw,
   handleGameOver,
-  handleCardAction,
-  handleGovernmentChange,
-  getHasCardAction,
   getAlivePlayers,
 } from './utils.js'
 
@@ -59,61 +56,7 @@ const getConfigAfterSuccessfullVote = (game, votes) => {
 
 const getConfigAfterFailedVote = (game, votes) => {
   if (game.conf.failedElectionsCount === 2) {
-    let discartedLaws = game.secret_conf.discartedLaws
-    let remainingLaws = game.secret_conf.remainingLaws
-
-    if (game.secret_conf.remainingLaws.length === 0) {
-      // we need to shuffle as there is nothing to draw random law from
-      const shuffled = handleLawsShuffle(remainingLaws, discartedLaws)
-      discartedLaws = shuffled.discartedLaws
-      remainingLaws = shuffled.remainingLaws
-    }
-
-    // draw random law and remove it from remaining laws
-    const choosenLaw = remainingLaws[0]
-    remainingLaws = remainingLaws.slice(1)
-
-    // there might be a need for shuffle after choosing random law
-    const shuffled = handleLawsShuffle(remainingLaws, discartedLaws)
-    discartedLaws = shuffled.discartedLaws
-    remainingLaws = shuffled.remainingLaws
-
-    const conf = handleGameOver(
-      {
-        ...game.conf,
-        liberalLawsCount:
-          game.conf.liberalLawsCount + (choosenLaw === 'liberal' ? 1 : 0),
-        fascistsLawsCount:
-          game.conf.fascistsLawsCount + (choosenLaw === 'fascist' ? 1 : 0),
-        drawPileCount: remainingLaws.length,
-        discardPileCount: discartedLaws.length,
-        failedElectionsCount: 0,
-        allSelectable: true,
-        votes,
-        voted: [],
-      },
-      game.players
-    )
-    const secret_conf = {
-      ...game.secret_conf,
-      votes: {},
-      discartedLaws,
-      remainingLaws,
-    }
-
-    const hasCardAction =
-      conf.action !== 'results' &&
-      choosenLaw === 'fascist' &&
-      getHasCardAction(conf, game.number_of_players)
-
-    const transformer = !hasCardAction ? handleGovernmentChange : (i) => i
-    return transformer({
-      ...game,
-      conf: hasCardAction
-        ? handleCardAction(conf, game.number_of_players)
-        : conf,
-      secret_conf,
-    })
+    return drawRandomLaw(game, votes)
   }
 
   const conf = {

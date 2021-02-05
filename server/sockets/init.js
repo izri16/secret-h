@@ -16,7 +16,7 @@ import {
   presidentTurnVeto,
   chancellorTurn,
   chancellorTurnVeto,
-} from './chooseLaw.js'
+} from './chooseLaw/index.js'
 import {examineFinished} from './cardActions/examine.js'
 import {kill} from './cardActions/kill.js'
 import {investigate, investigateFinished} from './cardActions/investigate.js'
