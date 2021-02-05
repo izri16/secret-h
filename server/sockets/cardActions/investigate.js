@@ -18,7 +18,15 @@ export const investigateFinished = (socket) => async () => {
   }
 
   const updatedGame = handleGovernmentChange(game)
-  await knex('games').where({id: game.id}).update(updatedGame)
+  await knex('games')
+    .where({id: game.id})
+    .update({
+      ...updatedGame,
+      secret_conf: {
+        ...updatedGame.secret_conf,
+        investigateInfo: undefined,
+      },
+    })
   ioServer.in(game.id).emit('fetch-data')
 }
 

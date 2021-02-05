@@ -9,7 +9,7 @@ import {
   emitSocketError,
 } from '../utils.js'
 import {chooseChancellor} from './chooseChancellor.js'
-import {vote} from './vote.js'
+import {vote, voteAdmin} from './vote.js'
 import {getData} from './getData.js'
 import {
   presidentTurn,
@@ -61,6 +61,7 @@ const registerListeners = (socket) => {
   // base actions
   socket.on('choose-chancellor', chooseChancellor(socket))
   socket.on('vote', vote(socket))
+  socket.on('voteAdmin', voteAdmin(socket))
   socket.on('getData', getData(socket))
   socket.on('presidentTurn', presidentTurn(socket))
   socket.on('presidentTurnVeto', presidentTurnVeto(socket))

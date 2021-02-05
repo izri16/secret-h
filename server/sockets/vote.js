@@ -2,6 +2,7 @@ import _ from 'lodash'
 
 import {ioServer} from '../server.js'
 import knex from '../knex/knex.js'
+import {config} from '../config.js'
 import {getGame, getPlayer, emitSocketError} from '../utils.js'
 import {
   chooseNextPresident,
@@ -153,6 +154,23 @@ export const voteTransformer = (playerId, game, data) => {
     },
     votedAll,
   }
+}
+
+// for quicker testing
+export const voteAdmin = (socket) => async (data) => {
+  if (!config.dev) {
+    return
+  }
+  const {playerId, gameId} = socket
+  const game = await getGame(gameId)
+  const player = await getPlayer(playerId)
+
+  const votes = _.mapValues(game.players, () => true)
+  game.secret_conf.votes = votes
+
+  const {game: updatedGame} = voteTransformer(player.id, game, data)
+  await knex('games').where({id: game.id}).update(updatedGame)
+  ioServer.in(game.id).emit('fetch-data')
 }
 
 export const vote = (socket) => async (data) => {

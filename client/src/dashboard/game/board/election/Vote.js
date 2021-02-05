@@ -6,6 +6,7 @@ import {useSocket} from '../../SocketContext'
 import {useConfirmModal} from '../../ConfirmModalContext'
 import {useGameData} from '../../GameDataContext'
 import {Backdrop, useCommonStyles, WaitingMessage, Message} from '../utils'
+import {config} from '../../../../config'
 
 export const Vote = () => {
   const commonStyles = useCommonStyles()
@@ -29,6 +30,11 @@ export const Vote = () => {
       socket.emit('vote', {vote: true})
     })
   }
+  const onAdminYes = () => {
+    openModal(yesMessage, () => {
+      socket.emit('voteAdmin', {vote: true})
+    })
+  }
 
   const noMessage = (
     <Typography variant="body2">
@@ -38,6 +44,11 @@ export const Vote = () => {
   const onNo = () => {
     openModal(noMessage, () => {
       socket.emit('vote', {vote: false})
+    })
+  }
+  const onAdminNo = () => {
+    openModal(noMessage, () => {
+      socket.emit('voteAdmin', {vote: false})
     })
   }
 
@@ -55,6 +66,16 @@ export const Vote = () => {
             <Box className={commonStyles.cardWrapper}>
               <BoardCard type="voteYes" onClick={onYes} />
             </Box>
+            {config.dev && (
+              <>
+                <Box className={commonStyles.cardWrapper}>
+                  <BoardCard type="voteAdminNo" onClick={onAdminNo} />
+                </Box>
+                <Box className={commonStyles.cardWrapper}>
+                  <BoardCard type="voteAdminYes" onClick={onAdminYes} />
+                </Box>
+              </>
+            )}
           </Grid>
         </>
       )}
