@@ -23,5 +23,9 @@ export const theme = createMuiTheme({
   },
   typography: {
     fontFamily: ['Langar', 'cursive'].join(','),
+    caption: {
+      fontSize: 13,
+      fontWeight: 100,
+    },
   },
 })

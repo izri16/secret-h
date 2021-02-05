@@ -17,9 +17,9 @@ const useStyles = makeStyles((theme) => {
     },
     player: ({selectable, loggedInPlayer, color}) => {
       return {
-        width: '70px',
-        height: '70px',
-        borderRadius: '35px',
+        width: 80,
+        height: 80,
+        borderRadius: 40,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -29,7 +29,6 @@ const useStyles = makeStyles((theme) => {
         background: color,
         color: '#333',
         overflow: 'hidden',
-        fontSize: '12px',
         padding: 4,
         transition: 'background .3s',
         textDecoration: loggedInPlayer ? 'underline' : 'none',
@@ -210,6 +209,7 @@ const Player = ({
         {investigated && <Search fontSize="small" style={{color}} />}
       </Grid>
       <Typography
+        variant="caption"
         onClick={
           selectable
             ? () => {
