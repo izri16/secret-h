@@ -1,6 +1,7 @@
 import {ioServer} from '../server.js'
 import knex from '../knex/knex.js'
-import {getAlivePlayers, getGame, emitSocketError} from '../utils.js'
+import {getAlivePlayers} from './utils.js'
+import {getGame, emitSocketError} from '../utils.js'
 
 const isValidChancellor = async (game, playerId) => {
   const alivePlayers = getAlivePlayers(game.players)

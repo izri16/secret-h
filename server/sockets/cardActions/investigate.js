@@ -46,6 +46,12 @@ export const investigate = (socket) => async (data) => {
 
   const updatedGame = {
     ...game,
+    conf: {
+      ...game.conf,
+      investigated: game.conf.investigated
+        ? [...game.conf.investigated, data.id]
+        : [data.id],
+    },
     secret_conf: {
       ...game.secret_conf,
       investigateInfo: {

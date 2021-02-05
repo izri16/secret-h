@@ -2,7 +2,7 @@ import _ from 'lodash'
 
 import {ioServer} from '../server.js'
 import knex from '../knex/knex.js'
-import {getAlivePlayers, getGame, getPlayer, emitSocketError} from '../utils.js'
+import {getGame, getPlayer, emitSocketError} from '../utils.js'
 import {
   chooseNextPresident,
   handleLawsShuffle,
@@ -10,6 +10,7 @@ import {
   handleCardAction,
   handleGovernmentChange,
   getHasCardAction,
+  getAlivePlayers,
 } from './utils.js'
 
 const canVote = async (game, playerId) => {
@@ -54,6 +55,7 @@ const getConfigAfterSuccessfullVote = (game, votes) => {
 
   const secretConf = {
     ...game.secret_conf,
+    votes: {},
     presidentLaws,
     remainingLaws,
   }
@@ -99,6 +101,7 @@ const getConfigAfterFailedVote = (game, votes) => {
 
     const secretConf = {
       ...game.secret_conf,
+      votes: {},
       discartedLaws,
       remainingLaws,
     }

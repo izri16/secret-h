@@ -30,10 +30,6 @@ export const assignRacesAndOrder = (players) => {
   )
 }
 
-export const getAlivePlayers = (players) => {
-  return _.fromPairs(_.toPairs(players).filter(([id, data]) => !data.killed)) // eslint-disable-line
-}
-
 export const getInitialGameConf = (players, active = true) => ({
   action: active ? 'choose-chancellor' : null,
   president: active
@@ -52,6 +48,7 @@ export const getInitialGameConf = (players, active = true) => ({
   veto: false,
   returnToPrevPresident: false,
   allSelectable: true,
+  investigated: [],
 })
 
 export const generateLaws = () => {

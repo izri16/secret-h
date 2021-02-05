@@ -1,17 +1,20 @@
 import _ from 'lodash'
-import {getAlivePlayers} from '../utils.js'
 import {fascistCardsConf} from 'common/constants.js'
 
-export const chooseNextPresident = (game, currentPresident) => {
-  const alivePlayers = getAlivePlayers(game.players)
+export const getAlivePlayers = (players) => {
+  return _.fromPairs(_.toPairs(players).filter(([id, data]) => !data.killed)) // eslint-disable-line
+}
 
+export const chooseNextPresident = (game, currentPresidentId) => {
+  const alivePlayers = getAlivePlayers(game.players)
   const sortedAlivePlayers = _.orderBy(
     Object.values(alivePlayers),
     (p) => p.order
   )
 
+  currentPresidentId = currentPresidentId || game.conf.president
   const currentPresidentIndex = sortedAlivePlayers.findIndex(
-    (p) => p.id === currentPresident || p.id === game.conf.president
+    (p) => p.id === currentPresidentId
   )
 
   const nextPresident =

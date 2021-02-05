@@ -2,6 +2,7 @@ import React from 'react'
 import _ from 'lodash'
 import {Box, Grid, Typography} from '@material-ui/core'
 import {makeStyles, useTheme, lighten} from '@material-ui/core/styles'
+import {Search} from '@material-ui/icons'
 
 import {useGameData} from '../GameDataContext'
 import {useConfirmModal} from '../ConfirmModalContext'
@@ -137,7 +138,15 @@ const getConfirmConf = (socket, action, id, login) => {
   return null
 }
 
-const Player = ({id, order, login, race, loggedInPlayerId, allSelectable}) => {
+const Player = ({
+  id,
+  order,
+  login,
+  race,
+  loggedInPlayerId,
+  allSelectable,
+  investigated,
+}) => {
   const theme = useTheme()
   const {openModal} = useConfirmModal()
   const {socket} = useSocket()
@@ -190,13 +199,16 @@ const Player = ({id, order, login, race, loggedInPlayerId, allSelectable}) => {
       <Typography variant="caption" className={styles.president} align="center">
         {isPresident ? 'President' : isChancellor ? 'Chancellor' : ''}&nbsp;
       </Typography>
-      <Typography
-        variant="caption"
-        style={{color, ...killedStyles}}
-        align="center"
-      >
-        {order}
-      </Typography>
+      <Grid container justify="center">
+        <Typography
+          variant="caption"
+          style={{color, ...killedStyles}}
+          align="center"
+        >
+          {order}
+        </Typography>
+        {investigated && <Search fontSize="small" style={{color}} />}
+      </Grid>
       <Typography
         onClick={
           selectable
@@ -250,6 +262,7 @@ export const Players = () => {
           <Player
             allSelectable={gameInfo.conf.allSelectable}
             loggedInPlayerId={loggedInPlayerId}
+            investigated={gameInfo.conf.investigated.includes(p.id)}
             key={p.id}
             {...p}
           />
