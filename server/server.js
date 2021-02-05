@@ -28,7 +28,11 @@ export const appSession = session({
   secret: config.sessionSecret,
   resave: false,
   saveUninitialized: false,
-  cookie: {secure: config.https, httpOnly: true},
+  cookie: {
+    secure: config.https,
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60 * 24 * 30 * 365 * 10, // 10 year
+  },
 })
 
 app.use(appSession)
