@@ -138,7 +138,6 @@ const getConfigAfterFailedVote = (game, votes) => {
 export const vote = (socket) => async (data) => {
   socket.log.info('Vote', data)
   const {playerId, gameId} = socket
-
   const game = await getGame(gameId)
   const player = await getPlayer(playerId)
 
@@ -173,6 +172,5 @@ export const vote = (socket) => async (data) => {
   await knex('games')
     .where({id: game.id})
     .update({conf: handleGameOver(conf, game.players), secret_conf: secretConf})
-
   votedAll ? ioServer.in(game.id).emit('fetch-data') : socket.emit('fetch-data')
 }

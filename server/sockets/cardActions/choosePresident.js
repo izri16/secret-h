@@ -6,7 +6,6 @@ import {handleGovernmentChange} from '../utils.js'
 export const choosePresident = (socket) => async (data) => {
   socket.log.info('Choosing next president', data.id)
   const {gameId, playerId} = socket
-
   const game = await getGame(gameId)
 
   if (
@@ -20,6 +19,5 @@ export const choosePresident = (socket) => async (data) => {
 
   const updatedGame = handleGovernmentChange(game, data.id)
   await knex('games').where({id: game.id}).update(updatedGame)
-
   ioServer.in(game.id).emit('fetch-data')
 }

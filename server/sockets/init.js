@@ -77,7 +77,6 @@ const registerListeners = (socket) => {
 
 export const init = async (socket) => {
   const {playerId, gameId} = socket
-
   const game = await getGame(gameId)
   const player = await getPlayer(playerId)
 

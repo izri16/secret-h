@@ -6,7 +6,6 @@ import {handleGovernmentChange} from '../utils.js'
 export const investigateFinished = (socket) => async () => {
   socket.log.info('Investigation finished')
   const {gameId, playerId} = socket
-
   const game = await getGame(gameId)
 
   if (
@@ -20,14 +19,12 @@ export const investigateFinished = (socket) => async () => {
 
   const updatedGame = handleGovernmentChange(game)
   await knex('games').where({id: game.id}).update(updatedGame)
-
   ioServer.in(game.id).emit('fetch-data')
 }
 
 export const investigate = (socket) => async (data) => {
   socket.log.info('Investigating player', data.id)
   const {gameId, playerId} = socket
-
   const game = await getGame(gameId)
 
   if (
@@ -61,6 +58,5 @@ export const investigate = (socket) => async (data) => {
     },
   }
   await knex('games').where({id: game.id}).update(updatedGame)
-
   ioServer.in(game.id).emit('fetch-data')
 }

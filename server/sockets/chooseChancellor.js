@@ -31,7 +31,6 @@ const isValidChancellor = async (game, playerId) => {
 export const chooseChancellor = (socket) => async (data) => {
   socket.log.info('Choose chancellor', data)
   const {gameId} = socket
-
   const game = await getGame(gameId)
 
   if (!game.active || game.conf.action !== 'choose-chancellor') {
@@ -62,6 +61,5 @@ export const chooseChancellor = (socket) => async (data) => {
   await knex('games')
     .where({id: game.id})
     .update({conf: updatedConf, secret_conf: updatedSecretConf})
-
   ioServer.in(game.id).emit('fetch-data')
 }

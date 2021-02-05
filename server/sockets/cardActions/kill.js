@@ -8,12 +8,9 @@ export const killTransformer = (game, data) => {
   const updatedPlayers = _.mapValues(game.players, (p) =>
     p.id === data.id ? {...p, killed: true} : p
   )
-
   const updatedConf = handleGameOver(game.conf, updatedPlayers)
-
   const transformer =
     updatedConf.action !== 'results' ? handleGovernmentChange : (i) => i
-
   return transformer({
     ...game,
     conf: updatedConf,
@@ -24,7 +21,6 @@ export const killTransformer = (game, data) => {
 export const kill = (socket) => async (data) => {
   socket.log.info('Killing player', data)
   const {gameId, playerId} = socket
-
   const game = await getGame(gameId)
 
   if (
@@ -38,6 +34,5 @@ export const kill = (socket) => async (data) => {
 
   const updatedGame = killTransformer(game, data)
   await knex('games').where({id: game.id}).update(updatedGame)
-
   ioServer.in(game.id).emit('fetch-data')
 }

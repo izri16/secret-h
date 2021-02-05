@@ -14,7 +14,6 @@ import {
 export const chancellorTurnVeto = (socket) => async () => {
   socket.log.info('Chancellor turn veto')
   const {gameId, playerId} = socket
-
   const game = await getGame(gameId)
 
   if (
@@ -54,15 +53,12 @@ export const chancellorTurn = (socket) => async (data) => {
 
   const updatedGame = chancellorTurnTransformer(game, data)
   await knex('games').where({id: game.id}).update(updatedGame)
-
   ioServer.in(game.id).emit('fetch-data')
 }
 
 export const presidentTurnVeto = (socket) => async (data) => {
   socket.log.info('President turn veto', data)
-
   const {gameId, playerId} = socket
-
   const game = await getGame(gameId)
 
   if (
@@ -168,14 +164,12 @@ export const presidentTurnVeto = (socket) => async (data) => {
         },
       })
   }
-
   ioServer.in(game.id).emit('fetch-data')
 }
 
 export const presidentTurn = (socket) => async (data) => {
   socket.log.info('President turn', data)
   const {gameId, playerId} = socket
-
   const game = await getGame(gameId, data)
 
   if (
@@ -189,6 +183,5 @@ export const presidentTurn = (socket) => async (data) => {
 
   const updatedGame = presidentTurnTransformer(game, data)
   await knex('games').where({id: game.id}).update(updatedGame)
-
   ioServer.in(game.id).emit('fetch-data')
 }
