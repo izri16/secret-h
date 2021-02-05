@@ -46,6 +46,7 @@ const useStyles = makeStyles((theme) => {
     },
     president: {
       color: theme.palette.selected.main,
+      paddingTop: theme.spacing(1),
     },
   }
 })

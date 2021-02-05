@@ -1,6 +1,10 @@
-body, html, #root {
+body, html {
   min-height: 100vh;
   min-width: 100vh;
+}
+
+#root {
+  min-width: 1100px;
 }
 
 * {
