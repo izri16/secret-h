@@ -111,7 +111,7 @@ export const presidentTurnVeto = (socket) => async (data) => {
         game.players
       )
 
-      const secretConf = {
+      const secret_conf = {
         ...game.secret_conf,
         discartedLaws,
         remainingLaws,
@@ -122,7 +122,7 @@ export const presidentTurnVeto = (socket) => async (data) => {
       const updatedGame = handleGovernmentChange({
         ...game,
         conf,
-        secret_conf: secretConf,
+        secret_conf,
       })
       await knex('games').where({id: game.id}).update(updatedGame)
     } else {
@@ -138,7 +138,7 @@ export const presidentTurnVeto = (socket) => async (data) => {
         failedElectionsCount: game.conf.failedElectionsCount + 1,
       }
 
-      const secretConf = {
+      const secret_conf = {
         ...game.secret_conf,
         discartedLaws,
         remainingLaws,
@@ -149,7 +149,7 @@ export const presidentTurnVeto = (socket) => async (data) => {
       const updatedGame = handleGovernmentChange({
         ...game,
         conf,
-        secret_conf: secretConf,
+        secret_conf,
       })
       await knex('games').where({id: game.id}).update(updatedGame)
     }

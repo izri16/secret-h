@@ -15,15 +15,12 @@ import {
 
 const canVote = async (game, playerId) => {
   const alivePlayers = getAlivePlayers(game.players)
-
   if (!alivePlayers[playerId]) {
     return false
   }
-
   if (game.conf.voted.includes(playerId)) {
     return false
   }
-
   return true
 }
 
@@ -32,13 +29,11 @@ const getConfigDuringVote = (game, votes) => {
     ...game.conf,
     voted: Object.keys(votes),
   }
-
-  const secretConf = {
+  const secret_conf = {
     ...game.secret_conf,
     votes,
   }
-
-  return {conf, secretConf}
+  return {conf, secret_conf}
 }
 
 const getConfigAfterSuccessfullVote = (game, votes) => {
@@ -52,15 +47,13 @@ const getConfigAfterSuccessfullVote = (game, votes) => {
     votes,
     drawPileCount: remainingLaws.length,
   }
-
-  const secretConf = {
+  const secret_conf = {
     ...game.secret_conf,
     votes: {},
     presidentLaws,
     remainingLaws,
   }
-
-  return {conf, secretConf}
+  return {conf, secret_conf}
 }
 
 const getConfigAfterFailedVote = (game, votes) => {
@@ -76,7 +69,7 @@ const getConfigAfterFailedVote = (game, votes) => {
     }
 
     // draw random law and remove it from remaining laws
-    const choosenLaw = game.secret_conf.remainingLaws[0]
+    const choosenLaw = remainingLaws[0]
     remainingLaws = remainingLaws.slice(1)
 
     // there might be a need for shuffle after choosing random law
@@ -95,11 +88,12 @@ const getConfigAfterFailedVote = (game, votes) => {
         discardPileCount: discartedLaws.length,
         failedElectionsCount: 0,
         allSelectable: true,
+        votes,
+        voted: [],
       },
       game.players
     )
-
-    const secretConf = {
+    const secret_conf = {
       ...game.secret_conf,
       votes: {},
       discartedLaws,
@@ -112,13 +106,12 @@ const getConfigAfterFailedVote = (game, votes) => {
       getHasCardAction(conf, game.number_of_players)
 
     const transformer = !hasCardAction ? handleGovernmentChange : (i) => i
-
     return transformer({
       ...game,
       conf: hasCardAction
         ? handleCardAction(conf, game.number_of_players)
         : conf,
-      secretConf: secretConf,
+      secret_conf,
     })
   }
 
@@ -131,8 +124,35 @@ const getConfigAfterFailedVote = (game, votes) => {
     chancellor: null,
     votes,
   }
+  return {conf, secret_conf: {...game.secret_conf, votes: {}}}
+}
 
-  return {conf, secretConf: game.secret_conf}
+export const voteTransformer = (playerId, game, data) => {
+  const votes = {
+    ...game.secret_conf.votes,
+    [playerId]: data.vote,
+  }
+  const alivePlayersCount = _.size(getAlivePlayers(game.players))
+  const votedAll = _.size(votes) === alivePlayersCount
+
+  const skipped =
+    votedAll &&
+    Object.values(votes).filter((v) => v).length * 2 <= alivePlayersCount
+
+  const {conf, secret_conf} = !votedAll
+    ? getConfigDuringVote(game, votes)
+    : !skipped
+    ? getConfigAfterSuccessfullVote(game, votes)
+    : getConfigAfterFailedVote(game, votes)
+
+  return {
+    game: {
+      ...game,
+      conf: handleGameOver(conf, game.players),
+      secret_conf: secret_conf,
+    },
+    votedAll,
+  }
 }
 
 export const vote = (socket) => async (data) => {
@@ -152,25 +172,7 @@ export const vote = (socket) => async (data) => {
     return
   }
 
-  const votes = {
-    ...game.secret_conf.votes,
-    [player.id]: data.vote,
-  }
-  const alivePlayersCount = _.size(getAlivePlayers(game.players))
-  const votedAll = _.size(votes) === alivePlayersCount
-
-  const skipped =
-    votedAll &&
-    Object.values(votes).filter((v) => v).length * 2 <= alivePlayersCount
-
-  const {conf, secretConf} = !votedAll
-    ? getConfigDuringVote(game, votes)
-    : !skipped
-    ? getConfigAfterSuccessfullVote(game, votes)
-    : getConfigAfterFailedVote(game, votes)
-
-  await knex('games')
-    .where({id: game.id})
-    .update({conf: handleGameOver(conf, game.players), secret_conf: secretConf})
+  const {game: updatedGame, votedAll} = voteTransformer(player.id, game, data)
+  await knex('games').where({id: game.id}).update(updatedGame)
   votedAll ? ioServer.in(game.id).emit('fetch-data') : socket.emit('fetch-data')
 }
