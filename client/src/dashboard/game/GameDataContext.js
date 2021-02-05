@@ -1,5 +1,6 @@
 import React from 'react'
 import {useParams} from 'react-router-dom'
+import {config} from '../../config'
 
 const GameDataContext = React.createContext({
   gameData: null,
@@ -11,7 +12,9 @@ export const GameDataProvider = ({children}) => {
 
   const [gameData, setGameData] = React.useState(null)
 
-  console.log('Game-Data', gameData)
+  if (config.dev) {
+    console.log('Game-Data', gameData)
+  }
 
   return (
     <GameDataContext.Provider value={{gameData, setGameData, gameId}}>

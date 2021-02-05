@@ -3,6 +3,7 @@ import io from 'socket.io-client'
 
 import {useGameData} from './GameDataContext'
 import {config} from '../../config'
+import {useErrorHandling} from '../../ErrorHandler'
 
 const SocketContext = React.createContext({
   socket: null,
@@ -11,6 +12,7 @@ const SocketContext = React.createContext({
 export const SocketProvider = ({children}) => {
   const [socket, setSocket] = React.useState(null)
   const {gameId, setGameData} = useGameData()
+  const {setError} = useErrorHandling()
 
   React.useEffect(() => {
     const query = {
@@ -35,12 +37,14 @@ export const SocketProvider = ({children}) => {
     })
 
     socket.on('socket-error', (error) => {
-      // TODO:
-      alert('socket error', error)
+      if (config.dev) {
+        console.error('Unexpected socket error', error)
+      }
+      setError(true)
     })
 
     setSocket(socket)
-  }, [gameId, setGameData])
+  }, [gameId, setGameData, setError])
 
   return (
     <SocketContext.Provider value={{socket}}>{children}</SocketContext.Provider>
