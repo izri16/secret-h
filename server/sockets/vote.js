@@ -108,7 +108,9 @@ export const voteAdmin = (socket) => async (data) => {
   const game = await getGame(gameId)
   const player = await getPlayer(playerId)
 
-  const votes = _.mapValues(game.players, () => true)
+  const votes = Object.values(game.players)
+    .filter((p) => !p.killed)
+    .reduce((res, p) => ({...res, [p.id]: data.vote}), {})
   game.secret_conf.votes = votes
 
   const {game: updatedGame} = voteTransformer(player.id, game, data)

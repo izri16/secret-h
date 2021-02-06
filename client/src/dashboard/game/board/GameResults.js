@@ -1,7 +1,8 @@
 import React from 'react'
-import {Backdrop, Card, Typography, Grid} from '@material-ui/core'
+import {Backdrop, Card, Typography, Grid, Box} from '@material-ui/core'
+import {KeyboardReturn} from '@material-ui/icons'
 import {makeStyles} from '@material-ui/core/styles'
-
+import {useHistory} from 'react-router-dom'
 import {useGameData} from '../GameDataContext'
 
 const useStyles = makeStyles((theme) => ({
@@ -15,6 +16,25 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(3),
   }),
 }))
+
+export const GoBack = ({color, text}) => {
+  color = color || 'secondary'
+  const history = useHistory()
+  const onClick = () => {
+    history.push('/')
+  }
+  return (
+    <Grid
+      container
+      alignItems="center"
+      style={{cursor: 'pointer'}}
+      onClick={onClick}
+    >
+      <KeyboardReturn color={color} />
+      {text && <Typography color={color}>{text}</Typography>}
+    </Grid>
+  )
+}
 
 export const GameResults = () => {
   const {
@@ -45,6 +65,8 @@ export const GameResults = () => {
           <Typography variant="h5" align="center">
             {reason}
           </Typography>
+          <Box mt={2} />
+          <GoBack color="primary" text="Menu" />
         </Grid>
       </Card>
     </Backdrop>

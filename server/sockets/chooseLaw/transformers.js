@@ -82,7 +82,7 @@ export const presidentTurnVetoTransformer = (game, data) => {
     if (game.conf.failedElectionsCount === 2) {
       return drawRandomLaw({
         ...game,
-        game: {
+        conf: {
           ...game.conf,
           discardPileCount: discartedLaws.length,
         },

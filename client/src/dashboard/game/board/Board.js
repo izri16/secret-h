@@ -1,33 +1,17 @@
 import React from 'react'
 import {Paper, Box, Typography} from '@material-ui/core'
-import {KeyboardReturn} from '@material-ui/icons'
 import {makeStyles} from '@material-ui/core/styles'
-import {useHistory} from 'react-router-dom'
 
 import {BoardCard} from './BoardCard'
 import {StatusBar} from './StatusBar'
 import {Players} from './Players'
 import {BoardCardActions} from './BoardCardActions'
-import {GameResults} from './GameResults'
+import {GameResults, GoBack} from './GameResults'
 import {PresidentTurn, ChancellorTurn, Vote} from './election'
 import {ChoosePresident, KillPlayer, Investigate, Examine} from './cardActions'
 
 import {useGameData} from '../GameDataContext'
 import {fascistCardsConf} from 'common/constants.js'
-
-export const GoBack = () => {
-  const history = useHistory()
-  const onClick = () => {
-    history.push('/')
-  }
-  return (
-    <KeyboardReturn
-      color="secondary"
-      style={{cursor: 'pointer'}}
-      onClick={onClick}
-    />
-  )
-}
 
 const useCardPlaceholderStyles = makeStyles((theme) => {
   const border = (race) => `2px dashed ${theme.palette[race].dark}`
