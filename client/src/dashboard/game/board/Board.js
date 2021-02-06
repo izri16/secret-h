@@ -1,6 +1,8 @@
 import React from 'react'
 import {Paper, Box, Typography} from '@material-ui/core'
+import {KeyboardReturn} from '@material-ui/icons'
 import {makeStyles} from '@material-ui/core/styles'
+import {useHistory} from 'react-router-dom'
 
 import {BoardCard} from './BoardCard'
 import {StatusBar} from './StatusBar'
@@ -12,6 +14,20 @@ import {ChoosePresident, KillPlayer, Investigate, Examine} from './cardActions'
 
 import {useGameData} from '../GameDataContext'
 import {fascistCardsConf} from 'common/constants.js'
+
+export const GoBack = () => {
+  const history = useHistory()
+  const onClick = () => {
+    history.push('/')
+  }
+  return (
+    <KeyboardReturn
+      color="secondary"
+      style={{cursor: 'pointer'}}
+      onClick={onClick}
+    />
+  )
+}
 
 const useCardPlaceholderStyles = makeStyles((theme) => {
   const border = (race) => `2px dashed ${theme.palette[race].dark}`
@@ -155,6 +171,11 @@ const useBoardStyles = makeStyles((theme) => {
     playersWrapper: {
       marginBottom: 20,
     },
+    goBack: {
+      position: 'fixed',
+      left: 20,
+      top: 20,
+    },
   }
 })
 
@@ -166,6 +187,9 @@ export const Board = () => {
 
   return (
     <Box className={styles.room}>
+      <Box className={styles.goBack}>
+        <GoBack />
+      </Box>
       <Box className={styles.boardWrapper}>
         <Paper className={styles.board}>
           <StatusBar />
