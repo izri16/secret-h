@@ -135,6 +135,7 @@ const useBoardStyles = makeStyles((theme) => {
     room: {
       background: theme.palette.primary.main,
       display: 'flex',
+      minWidth: 1100,
       minHeight: '100vh',
       width: '100%',
       justifyContent: 'space-between',
@@ -156,7 +157,7 @@ const useBoardStyles = makeStyles((theme) => {
       marginBottom: 20,
     },
     goBack: {
-      position: 'fixed',
+      position: 'absolute',
       left: 20,
       top: 20,
     },

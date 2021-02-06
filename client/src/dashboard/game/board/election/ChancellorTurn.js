@@ -49,7 +49,12 @@ export const ChancellorTurn = ({veto}) => {
       {isChancellor ? (
         <>
           <Message>Choose one law!</Message>
-          <Grid container justify="space-between">
+          <Grid
+            container
+            justify="space-between"
+            wrap="nowrap"
+            className={commonStyles.scrollableContainer}
+          >
             {extras.chancellorLaws.map((law, i) => (
               <Box key={i} className={commonStyles.cardWrapper}>
                 <BoardCard

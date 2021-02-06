@@ -25,7 +25,12 @@ export const Examine = () => {
       {isPresident ? (
         <BackdropCard>
           <Message>Top 3 draw pile cards (leftmost is first)</Message>
-          <Grid container justify="space-between">
+          <Grid
+            container
+            justify="space-between"
+            wrap="nowrap"
+            className={commonStyles.scrollableContainer}
+          >
             {extras.topCards.map((law, i) => (
               <Box key={i} className={commonStyles.cardWrapper}>
                 <BoardCard type={law} />

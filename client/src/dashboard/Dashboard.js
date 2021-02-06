@@ -13,10 +13,13 @@ const useStyles = makeStyles((theme) => ({
     position: 'relative',
   },
   innerWrapper: {
-    width: 600,
+    minWidth: 0,
+    [theme.breakpoints.up('sm')]: {
+      minWidth: 560,
+    },
   },
   logout: {
-    position: 'absolute',
+    position: 'fixed',
     top: 20,
     right: 20,
   },

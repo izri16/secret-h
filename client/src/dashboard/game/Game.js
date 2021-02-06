@@ -9,6 +9,7 @@ import {
   Paper,
   Divider,
   CircularProgress,
+  Box,
 } from '@material-ui/core'
 import {makeStyles} from '@material-ui/styles'
 import {SocketProvider} from './SocketContext'
@@ -16,22 +17,29 @@ import {GameDataProvider, useGameData} from './GameDataContext'
 import {ConfirmModalProvider, ConfirmModal} from './ConfirmModalContext'
 import {Board} from './board/Board'
 import {GameUrlToClipboard} from './GameUrlToClipboard'
+import {GoBack} from './board/GameResults'
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {
     width: '100%',
-    minHeight: '100vh',
+    height: '100vh',
     background: theme.palette.primary.main,
     position: 'relative',
   },
-  innerWrapper: {
-    width: 600,
+  minWidth: 0,
+  [theme.breakpoints.up('sm')]: {
+    minWidth: 560,
   },
   divider: {
     width: '100%',
   },
   section: {
     padding: theme.spacing(3),
+  },
+  goBack: {
+    position: 'absolute',
+    left: 20,
+    top: 20,
   },
 }))
 
@@ -48,6 +56,9 @@ const GameContent = () => {
         direction="column"
         className={styles.wrapper}
       >
+        <Box className={styles.goBack}>
+          <GoBack />
+        </Box>
         <CircularProgress color="secondary" />
       </Grid>
     )
@@ -68,6 +79,9 @@ const GameContent = () => {
         direction="column"
         className={styles.wrapper}
       >
+        <Box className={styles.goBack}>
+          <GoBack />
+        </Box>
         <Paper>
           <Grid
             container

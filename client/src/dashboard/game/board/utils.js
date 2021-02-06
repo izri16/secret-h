@@ -15,7 +15,9 @@ const useStyles = makeStyles((theme) => ({
     color: '#fff',
   },
   wrapper: {
+    minHeight: 100, // without this scrolling does strange things ...
     width: 'auto',
+    overflow: 'auto',
   },
 }))
 
@@ -54,6 +56,9 @@ export const useCommonStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     background: theme.palette.secondary.main,
+  },
+  scrollableContainer: {
+    width: 'auto',
   },
 }))
 

@@ -27,7 +27,7 @@ export const GoBack = ({color, text}) => {
     <Grid
       container
       alignItems="center"
-      style={{cursor: 'pointer'}}
+      style={{cursor: 'pointer', zIndex: 9999999, position: 'relative'}}
       onClick={onClick}
     >
       <KeyboardReturn color={color} />

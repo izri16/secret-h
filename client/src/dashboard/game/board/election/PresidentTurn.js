@@ -43,7 +43,12 @@ export const PresidentTurn = ({veto}) => {
       {isPresident ? (
         <>
           <Message>{veto ? 'Allow veto?' : 'Discard one law!'}</Message>
-          <Grid container justify="space-between">
+          <Grid
+            container
+            justify="space-between"
+            wrap="nowrap"
+            className={commonStyles.scrollableContainer}
+          >
             {!veto &&
               extras.presidentLaws.map((law, i) => (
                 <Box key={i} className={commonStyles.cardWrapper}>

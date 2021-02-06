@@ -59,7 +59,12 @@ export const Vote = () => {
       ) : (
         <>
           <Message>Vote for the government</Message>
-          <Grid container justify="space-between">
+          <Grid
+            container
+            justify="space-between"
+            wrap="nowrap"
+            className={commonStyles.scrollableContainer}
+          >
             <Box className={commonStyles.cardWrapper}>
               <BoardCard type="voteNo" onClick={onNo} />
             </Box>

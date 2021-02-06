@@ -10,15 +10,37 @@ import {Game} from './dashboard/game/Game'
 import {theme} from './theme'
 import {ErrorDialog, ErrorHandlingProvider} from './ErrorHandler'
 
+const useGlobalStyles = makeStyles((theme) => ({
+  '@global': {
+    'body, html': {
+      minHeight: '100vh',
+      minWidth: '100vw',
+      background: theme.palette.primary.main,
+    },
+    '#root': {
+      width: '100%',
+      height: '100%',
+    },
+    '*': {
+      padding: 0,
+      margin: 0,
+      boxSizing: 'border-box',
+    },
+  },
+}))
+
 const useStyles = makeStyles((theme) => ({
   wrapper: {
     width: '100%',
     minHeight: '100vh',
-    background: theme.palette.primary.main,
     position: 'relative',
+    overflow: 'auto',
   },
   innerWrapper: {
-    width: 600,
+    minWidth: 0,
+    [theme.breakpoints.up('sm')]: {
+      minWidth: 560,
+    },
   },
   divider: {
     width: '100%',
@@ -29,6 +51,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 const AppContent = () => {
+  useGlobalStyles()
   const styles = useStyles()
   return (
     <Grid
