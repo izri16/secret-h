@@ -9,6 +9,7 @@ import {
 } from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import {useGameData} from '../GameDataContext'
+import {GameUrlToClipboard} from '../GameUrlToClipboard'
 
 const useStatusBarStyles = makeStyles((theme) => {
   return {
@@ -87,6 +88,10 @@ export const StatusBar = () => {
           <Paper className={styles.pile}>
             <Typography>{gameInfo.conf.discardPileCount}</Typography>
           </Paper>
+        </Box>
+
+        <Box mt={2} ml={1}>
+          <GameUrlToClipboard />
         </Box>
       </Box>
 

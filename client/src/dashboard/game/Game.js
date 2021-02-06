@@ -7,14 +7,15 @@ import {
   Typography,
   Grid,
   Paper,
-  CircularProgress,
   Divider,
+  CircularProgress,
 } from '@material-ui/core'
 import {makeStyles} from '@material-ui/styles'
 import {SocketProvider} from './SocketContext'
 import {GameDataProvider, useGameData} from './GameDataContext'
 import {ConfirmModalProvider, ConfirmModal} from './ConfirmModalContext'
 import {Board} from './board/Board'
+import {GameUrlToClipboard} from './GameUrlToClipboard'
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {
@@ -74,9 +75,14 @@ const GameContent = () => {
             alignItems="center"
             className={styles.innerWrapper}
           >
-            <Typography className={styles.section}>
-              {gameData.gameInfo.id}
-            </Typography>
+            <Grid item>
+              <Grid container justify="center" alignItems="center">
+                <Typography className={styles.section}>
+                  {gameData.gameInfo.id}
+                </Typography>
+                <GameUrlToClipboard />
+              </Grid>
+            </Grid>
             <Typography
               className={styles.section}
             >{`Waiting for ${remainingPlayersCount} others ...`}</Typography>
